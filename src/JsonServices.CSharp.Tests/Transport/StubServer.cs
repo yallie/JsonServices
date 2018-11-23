@@ -20,13 +20,13 @@ namespace JsonServices.Tests.Transport
 
 		public ISession GetSession(string sessionId) => Clients[sessionId];
 
-		public void Send(string sessionId, byte[] data)
+		public void Send(string sessionId, string data)
 		{
 			var client = Clients[sessionId];
 			client.Receive(data);
 		}
 
-		internal void Receive(string sessionId, byte[] data)
+		internal void Receive(string sessionId, string data)
 		{
 			var args = new MessageEventArgs
 			{

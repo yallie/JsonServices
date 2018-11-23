@@ -20,33 +20,23 @@ namespace JsonServices.Tests.Serialization
 
 		private IMessageTypeLocator Locator { get; }
 
-		public byte[] SerializeRequest(RequestMessage message)
+		public string SerializeRequest(RequestMessage message)
 		{
-			using (var ms = new MemoryStream())
+			using (var config = JsConfig.BeginScope())
 			{
-				using (var config = JsConfig.BeginScope())
-				{
-					config.IncludeTypeInfo = false;
-					config.ExcludeTypeInfo = true;
-					JsonSerializer.SerializeToStream(message, ms);
-				}
-
-				return ms.ToArray();
+				config.IncludeTypeInfo = false;
+				config.ExcludeTypeInfo = true;
+				return JsonSerializer.SerializeToString(message);
 			}
 		}
 
-		public byte[] SerializeResponse(ResponseMessage message)
+		public string SerializeResponse(ResponseMessage message)
 		{
-			using (var ms = new MemoryStream())
+			using (var config = JsConfig.BeginScope())
 			{
-				using (var config = JsConfig.BeginScope())
-				{
-					config.IncludeTypeInfo = false;
-					config.ExcludeTypeInfo = true;
-					JsonSerializer.SerializeToStream(message, ms);
-				}
-
-				return ms.ToArray();
+				config.IncludeTypeInfo = false;
+				config.ExcludeTypeInfo = true;
+				return JsonSerializer.SerializeToString(message);
 			}
 		}
 
@@ -63,21 +53,17 @@ namespace JsonServices.Tests.Serialization
 			object IRequestMessage.Parameters => Parameters;
 		}
 
-		public RequestMessage DeserializeRequest(byte[] data)
+		public RequestMessage DeserializeRequest(string data)
 		{
-			using (var ms = new MemoryStream(data))
-			{
-				// pre-deserialize to get the message request type
-				var msg = JsonSerializer.DeserializeFromStream<RequestMessage>(ms);
-				var type = Locator.GetRequestType(msg.Name);
-				var msgType = typeof(RequestMsg<>).MakeGenericType(new[] { type });
+			// pre-deserialize to get the message request type
+			var msg = JsonSerializer.DeserializeFromString<RequestMessage>(data);
+			var type = Locator.GetRequestType(msg.Name);
+			var msgType = typeof(RequestMsg<>).MakeGenericType(new[] { type });
 
-				// rewind the stream and deserialize the strong-typed message
-				ms.Position = 0;
-				var reqMsg = (IRequestMessage)JsonSerializer.DeserializeFromStream(msgType, ms);
-				msg.Parameters = reqMsg.Parameters;
-				return msg;
-			}
+			// deserialize the strong-typed message
+			var reqMsg = (IRequestMessage)JsonSerializer.DeserializeFromString(data, msgType);
+			msg.Parameters = reqMsg.Parameters;
+			return msg;
 		}
 
 		private interface IResponseMessage
@@ -93,21 +79,17 @@ namespace JsonServices.Tests.Serialization
 			object IResponseMessage.Result => Result;
 		}
 
-		public ResponseMessage DeserializeResponse(string name, byte[] data)
+		public ResponseMessage DeserializeResponse(string name, string data)
 		{
-			using (var ms = new MemoryStream(data))
-			{
-				// pre-deserialize to get the bulk of the message
-				var msg = JsonSerializer.DeserializeFromStream<ResponseMessage>(ms);
-				var type = Locator.GetResponseType(name);
-				var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
+			// pre-deserialize to get the bulk of the message
+			var msg = JsonSerializer.DeserializeFromString<ResponseMessage>(data);
+			var type = Locator.GetResponseType(name);
+			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 
-				// rewind the stream and deserialize the strong-typed message
-				ms.Position = 0;
-				var respMsg = (IResponseMessage)JsonSerializer.DeserializeFromStream(msgType, ms);
-				msg.Result = respMsg.Result;
-				return msg;
-			}
+			// deserialize the strong-typed message
+			var respMsg = (IResponseMessage)JsonSerializer.DeserializeFromString(data, msgType);
+			msg.Result = respMsg.Result;
+			return msg;
 		}
 	}
 }

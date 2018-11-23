@@ -6,6 +6,6 @@ namespace JsonServices.Transport
 	{
 		public string SessionId { get; set; }
 
-		public byte[] Data { get; set; }
+		public string Data { get; set; }
 	}
 }

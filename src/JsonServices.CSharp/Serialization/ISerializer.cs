@@ -9,12 +9,12 @@ namespace JsonServices.Serialization
 {
 	public interface ISerializer
 	{
-		byte[] SerializeRequest(RequestMessage message);
+		string SerializeRequest(RequestMessage message);
 
-		byte[] SerializeResponse(ResponseMessage message);
+		string SerializeResponse(ResponseMessage message);
 
-		RequestMessage DeserializeRequest(byte[] data);
+		RequestMessage DeserializeRequest(string data);
 
-		ResponseMessage DeserializeResponse(string name, byte[] data);
+		ResponseMessage DeserializeResponse(string name, string data);
 	}
 }

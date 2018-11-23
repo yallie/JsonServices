@@ -19,12 +19,12 @@ namespace JsonServices.Tests.Transport
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
-		public void Send(byte[] data)
+		public void Send(string data)
 		{
 			Server?.Receive(SessionId, data);
 		}
 
-		internal void Receive(byte[] data)
+		internal void Receive(string data)
 		{
 			var args = new MessageEventArgs
 			{

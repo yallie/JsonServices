@@ -5,7 +5,7 @@ namespace JsonServices.Transport
 {
 	public interface IServer : IDisposable
 	{
-		void Send(string sessionId, byte[] data);
+		void Send(string sessionId, string data);
 
 		event EventHandler<MessageEventArgs> MessageReceived;
 

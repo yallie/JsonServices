@@ -27,9 +27,7 @@ namespace JsonServices.Tests.Serialization
 				}
 			};
 
-			var data = Serializer.SerializeRequest(msg);
-			var payload = Encoding.UTF8.GetString(data);
-
+			var payload = Serializer.SerializeRequest(msg);
 			Assert.NotNull(payload);
 			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true}}", payload);
 		}
@@ -47,9 +45,7 @@ namespace JsonServices.Tests.Serialization
 				}
 			};
 
-			var data = Serializer.SerializeRequest(msg);
-			var payload = Encoding.UTF8.GetString(data);
-
+			var payload = Serializer.SerializeRequest(msg);
 			Assert.NotNull(payload);
 			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true},\"id\":\"123\"}", payload);
 		}
@@ -65,9 +61,7 @@ namespace JsonServices.Tests.Serialization
 				}
 			};
 
-			var data = Serializer.SerializeResponse(msg);
-			var payload = Encoding.UTF8.GetString(data);
-
+			var payload = Serializer.SerializeResponse(msg);
 			Assert.NotNull(payload);
 			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"}}", payload);
 		}
@@ -84,9 +78,7 @@ namespace JsonServices.Tests.Serialization
 				}
 			};
 
-			var data = Serializer.SerializeResponse(msg);
-			var payload = Encoding.UTF8.GetString(data);
-
+			var payload = Serializer.SerializeResponse(msg);
 			Assert.NotNull(payload);
 			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"321\"}", payload);
 		}
@@ -94,8 +86,9 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanDeserializeRequestOneWayMessage()
 		{
-			var data = Encoding.UTF8.GetBytes("{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true}}");
+			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true}}";
 			var msg = Serializer.DeserializeRequest(data);
+
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
 			Assert.AreEqual("JsonServices.Tests.Messages.GetVersion", msg.Name);
@@ -107,8 +100,9 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanDeserializeRequestMessage()
 		{
-			var data = Encoding.UTF8.GetBytes("{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true},\"id\":\"123\"}");
+			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true},\"id\":\"123\"}";
 			var msg = Serializer.DeserializeRequest(data);
+
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
 			Assert.AreEqual("JsonServices.Tests.Messages.GetVersion", msg.Name);
@@ -120,8 +114,9 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanDeserializeResponseOneWayMessage()
 		{
-			var data = Encoding.UTF8.GetBytes("{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"}}");
+			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"}}";
 			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
 			Assert.IsNull(msg.Error);
@@ -133,8 +128,9 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanDeserializeResponseMessage()
 		{
-			var data = Encoding.UTF8.GetBytes("{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"312\"}");
+			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"312\"}";
 			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
 			Assert.IsNull(msg.Error);

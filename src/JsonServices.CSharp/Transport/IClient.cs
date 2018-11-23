@@ -4,7 +4,7 @@ namespace JsonServices.Transport
 {
 	public interface IClient : IDisposable
 	{
-		void Send(byte[] data);
+		void Send(string data);
 
 		event EventHandler<MessageEventArgs> MessageReceived;
 	}
