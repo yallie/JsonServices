@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>JsonServices.Tests</Title>
+    <Version>0.0.0.1</Version>
+    <Authors>yallie</Authors>
+    <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
+    <Description>C# Message-Based JSON-RPC Client over WebSockets or ZeroMQ Connections</Description>
+    <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
+    <PackageTags>websockets zeromq json rpc events</PackageTags>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <RootNamespace>JsonServices.Tests</RootNamespace>
+    <AssemblyName>JsonServices.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JsonServices.CSharp\JsonServices.CSharp.csproj" />
+  </ItemGroup>
+
+</Project>
