@@ -1,19 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JsonServices.Messages
 {
-	public class ResponseMessage<T> : IResponseMessage
+	[DataContract]
+	public class ResponseMessage
 	{
-		public string Id { get; set; }
+		[DataMember(Name = "jsonrpc", EmitDefaultValue = true)]
+		public string Version => "2.0";
 
-		public T Result { get; set; }
+		[DataMember(Name = "result", EmitDefaultValue = false)]
+		public object Result { get; set; }
 
+		[DataMember(Name = "error", EmitDefaultValue = false)]
 		public Error Error { get; set; }
 
-		object IResponseMessage.Result => Result;
+		[DataMember(Name = "id", EmitDefaultValue = false)]
+		public string Id { get; set; }
 	}
 }

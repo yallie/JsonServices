@@ -38,9 +38,9 @@ namespace JsonServices
 		private ConcurrentDictionary<string, TaskCompletionSource<object>> PendingMessages { get; } =
 			new ConcurrentDictionary<string, TaskCompletionSource<object>>();
 
-		internal void SendMessage(IRequestMessage requestMessage)
+		internal void SendMessage(RequestMessage requestMessage)
 		{
-			var data = Serializer.Serialize(requestMessage);
+			var data = Serializer.SerializeRequest(requestMessage);
 			if (!requestMessage.IsOneWay)
 			{
 				PendingMessages[requestMessage.Id] = new TaskCompletionSource<object>();

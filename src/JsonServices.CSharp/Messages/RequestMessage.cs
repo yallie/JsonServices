@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JsonServices.Messages
 {
-	public class RequestMessage<T> : IRequestMessage
+	[DataContract]
+	public class RequestMessage
 	{
-		public RequestMessage()
-		{
-			Name = typeof(T).FullName;
-		}
+		[DataMember(Name = "jsonrpc", EmitDefaultValue = true)]
+		public string Version => "2.0";
 
-		public string Id { get; set; }
-
-		public bool IsOneWay => string.IsNullOrWhiteSpace(Id);
-
+		[DataMember(Name = "method", EmitDefaultValue = true)]
 		public string Name { get; set; }
 
-		public T Params { get; set; }
+		[DataMember(Name = "params", EmitDefaultValue = true)]
+		public object Parameters { get; set; }
 
-		object IRequestMessage.Params => Params;
+		[DataMember(Name = "id", EmitDefaultValue = false)]
+		public string Id { get; set; }
+
+		[IgnoreDataMember]
+		public bool IsOneWay => string.IsNullOrWhiteSpace(Id);
 	}
 }
