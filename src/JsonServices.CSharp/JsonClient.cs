@@ -11,20 +11,26 @@ namespace JsonServices
 	{
 		public JsonClient(IClient client)
 		{
-			Client = client;
+			Client = client ?? throw new ArgumentNullException("client");
+			Client.MessageReceived += HandleClientMessage;
 		}
 
 		public bool IsDisposed { get; private set; }
 
-		public IClient Client { get; }
+		public IClient Client { get; set; }
 
 		public void Dispose()
 		{
 			if (!IsDisposed)
 			{
-				Client?.Dispose();
+				Client.MessageReceived -= HandleClientMessage;
+				Client.Dispose();
 				IsDisposed = true;
 			}
+		}
+
+		private void HandleClientMessage(object sender, MessageEventArgs args)
+		{
 		}
 	}
 }

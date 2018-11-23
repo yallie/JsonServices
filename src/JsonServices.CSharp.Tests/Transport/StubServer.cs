@@ -6,27 +6,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Transport;
 
-namespace JsonServices.Tests
+namespace JsonServices.Tests.Transport
 {
 	internal class StubServer : IServer
 	{
 		public void Dispose() => Clients.Clear();
 
-		private Dictionary<Guid, StubClient> Clients { get; } = new Dictionary<Guid, StubClient>();
+		private Dictionary<string, StubClient> Clients { get; } = new Dictionary<string, StubClient>();
 
 		public IEnumerable<ISession> ActiveSessions => Clients.Values;
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
-		public ISession GetSession(Guid sessionId) => Clients[sessionId];
+		public ISession GetSession(string sessionId) => Clients[sessionId];
 
-		public void Send(Guid sessionId, byte[] data)
+		public void Send(string sessionId, byte[] data)
 		{
 			var client = Clients[sessionId];
 			client.Receive(data);
 		}
 
-		internal void Receive(Guid sessionId, byte[] data)
+		internal void Receive(string sessionId, byte[] data)
 		{
 			var args = new MessageEventArgs
 			{

@@ -4,6 +4,6 @@ namespace JsonServices.Transport
 {
 	public interface ISession
 	{
-		Guid SessionId { get; }
+		string SessionId { get; }
 	}
 }

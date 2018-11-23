@@ -21,8 +21,4 @@
     <AssemblyName>JsonServices</AssemblyName>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Serialization\" />
-  </ItemGroup>
-
 </Project>

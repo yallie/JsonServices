@@ -2,7 +2,7 @@
 using System.Threading;
 using JsonServices.Transport;
 
-namespace JsonServices.Tests
+namespace JsonServices.Tests.Transport
 {
 	internal class StubClient : IClient, ISession
 	{
@@ -13,7 +13,7 @@ namespace JsonServices.Tests
 
 		public void Dispose() => Server = null;
 
-		public Guid SessionId { get; } = Guid.NewGuid();
+		public string SessionId { get; } = Guid.NewGuid().ToString();
 
 		private StubServer Server { get; set; }
 
