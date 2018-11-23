@@ -1,0 +1,9 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+
+before_build:
+- ps: nuget restore src\JsonServices.sln
+
+build:
+  project: src\JsonServices.sln
+  verbosity: minimal

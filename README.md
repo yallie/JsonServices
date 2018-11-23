@@ -1,5 +1,7 @@
 ﻿# JsonServices
 
+[![Appveyor build status](https://ci.appveyor.com/api/projects/status/l8sntux7xbx53rk6?svg=true)](https://ci.appveyor.com/project/yallie/jsonservices)
+
 This is a simple library for message-based services running on top of the  
 WebSockets or ZeroMQ connection and based on JSON-RPC 2.0 Specification:  
 
@@ -10,8 +12,8 @@ Note that TypeScript client supports only web socket connections.
 
 ## Message-based RPC
 
-The communication is based on message names, not service types and/or method  
-names like normal RPC. The idea is inspired by ServiceStack architecture.
+The communication is based on message names, not service and/or method names  
+like normal RPC. The idea is inspired by ServiceStack architecture.
 
 C# server code example:
 
