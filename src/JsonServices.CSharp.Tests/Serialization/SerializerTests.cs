@@ -84,6 +84,41 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
+		public void SerializerCanSerializeResponseOneWayMessageWithError()
+		{
+			var msg = new ResponseMessage
+			{
+				Error = new Error
+				{
+					Code = -3123,
+					Message = "Something is rotten"
+				}
+			};
+
+			var payload = Serializer.SerializeResponse(msg);
+			Assert.NotNull(payload);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"}}", payload);
+		}
+
+		[Test]
+		public void SerializerCanSerializeResponseMessageWithError()
+		{
+			var msg = new ResponseMessage
+			{
+				Id = "112",
+				Error = new Error
+				{
+					Code = -3123,
+					Message = "Something is rotten"
+				}
+			};
+
+			var payload = Serializer.SerializeResponse(msg);
+			Assert.NotNull(payload);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"112\"}", payload);
+		}
+
+		[Test]
 		public void SerializerCanDeserializeRequestOneWayMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true}}";
@@ -137,6 +172,38 @@ namespace JsonServices.Tests.Serialization
 			Assert.NotNull(msg.Result);
 			Assert.AreEqual("1.2.3.4", (msg.Result as GetVersionResponse).Version);
 			Assert.AreEqual("312", msg.Id);
+		}
+
+		[Test]
+		public void SerializerCanDeserializeResponseOneWayMessageWithError()
+		{
+			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"}}";
+			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+
+			Assert.NotNull(msg);
+			Assert.AreEqual("2.0", msg.Version);
+			Assert.IsNull(msg.Result);
+			Assert.NotNull(msg.Error);
+			Assert.AreEqual(-3123, msg.Error.Code);
+			Assert.AreEqual("Something is rotten", msg.Error.Message);
+			Assert.IsNull(msg.Error.Data);
+			Assert.IsNull(msg.Id);
+		}
+
+		[Test]
+		public void SerializerCanDeserializeResponseMessageWithError()
+		{
+			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"332\"}";
+			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+
+			Assert.NotNull(msg);
+			Assert.AreEqual("2.0", msg.Version);
+			Assert.IsNull(msg.Result);
+			Assert.NotNull(msg.Error);
+			Assert.AreEqual(-3123, msg.Error.Code);
+			Assert.AreEqual("Something is rotten", msg.Error.Message);
+			Assert.IsNull(msg.Error.Data);
+			Assert.AreEqual("332", msg.Id);
 		}
 	}
 }
