@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace JsonServices.Messages
 {
-	public class RequestMessage
+	public class RequestMessage<T> : IRequestMessage
 	{
+		public RequestMessage()
+		{
+			Name = typeof(T).FullName;
+		}
+
 		public string Id { get; set; }
+
+		public bool IsOneWay => string.IsNullOrWhiteSpace(Id);
 
 		public string Name { get; set; }
 
-		public object Params { get; set; }
+		public T Params { get; set; }
+
+		object IRequestMessage.Params => Params;
 	}
 }

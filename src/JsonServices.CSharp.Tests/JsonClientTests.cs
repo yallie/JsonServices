@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Tests.Transport;
 using NUnit.Framework;
 
 namespace JsonServices.Tests
@@ -11,9 +12,10 @@ namespace JsonServices.Tests
 	public class JsonClientTests
 	{
 		[Test]
-		public void JsonClientRequiresClientInstance()
+		public void JsonClientRequiresServices()
 		{
-			Assert.Throws<ArgumentNullException>(() => new JsonClient(null));
+			Assert.Throws<ArgumentNullException>(() => new JsonClient(null, null));
+			Assert.Throws<ArgumentNullException>(() => new JsonClient(new StubClient(new StubServer()), null));
 		}
 	}
 }
