@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace JsonServices.Tests.Messages
 {
-	internal class GetVersionService : IService<GetVersion>
+	internal class GetVersionService
 	{
-		public object Execute(GetVersion request)
+		public GetVersionResponse Execute(GetVersion request)
 		{
 			if (request == null)
 			{
@@ -17,10 +17,21 @@ namespace JsonServices.Tests.Messages
 
 			if (request.IsInternal)
 			{
-				return "Version 0.01-alpha, build 12345, by yallie";
+				return new GetVersionResponse
+				{
+					Version = "Version 0.01-alpha, build 12345, by yallie"
+				};
 			}
 
-			return "0.01-alpha";
+			return new GetVersionResponse
+			{
+				Version = "0.01-alpha"
+			};
+		}
+
+		public GetVersionResponse Execute(IReturn<GetVersionResponse> request)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace JsonServices.Tests.Transport
 		public StubClient(StubServer server)
 		{
 			Server = server;
+			Server.Connect(this);
 		}
 
 		public void Dispose() => Server = null;

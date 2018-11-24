@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Services;
@@ -78,6 +79,20 @@ namespace JsonServices
 						Result = result
 					};
 				}
+				catch (JsonServicesException ex)
+				{
+					// service is not registered, parse error, internal error, etc
+					response = new ResponseMessage
+					{
+						Id = request.Id,
+						Error = new Error
+						{
+							Code = ex.Code,
+							Message = ex.Message,
+							Data = ex.ToString(),
+						}
+					};
+				}
 				catch (Exception ex)
 				{
 					// error executing the service
@@ -108,7 +123,7 @@ namespace JsonServices
 			}
 
 			// skip response if the request was a one-way notification
-			if (request == null || !request.IsOneWay)
+			if (request == null || !request.IsNotification)
 			{
 				var data = Serializer.SerializeResponse(response);
 				Server.Send(args.SessionId, data);

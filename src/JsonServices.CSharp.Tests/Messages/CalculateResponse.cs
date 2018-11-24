@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JsonServices
+namespace JsonServices.Tests.Messages
 {
-	public interface IService<TRequest>
+	public class CalculateResponse
 	{
-		object Execute(TRequest request);
+		public decimal Result { get; set; }
 	}
 }

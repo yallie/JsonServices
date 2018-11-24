@@ -20,6 +20,11 @@ namespace JsonServices.Tests.Transport
 
 		public ISession GetSession(string sessionId) => Clients[sessionId];
 
+		public void Connect(StubClient client)
+		{
+			Clients[client.SessionId] = client;
+		}
+
 		public void Send(string sessionId, string data)
 		{
 			var client = Clients[sessionId];

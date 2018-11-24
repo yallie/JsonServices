@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using JsonServices.Tests.Messages;
 using NUnit.Framework;
 
@@ -14,8 +15,8 @@ namespace JsonServices.Tests.Services
 		[Test]
 		public void StubLocatorThrowsOnUnknownType()
 		{
-			Assert.Throws<InvalidOperationException>(() => new StubLocator().GetRequestType("Foo"));
-			Assert.Throws<InvalidOperationException>(() => new StubLocator().GetResponseType("Bar"));
+			Assert.Throws<MethodNotFoundException>(() => new StubLocator().GetRequestType("Foo"));
+			Assert.Throws<MethodNotFoundException>(() => new StubLocator().GetResponseType("Bar"));
 		}
 
 		[Test]

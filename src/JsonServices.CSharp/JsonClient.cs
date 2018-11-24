@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Transport;
@@ -48,7 +50,7 @@ namespace JsonServices
 		internal void SendMessage(RequestMessage requestMessage)
 		{
 			var data = Serializer.SerializeRequest(requestMessage);
-			if (!requestMessage.IsOneWay)
+			if (!requestMessage.IsNotification)
 			{
 				PendingMessages[requestMessage.Id] = new PendingMessage
 				{
@@ -80,7 +82,7 @@ namespace JsonServices
 			if (replyMessage.Error != null)
 			{
 				// TODO: improve exception handling
-				tcs.SetException(new Exception(replyMessage.Error.Message));
+				tcs.SetException(new JsonServicesException(replyMessage.Error.Code, replyMessage.Error.Message));
 				return;
 			}
 
@@ -114,6 +116,68 @@ namespace JsonServices
 		{
 			var result = await GetResultTask(messageId);
 			return (TResult)result;
+		}
+
+		private long lastMessageId;
+
+		internal string GenerateMessageId()
+		{
+			var id = Interlocked.Increment(ref lastMessageId);
+			return id.ToString();
+		}
+
+		internal string GetName(object request) => request.GetType().FullName;
+
+		public void Notify(object request)
+		{
+			if (request == null)
+			{
+				throw new ArgumentNullException(nameof(request));
+			}
+
+			var requestMessage = new RequestMessage
+			{
+				Name = GetName(request),
+				Parameters = request,
+			};
+
+			SendMessage(requestMessage);
+		}
+
+		public Task<TResponse> Call<TResponse>(IReturn<TResponse> request)
+		{
+			if (request == null)
+			{
+				throw new ArgumentNullException(nameof(request));
+			}
+
+			var requestMessage = new RequestMessage
+			{
+				Id = GenerateMessageId(),
+				Name = GetName(request),
+				Parameters = request,
+			};
+
+			SendMessage(requestMessage);
+			return GetAsyncResult<TResponse>(requestMessage.Id);
+		}
+
+		public Task Call(IReturnVoid request)
+		{
+			if (request == null)
+			{
+				throw new ArgumentNullException(nameof(request));
+			}
+
+			var requestMessage = new RequestMessage
+			{
+				Id = GenerateMessageId(),
+				Name = GetName(request),
+				Parameters = request,
+			};
+
+			SendMessage(requestMessage);
+			return GetAsyncResult(requestMessage.Id);
 		}
 	}
 }

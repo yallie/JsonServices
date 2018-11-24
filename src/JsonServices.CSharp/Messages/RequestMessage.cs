@@ -23,6 +23,6 @@ namespace JsonServices.Messages
 		public string Id { get; set; }
 
 		[IgnoreDataMember]
-		public bool IsOneWay => string.IsNullOrWhiteSpace(Id);
+		public bool IsNotification => string.IsNullOrWhiteSpace(Id);
 	}
 }

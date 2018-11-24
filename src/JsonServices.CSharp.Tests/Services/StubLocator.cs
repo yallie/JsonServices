@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using JsonServices.Services;
 using JsonServices.Tests.Messages;
 
@@ -11,16 +12,21 @@ namespace JsonServices.Tests.Services
 {
 	public class StubLocator : IMessageTypeLocator
 	{
+		private Dictionary<string, Type> RequestTypes { get; } =
+			new Dictionary<string, Type>
+			{
+				{ typeof(GetVersion).FullName, typeof(GetVersion) },
+				{ typeof(Calculate).FullName, typeof(Calculate) },
+			};
+
 		public Type GetRequestType(string name)
 		{
-			switch (name)
+			if (RequestTypes.TryGetValue(name, out var result))
 			{
-				case "JsonServices.Tests.Messages.GetVersion":
-					return typeof(GetVersion);
-
-				default:
-					throw new InvalidOperationException($"Message request type not found: {name}");
+				return result;
 			}
+
+			throw new MethodNotFoundException(name);
 		}
 
 		public Type GetResponseType(string name)
@@ -42,7 +48,7 @@ namespace JsonServices.Tests.Services
 				return retType.GetGenericArguments().Single();
 			}
 
-			throw new InvalidOperationException($"Message response type not found: {name}");
+			throw new MethodNotFoundException(name);
 		}
 	}
 }
