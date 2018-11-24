@@ -15,6 +15,6 @@ namespace JsonServices.Serialization
 
 		RequestMessage DeserializeRequest(string data);
 
-		ResponseMessage DeserializeResponse(string name, string data);
+		ResponseMessage DeserializeResponse(string data, Func<string, string> getName);
 	}
 }

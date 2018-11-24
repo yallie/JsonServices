@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Tests.Messages;
+using JsonServices.Tests.Services;
 using NUnit.Framework;
 
 namespace JsonServices.Tests.Serialization
@@ -150,7 +151,7 @@ namespace JsonServices.Tests.Serialization
 		public void SerializerCanDeserializeResponseOneWayMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"}}";
-			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+			var msg = Serializer.DeserializeResponse(data, id => "JsonServices.Tests.Messages.GetVersion");
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
@@ -164,7 +165,7 @@ namespace JsonServices.Tests.Serialization
 		public void SerializerCanDeserializeResponseMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"312\"}";
-			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+			var msg = Serializer.DeserializeResponse(data, id => "JsonServices.Tests.Messages.GetVersion");
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
@@ -178,7 +179,7 @@ namespace JsonServices.Tests.Serialization
 		public void SerializerCanDeserializeResponseOneWayMessageWithError()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"}}";
-			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+			var msg = Serializer.DeserializeResponse(data, id => "JsonServices.Tests.Messages.GetVersion");
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
@@ -194,7 +195,7 @@ namespace JsonServices.Tests.Serialization
 		public void SerializerCanDeserializeResponseMessageWithError()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"332\"}";
-			var msg = Serializer.DeserializeResponse("JsonServices.Tests.Messages.GetVersion", data);
+			var msg = Serializer.DeserializeResponse(data, id => "JsonServices.Tests.Messages.GetVersion");
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);

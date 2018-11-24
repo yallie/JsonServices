@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using JsonServices.Serialization;
+using JsonServices.Services;
 using JsonServices.Tests.Messages;
 
-namespace JsonServices.Tests.Serialization
+namespace JsonServices.Tests.Services
 {
 	public class StubLocator : IMessageTypeLocator
 	{

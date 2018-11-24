@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JsonServices.Messages;
 using JsonServices.Serialization;
+using JsonServices.Services;
 using ServiceStack.Text;
 
 namespace JsonServices.Tests.Serialization
@@ -79,10 +80,11 @@ namespace JsonServices.Tests.Serialization
 			object IResponseMessage.Result => Result;
 		}
 
-		public ResponseMessage DeserializeResponse(string name, string data)
+		public ResponseMessage DeserializeResponse(string data, Func<string, string> getName)
 		{
 			// pre-deserialize to get the bulk of the message
 			var msg = JsonSerializer.DeserializeFromString<ResponseMessage>(data);
+			var name = getName(msg.Id);
 			var type = Locator.GetResponseType(name);
 			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 

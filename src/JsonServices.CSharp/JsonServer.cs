@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Transport;
 
@@ -35,6 +36,7 @@ namespace JsonServices
 
 		private void HandleServerMessage(object sender, MessageEventArgs args)
 		{
+			var request = Serializer.DeserializeRequest(args.Data);
 		}
 	}
 }

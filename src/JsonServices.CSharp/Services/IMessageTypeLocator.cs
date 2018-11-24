@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JsonServices.Serialization
+namespace JsonServices.Services
 {
 	public interface IMessageTypeLocator
 	{

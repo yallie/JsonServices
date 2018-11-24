@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using JsonServices.Tests.Messages;
 using NUnit.Framework;
 
-namespace JsonServices.Tests.Serialization
+namespace JsonServices.Tests.Services
 {
 	[TestFixture]
 	public class StubLocatorTests
