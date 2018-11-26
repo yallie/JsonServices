@@ -24,11 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JsonServices.CSharp\JsonServices.CSharp.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Serialization\Newtonsoft.Json\" />
+    <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
   </ItemGroup>
 
 </Project>
