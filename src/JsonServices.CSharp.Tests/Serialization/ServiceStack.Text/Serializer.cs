@@ -14,12 +14,12 @@ namespace JsonServices.Tests.Serialization.ServiceStack.Text
 {
 	public class Serializer : ISerializer
 	{
-		public Serializer(IMessageTypeLocator locator)
+		public Serializer(IMessageTypeProvider provider)
 		{
-			Locator = locator ?? throw new ArgumentNullException(nameof(locator));
+			MessageTypeProvider = provider ?? throw new ArgumentNullException(nameof(provider));
 		}
 
-		private IMessageTypeLocator Locator { get; }
+		public IMessageTypeProvider MessageTypeProvider { get; }
 
 		public string SerializeRequest(RequestMessage message)
 		{
@@ -58,7 +58,7 @@ namespace JsonServices.Tests.Serialization.ServiceStack.Text
 		{
 			// pre-deserialize to get the message request type
 			var msg = JsonSerializer.DeserializeFromString<RequestMessage>(data);
-			var type = Locator.GetRequestType(msg.Name);
+			var type = MessageTypeProvider.GetRequestType(msg.Name);
 			var msgType = typeof(RequestMsg<>).MakeGenericType(new[] { type });
 
 			// deserialize the strong-typed message
@@ -85,7 +85,7 @@ namespace JsonServices.Tests.Serialization.ServiceStack.Text
 			// pre-deserialize to get the bulk of the message
 			var msg = JsonSerializer.DeserializeFromString<ResponseMessage>(data);
 			var name = getName(msg.Id);
-			var type = Locator.GetResponseType(name);
+			var type = MessageTypeProvider.GetResponseType(name);
 			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 
 			// deserialize the strong-typed message

@@ -10,7 +10,7 @@ using JsonServices.Tests.Messages;
 
 namespace JsonServices.Tests.Services
 {
-	public class StubLocator : MessageTypeLocator
+	public class StubLocator : MessageTypeProvider
 	{
 		public StubLocator()
 		{

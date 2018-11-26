@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonServices.Services
 {
-	public interface IMessageTypeLocator
+	public interface IMessageTypeProvider
 	{
 		void Register(string name, Type requestType, Type responseType = null);
 

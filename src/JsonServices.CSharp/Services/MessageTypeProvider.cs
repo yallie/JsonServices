@@ -9,7 +9,7 @@ using JsonServices.Exceptions;
 
 namespace JsonServices.Services
 {
-	public class MessageTypeLocator : IMessageTypeLocator
+	public class MessageTypeProvider : IMessageTypeProvider
 	{
 		private ConcurrentDictionary<string, Type> RequestTypes { get; } =
 			new ConcurrentDictionary<string, Type>();
@@ -79,13 +79,7 @@ namespace JsonServices.Services
 					(inter.Name == IReturnInterfaceName && inter.IsGenericType)
 				select inter;
 
-			var result = retTypes.Take(2).ToArray();
-			if (result.Length != 1)
-			{
-				return null;
-			}
-
-			var retType = retTypes.Single();
+			var retType = retTypes.FirstOrDefault();
 			if (retType == null)
 			{
 				return null;
