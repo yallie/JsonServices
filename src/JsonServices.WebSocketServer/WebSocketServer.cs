@@ -12,8 +12,10 @@ namespace JsonServices.WebSocketServer
 	{
 		public WebSocketServer(string url)
 		{
-			WsSharpServer = new WsSharpServer(url);
+			WsSharpServer = new WsSharpServer(Url = url);
 		}
+
+		public string Url { get; }
 
 		private WsSharpServer WsSharpServer { get; set; }
 

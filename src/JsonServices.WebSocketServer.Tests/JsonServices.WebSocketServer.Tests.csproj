@@ -19,6 +19,9 @@
     <DebugSymbols>True</DebugSymbols>
     <RootNamespace>JsonServices.WebSocketServer.Tests</RootNamespace>
     <AssemblyName>JsonServices.WebSocketServer.Tests</AssemblyName>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
