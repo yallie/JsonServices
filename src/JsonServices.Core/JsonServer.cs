@@ -30,6 +30,12 @@ namespace JsonServices
 
 		private IServiceExecutor Executor { get; }
 
+		public JsonServer Start()
+		{
+			Server.Start();
+			return this;
+		}
+
 		public void Dispose()
 		{
 			if (!IsDisposed)

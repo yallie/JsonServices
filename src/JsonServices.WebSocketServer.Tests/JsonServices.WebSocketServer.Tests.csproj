@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>JsonServices.Tests</Title>
+    <Title>JsonServices.WebSocketServer.Tests</Title>
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
     <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
@@ -11,11 +11,18 @@
     <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
     <PackageTags>websockets json rpc events</PackageTags>
     <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
-    <RootNamespace>JsonServices.Tests</RootNamespace>
-    <AssemblyName>JsonServices.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
+    <DebugInfo>full</DebugInfo>
+    <DebugSymbols>True</DebugSymbols>
+    <RootNamespace>JsonServices.WebSocketServer.Tests</RootNamespace>
+    <AssemblyName>JsonServices.WebSocketServer.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fleck" Version="1.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NUnit" Version="3.11.0" />
@@ -25,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
+    <ProjectReference Include="..\JsonServices.WebSocketServer\JsonServices.WebSocketServer.csproj" />
   </ItemGroup>
 
 </Project>

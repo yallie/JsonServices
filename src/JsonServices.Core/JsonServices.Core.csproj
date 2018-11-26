@@ -5,11 +5,11 @@
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
     <Copyright>Copyright Alexey Yakovlev 2018. All Rights Reserved.</Copyright>
-    <Description>C# Message-Based JSON-RPC Client over WebSockets or ZeroMQ Connections</Description>
+    <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
     <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
-    <PackageTags>websockets zeromq json rpc events</PackageTags>
+    <PackageTags>websockets json rpc events</PackageTags>
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
@@ -20,5 +20,9 @@
     <RootNamespace>JsonServices</RootNamespace>
     <AssemblyName>JsonServices</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 
 </Project>

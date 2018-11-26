@@ -2,7 +2,7 @@ using System;
 
 namespace JsonServices.Transport
 {
-	public class MessageEventArgs
+	public class MessageEventArgs : EventArgs
 	{
 		public string SessionId { get; set; }
 

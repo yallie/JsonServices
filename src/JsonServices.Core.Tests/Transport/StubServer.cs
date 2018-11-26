@@ -10,6 +10,10 @@ namespace JsonServices.Tests.Transport
 {
 	internal class StubServer : IServer
 	{
+		public void Start()
+		{
+		}
+
 		public void Dispose() => Clients.Clear();
 
 		private Dictionary<string, StubClient> Clients { get; } = new Dictionary<string, StubClient>();
@@ -17,6 +21,8 @@ namespace JsonServices.Tests.Transport
 		public IEnumerable<ISession> ActiveSessions => Clients.Values;
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
+
+		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 
 		public ISession GetSession(string sessionId) => Clients[sessionId];
 
@@ -27,8 +33,20 @@ namespace JsonServices.Tests.Transport
 
 		public void Send(string sessionId, string data)
 		{
-			var client = Clients[sessionId];
-			client.Receive(data);
+			try
+			{
+				var client = Clients[sessionId];
+				client.Receive(data);
+			}
+			catch (Exception ex)
+			{
+				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
+				{
+					SessionId = sessionId,
+					Data = data,
+					Exception = ex,
+				});
+			}
 		}
 
 		internal void Receive(string sessionId, string data)

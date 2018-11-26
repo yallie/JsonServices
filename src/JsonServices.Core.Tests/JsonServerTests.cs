@@ -36,8 +36,8 @@ namespace JsonServices.Tests
 			var executor = new StubExecutor();
 
 			// json server and client
-			var js = new JsonServer(server, serializer, executor);
-			var jc = new JsonClient(client, serializer);
+			var js = new JsonServer(server, serializer, executor).Start();
+			var jc = new JsonClient(client, serializer).Connect();
 
 			// call GetVersion
 			var msg = new GetVersion();
@@ -50,6 +50,9 @@ namespace JsonServices.Tests
 			result = await jc.Call(msg);
 			Assert.NotNull(result);
 			Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie", result.Version);
+
+			// make sure all incoming messages are processed
+			Assert.AreEqual(0, jc.PendingMessages.Count);
 		}
 
 		[Test]
@@ -63,8 +66,8 @@ namespace JsonServices.Tests
 			var executor = new StubExecutor();
 
 			// json server and client
-			var js = new JsonServer(server, serializer, executor);
-			var jc = new JsonClient(client, serializer);
+			var js = new JsonServer(server, serializer, executor).Start();
+			var jc = new JsonClient(client, serializer).Connect();
 
 			// normal call
 			var msg = new Calculate
@@ -77,6 +80,11 @@ namespace JsonServices.Tests
 			var result = await jc.Call(msg);
 			Assert.NotNull(result);
 			Assert.AreEqual(534, result.Result);
+
+			msg.SecondOperand = 333;
+			result = await jc.Call(msg);
+			Assert.NotNull(result);
+			Assert.AreEqual(686, result.Result);
 
 			// call with error
 			msg.Operation = "#";
@@ -92,6 +100,9 @@ namespace JsonServices.Tests
 			result = await jc.Call(msg);
 			Assert.NotNull(result);
 			Assert.AreEqual(0, result.Result);
+
+			// make sure all incoming messages are processed
+			Assert.AreEqual(0, jc.PendingMessages.Count);
 		}
 	}
 }

@@ -12,6 +12,10 @@ namespace JsonServices.Tests.Transport
 			Server.Connect(this);
 		}
 
+		public void Connect()
+		{
+		}
+
 		public void Dispose() => Server = null;
 
 		public string SessionId { get; } = Guid.NewGuid().ToString();
@@ -20,9 +24,23 @@ namespace JsonServices.Tests.Transport
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
+		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
+
 		public void Send(string data)
 		{
-			Server?.Receive(SessionId, data);
+			try
+			{
+				Server?.Receive(SessionId, data);
+			}
+			catch (Exception ex)
+			{
+				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
+				{
+					SessionId = SessionId,
+					Data = data,
+					Exception = ex,
+				});
+			}
 		}
 
 		internal void Receive(string data)

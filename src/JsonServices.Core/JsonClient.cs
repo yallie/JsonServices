@@ -28,6 +28,12 @@ namespace JsonServices
 
 		private ISerializer Serializer { get; set; }
 
+		public JsonClient Connect()
+		{
+			Client.Connect();
+			return this;
+		}
+
 		public void Dispose()
 		{
 			if (!IsDisposed)
@@ -38,14 +44,14 @@ namespace JsonServices
 			}
 		}
 
-		private class PendingMessage
+		internal class PendingMessage
 		{
 			public string Name { get; set; }
 			public TaskCompletionSource<object> CompletionSource { get; set; } =
 				new TaskCompletionSource<object>();
 		}
 
-		private ConcurrentDictionary<string, PendingMessage> PendingMessages { get; } =
+		internal ConcurrentDictionary<string, PendingMessage> PendingMessages { get; } =
 			new ConcurrentDictionary<string, PendingMessage>();
 
 		internal void SendMessage(RequestMessage requestMessage)
@@ -67,9 +73,9 @@ namespace JsonServices
 			// get request message name by id
 			string getName(string id)
 			{
-				if (PendingMessages.TryGetValue(id, out var pm))
+				if (PendingMessages.TryGetValue(id, out var pmsg))
 				{
-					return pm.Name;
+					return pmsg.Name;
 				}
 
 				return null;
@@ -77,7 +83,15 @@ namespace JsonServices
 
 			// deserialize the response message
 			var replyMessage = Serializer.DeserializeResponse(args.Data, getName);
-			var tcs = PendingMessages[replyMessage.Id].CompletionSource;
+			if (!PendingMessages.TryRemove(replyMessage.Id, out var pm))
+			{
+				// got the unknown answer message
+				// cannot throw here because we're on the worker thread
+				// TODO: find out what can be done
+				return;
+			}
+
+			var tcs = pm.CompletionSource;
 
 			// signal the remote exception
 			if (replyMessage.Error != null)

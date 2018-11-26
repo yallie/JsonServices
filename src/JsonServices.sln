@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Core", "JsonSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Core.Tests", "JsonServices.Core.Tests\JsonServices.Core.Tests.csproj", "{190240BF-FAC8-4FA5-967B-5FBE189EAC0C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.WebSocketServer", "JsonServices.WebSocketServer\JsonServices.WebSocketServer.csproj", "{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.WebSocketServer.Tests", "JsonServices.WebSocketServer.Tests\JsonServices.WebSocketServer.Tests.csproj", "{80764200-0C00-4DA5-8480-276064535CE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{190240BF-FAC8-4FA5-967B-5FBE189EAC0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{190240BF-FAC8-4FA5-967B-5FBE189EAC0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{190240BF-FAC8-4FA5-967B-5FBE189EAC0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80764200-0C00-4DA5-8480-276064535CE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80764200-0C00-4DA5-8480-276064535CE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80764200-0C00-4DA5-8480-276064535CE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80764200-0C00-4DA5-8480-276064535CE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
