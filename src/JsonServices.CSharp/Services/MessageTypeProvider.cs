@@ -5,12 +5,20 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Events;
 using JsonServices.Exceptions;
+using JsonServices.Messages;
 
 namespace JsonServices.Services
 {
 	public class MessageTypeProvider : IMessageTypeProvider
 	{
+		public MessageTypeProvider()
+		{
+			// built-in messages
+			Register(SubscriptionMessage.MessageName, typeof(SubscriptionMessage));
+		}
+
 		private ConcurrentDictionary<string, Type> RequestTypes { get; } =
 			new ConcurrentDictionary<string, Type>();
 
@@ -42,7 +50,7 @@ namespace JsonServices.Services
 		public void Register(string name, Type requestType, Type responseType = null)
 		{
 			RequestTypes[name] = requestType ?? throw new ArgumentNullException(nameof(requestType));
-			ResponseTypes[name] = responseType ?? TryGetResponseType(requestType) ?? throw new ArgumentNullException(nameof(responseType));
+			ResponseTypes[name] = responseType ?? TryGetResponseType(requestType) ?? typeof(void); // it's optional
 		}
 
 		protected virtual Type TryGetRequestType(string name)

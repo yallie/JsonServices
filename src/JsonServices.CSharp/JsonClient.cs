@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Events;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
@@ -126,7 +127,15 @@ namespace JsonServices
 			return id.ToString();
 		}
 
-		internal string GetName(object request) => request.GetType().FullName;
+		internal string GetName(object request)
+		{
+			if (request is ICustomName customName)
+			{
+				return customName.MessageName;
+			}
+
+			return request.GetType().FullName;
+		}
 
 		public void Notify(object request)
 		{
@@ -178,6 +187,22 @@ namespace JsonServices
 
 			SendMessage(requestMessage);
 			return GetAsyncResult(requestMessage.Id);
+		}
+
+		public IDisposable Subscribe<TEventArgs>(string eventName, EventHandler<TEventArgs> handler, Dictionary<string, string> eventFilter)
+		{
+			Serializer.MessageTypeProvider.Register(eventName, typeof(TEventArgs));
+
+			var request = new SubscriptionMessage
+			{
+				Enabled = true,
+				EventName = eventName,
+				Filter = eventFilter,
+				SubscriptionId = GenerateMessageId()
+			};
+
+			Notify(request);
+			return null;
 		}
 	}
 }
