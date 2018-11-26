@@ -9,6 +9,7 @@ using JsonServices.Tests.Serialization;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
 using NUnit.Framework;
+using StSerializer = JsonServices.Tests.Serialization.ServiceStack.Text.Serializer;
 
 namespace JsonServices.Tests
 {
@@ -20,8 +21,8 @@ namespace JsonServices.Tests
 		{
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(null, null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), null, null));
-			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new Serializer(null), null));
-			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new Serializer(new StubLocator()), null));
+			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StSerializer(null), null));
+			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StSerializer(new StubLocator()), null));
 		}
 
 		[Test]
@@ -31,7 +32,7 @@ namespace JsonServices.Tests
 			var server = new StubServer();
 			var client = new StubClient(server);
 			var locator = new StubLocator();
-			var serializer = new Serializer(locator);
+			var serializer = new StSerializer(locator);
 			var executor = new StubExecutor();
 
 			// json server and client
@@ -58,7 +59,7 @@ namespace JsonServices.Tests
 			var server = new StubServer();
 			var client = new StubClient(server);
 			var locator = new StubLocator();
-			var serializer = new Serializer(locator);
+			var serializer = new StSerializer(locator);
 			var executor = new StubExecutor();
 
 			// json server and client

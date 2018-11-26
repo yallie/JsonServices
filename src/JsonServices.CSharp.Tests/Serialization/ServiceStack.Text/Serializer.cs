@@ -10,7 +10,7 @@ using JsonServices.Serialization;
 using JsonServices.Services;
 using ServiceStack.Text;
 
-namespace JsonServices.Tests.Serialization
+namespace JsonServices.Tests.Serialization.ServiceStack.Text
 {
 	public class Serializer : ISerializer
 	{

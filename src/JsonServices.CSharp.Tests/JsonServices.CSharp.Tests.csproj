@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     <PackageReference Include="ServiceStack.Text" Version="5.4.0" />
@@ -24,6 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JsonServices.CSharp\JsonServices.CSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Serialization\Newtonsoft.Json\" />
   </ItemGroup>
 
 </Project>

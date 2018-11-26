@@ -9,7 +9,7 @@ using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 
-namespace JsonServices.Tests.Serialization
+namespace JsonServices.Tests.Serialization.ServiceStack.Text
 {
 	[TestFixture]
 	public class SerializerTests
