@@ -10,45 +10,12 @@ using JsonServices.Tests.Messages;
 
 namespace JsonServices.Tests.Services
 {
-	public class StubLocator : IMessageTypeLocator
+	public class StubLocator : MessageTypeLocator
 	{
-		private Dictionary<string, Type> RequestTypes { get; } =
-			new Dictionary<string, Type>
-			{
-				{ typeof(GetVersion).FullName, typeof(GetVersion) },
-				{ typeof(Calculate).FullName, typeof(Calculate) },
-			};
-
-		public Type GetRequestType(string name)
+		public StubLocator()
 		{
-			if (RequestTypes.TryGetValue(name, out var result))
-			{
-				return result;
-			}
-
-			throw new MethodNotFoundException(name);
-		}
-
-		public Type GetResponseType(string name)
-		{
-			var type = GetRequestType(name);
-			var retTypes =
-				from inter in type.GetTypeInfo().GetInterfaces()
-				where inter.FullName.StartsWith("JsonServices.IReturn")
-				select inter;
-
-			var retType = retTypes.Single();
-			if (retType == typeof(IReturnVoid))
-			{
-				return typeof(void);
-			}
-
-			if (retType.IsGenericType)
-			{
-				return retType.GetGenericArguments().Single();
-			}
-
-			throw new MethodNotFoundException(name);
+			Register(typeof(GetVersion).FullName, typeof(GetVersion));
+			Register(typeof(Calculate).FullName, typeof(Calculate));
 		}
 	}
 }

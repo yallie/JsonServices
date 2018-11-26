@@ -8,6 +8,8 @@ namespace JsonServices.Services
 {
 	public interface IMessageTypeLocator
 	{
+		void Register(string name, Type requestType, Type responseType = null);
+
 		Type GetRequestType(string name);
 
 		Type GetResponseType(string name);
