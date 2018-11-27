@@ -31,8 +31,10 @@ namespace JsonServices.WebSocketSharp
 
 		public void Start()
 		{
-			WsSharpServer.AddWebSocketService<WebSocketSession>(WebSocketSession.ServiceName, s =>
+			WsSharpServer.AddWebSocketService(WebSocketSession.ServiceName, () =>
 			{
+				var s = new WebSocketSession();
+
 				s.OnOpenHandler = () =>
 				{
 					var sessionId = s.ID.ToString();
@@ -57,6 +59,8 @@ namespace JsonServices.WebSocketSharp
 						});
 					});
 				};
+
+				return s;
 			});
 
 			WsSharpServer.Start();
