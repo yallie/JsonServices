@@ -66,8 +66,7 @@ namespace JsonServices.WebSocketServer.Tests
 					Operation = "+",
 				};
 
-				var result = default(CalculateResponse); /*
-				result await jc.Call(msg);
+				var result = await jc.Call(msg);
 				Assert.NotNull(result);
 				Assert.AreEqual(534, result.Result);
 
@@ -79,56 +78,24 @@ namespace JsonServices.WebSocketServer.Tests
 				msg.Operation = "-";
 				result = await jc.Call(msg);
 				Assert.NotNull(result);
-				Assert.AreEqual(20, result.Result);*/
-
-				//Assert.AreEqual(ApartmentState.MTA, Thread.CurrentThread.GetApartmentState());
-				//Assert.IsNull(SynchronizationContext.Current);
-				result = await jc.Call(msg);
-				//Assert.AreEqual(ApartmentState.MTA, Thread.CurrentThread.GetApartmentState());
-				//Assert.IsNull(SynchronizationContext.Current);
-
-				// Assert.ThrowAsync freezes if jc.Call was awaited before
-				msg.Operation = "#";
-				Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
-				Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
-				Assert.IsNull(SynchronizationContext.Current);
+				Assert.AreEqual(20, result.Result);
 
 				// call with error
 				msg.Operation = "#";
-				try
-				{
-					await jc.Call(msg);
-					Assert.Fail("Exception was expected.");
-				}
-				catch (JsonServicesException ex)
-				{
-					// internal server error
-					Assert.AreEqual(-32603, ex.Code);
-				}
+				var ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+
+				// internal server error
+				Assert.AreEqual(-32603, ex.Code);
+				Assert.AreEqual("Internal server error", ex.Message);
 
 				// call with another error
 				msg.Operation = "%";
 				msg.SecondOperand = 0;
-				try
-				{
-					await jc.Call(msg);
-					Assert.Fail("Exception was expected.");
-				}
-				catch (JsonServicesException ex)
-				{
-					// internal server error
-					Assert.AreEqual(-32603, ex.Code);
-				}
+				ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
 
-				//// TODO: Assert.ThrowsAsync doesn't work for some reason!
-				//// call with error
-				//msg.Operation = "#";
-				//Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
-
-				//// call with another error
-				//msg.Operation = "%";
-				//msg.SecondOperand = 0;
-				//Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+				// internal server error
+				Assert.AreEqual(-32603, ex.Code);
+				Assert.AreEqual("Internal server error", ex.Message);
 
 				// normal call again
 				msg.Operation = "*";

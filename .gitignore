@@ -1,4 +1,4 @@
 /src/.vs
+*.user
 obj
 bin
-/src/JsonServices.WebSocketServer.Tests/*.user
