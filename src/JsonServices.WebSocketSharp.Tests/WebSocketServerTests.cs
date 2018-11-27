@@ -111,6 +111,28 @@ namespace JsonServices.WebSocketSharp.Tests
 			}
 		}
 
+		// awaitable version of Assert.ThrowsAsync
+		private async Task<T> Assert_ThrowsAsync<T>(AsyncTestDelegate code)
+			where T : Exception
+		{
+			try
+			{
+				await code();
+				Assert.Fail("Exception is expected but not thrown.");
+				throw new InvalidOperationException();
+			}
+			catch (T ex)
+			{
+				// great, everything is fine
+				return ex;
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Exception of type {typeof(T).Name} is expected, but {ex.GetType().Name} is thrown instead.");
+				throw;
+			}
+		}
+
 		private Task<bool> AsyncOperation(bool throwException)
 		{
 			var tcs = new TaskCompletionSource<bool>();

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Transport;
 using WsSharpServer = WebSocketSharp.Server.WebSocketServer;
@@ -46,11 +47,14 @@ namespace JsonServices.WebSocketSharp
 
 				s.OnMessageHandler = message =>
 				{
-					var sessionId = s.ID.ToString();
-					MessageReceived?.Invoke(this, new MessageEventArgs
+					ThreadPool.QueueUserWorkItem(x =>
 					{
-						SessionId = sessionId,
-						Data = message.Data,
+						var sessionId = s.ID.ToString();
+						MessageReceived?.Invoke(this, new MessageEventArgs
+						{
+							SessionId = sessionId,
+							Data = message.Data,
+						});
 					});
 				};
 			});

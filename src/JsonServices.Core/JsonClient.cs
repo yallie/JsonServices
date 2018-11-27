@@ -97,12 +97,12 @@ namespace JsonServices
 			if (replyMessage.Error != null)
 			{
 				// TODO: improve exception handling
-				tcs.SetException(new JsonServicesException(replyMessage.Error.Code, replyMessage.Error.Message));
+				tcs.TrySetException(new JsonServicesException(replyMessage.Error.Code, replyMessage.Error.Message));
 				return;
 			}
 
 			// signal the result
-			tcs.SetResult(replyMessage.Result);
+			tcs.TrySetResult(replyMessage.Result);
 		}
 
 		private Task<object> GetResultTask(string messageId)
