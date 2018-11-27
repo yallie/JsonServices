@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Tests.Messages;
@@ -65,7 +66,8 @@ namespace JsonServices.WebSocketServer.Tests
 					Operation = "+",
 				};
 
-				var result = await jc.Call(msg);
+				var result = default(CalculateResponse); /*
+				result await jc.Call(msg);
 				Assert.NotNull(result);
 				Assert.AreEqual(534, result.Result);
 
@@ -77,7 +79,19 @@ namespace JsonServices.WebSocketServer.Tests
 				msg.Operation = "-";
 				result = await jc.Call(msg);
 				Assert.NotNull(result);
-				Assert.AreEqual(20, result.Result);
+				Assert.AreEqual(20, result.Result);*/
+
+				//Assert.AreEqual(ApartmentState.MTA, Thread.CurrentThread.GetApartmentState());
+				//Assert.IsNull(SynchronizationContext.Current);
+				result = await jc.Call(msg);
+				//Assert.AreEqual(ApartmentState.MTA, Thread.CurrentThread.GetApartmentState());
+				//Assert.IsNull(SynchronizationContext.Current);
+
+				// Assert.ThrowAsync freezes if jc.Call was awaited before
+				msg.Operation = "#";
+				Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+				Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+				Assert.IsNull(SynchronizationContext.Current);
 
 				// call with error
 				msg.Operation = "#";
@@ -128,6 +142,37 @@ namespace JsonServices.WebSocketServer.Tests
 				Assert.NotNull(result);
 				Assert.AreEqual(534, result.Result);
 			}
+		}
+
+		private Task<bool> AsyncOperation(bool throwException)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			ThreadPool.QueueUserWorkItem(x =>
+			{
+				if (throwException)
+				{
+					tcs.SetException(new InvalidOperationException());
+				}
+				else
+				{
+					tcs.SetResult(true);
+				}
+			});
+
+			return tcs.Task;
+		}
+
+		[Test]
+		public async Task MakeSureNUnitDoesntDeadlock()
+		{
+			// works fine
+			var result = await AsyncOperation(throwException: false);
+			Assert.IsTrue(result);
+
+			// suspected a deadlock here, but actually it works fine
+			// so the problem is not NUnit, but either my code or WebSocketSharp
+			Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await AsyncOperation(throwException: true));
 		}
 	}
 }

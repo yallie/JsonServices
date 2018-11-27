@@ -24,5 +24,8 @@ namespace JsonServices.Messages
 
 		[IgnoreDataMember]
 		public bool IsNotification => string.IsNullOrWhiteSpace(Id);
+
+		public override string ToString() => $"--> {Name}" +
+			(Id != null ? $" #{Id}" : string.Empty);
 	}
 }

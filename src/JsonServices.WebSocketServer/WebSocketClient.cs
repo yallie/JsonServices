@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Transport;
 using WebSocketSharp;
@@ -31,9 +32,14 @@ namespace JsonServices.WebSocketServer
 
 		private void OnMessageReceived(object sender, WebSocketSharp.MessageEventArgs e)
 		{
-			MessageReceived?.Invoke(this, new MessageEventArgs
+			// looks like WebSocket.OneMessage is executed under a lock,
+			// so use the worker thread to avoid deadlock
+			ThreadPool.QueueUserWorkItem(x =>
 			{
-				Data = e.Data
+				MessageReceived?.Invoke(this, new MessageEventArgs
+				{
+					Data = e.Data
+				});
 			});
 		}
 

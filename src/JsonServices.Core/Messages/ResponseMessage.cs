@@ -21,5 +21,9 @@ namespace JsonServices.Messages
 
 		[DataMember(Name = "id", EmitDefaultValue = false)]
 		public string Id { get; set; }
+
+		public override string ToString() => $"<-- " +
+			(Error != null ? $"Error: {Error.Message} ({Error.Code})" : $"Ok: {Result}") +
+			(Id != null ? $" #{Id}" : string.Empty);
 	}
 }
