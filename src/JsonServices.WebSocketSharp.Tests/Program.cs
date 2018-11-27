@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Serialization.ServiceStack.Text;
 
-namespace JsonServices.WebSocketServer.Tests
+namespace JsonServices.WebSocketSharp.Tests
 {
 	class Program
 	{

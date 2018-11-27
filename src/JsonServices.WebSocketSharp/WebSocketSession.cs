@@ -7,7 +7,7 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using ISession = JsonServices.Transport.ISession;
 
-namespace JsonServices.WebSocketServer
+namespace JsonServices.WebSocketSharp
 {
 	public class WebSocketSession : WebSocketBehavior, ISession
 	{

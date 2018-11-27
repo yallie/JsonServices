@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using JsonServices.Transport;
 using WebSocketSharp;
 using MessageEventArgs = JsonServices.Transport.MessageEventArgs;
+using WsMessageEventArgs = WebSocketSharp.MessageEventArgs;
 
-namespace JsonServices.WebSocketServer
+namespace JsonServices.WebSocketSharp
 {
 	public class WebSocketClient : IClient
 	{
@@ -30,7 +31,7 @@ namespace JsonServices.WebSocketServer
 
 		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 
-		private void OnMessageReceived(object sender, WebSocketSharp.MessageEventArgs e)
+		private void OnMessageReceived(object sender, WsMessageEventArgs e)
 		{
 			// looks like WebSocket.OneMessage is executed under a lock,
 			// so use the worker thread to avoid deadlock

@@ -11,7 +11,7 @@ using JsonServices.Tests.Services;
 using NUnit.Framework;
 using StSerializer = JsonServices.Tests.Serialization.ServiceStack.Text.Serializer;
 
-namespace JsonServices.WebSocketServer.Tests
+namespace JsonServices.WebSocketSharp.Tests
 {
 	[TestFixture]
 	public class WebSocketServerTests
