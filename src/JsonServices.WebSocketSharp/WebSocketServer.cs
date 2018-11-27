@@ -20,9 +20,9 @@ namespace JsonServices.WebSocketSharp
 
 		private WsSharpServer WsSharpServer { get; set; }
 
-		public IEnumerable<ISession> ActiveSessions => Sessions.Values.ToArray();
+		public IEnumerable<IConnection> Connections => WebSocketSessions.Values.ToArray();
 
-		private ConcurrentDictionary<string, WebSocketSession> Sessions { get; } =
+		private ConcurrentDictionary<string, WebSocketSession> WebSocketSessions { get; } =
 			new ConcurrentDictionary<string, WebSocketSession>();
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
@@ -38,13 +38,13 @@ namespace JsonServices.WebSocketSharp
 				s.OnOpenHandler = () =>
 				{
 					var sessionId = s.ID.ToString();
-					Sessions[sessionId] = s;
+					WebSocketSessions[sessionId] = s;
 				};
 
 				s.OnCloseHandler = e =>
 				{
 					var sessionId = s.ID.ToString();
-					Sessions.TryRemove(sessionId, out var ignored);
+					WebSocketSessions.TryRemove(sessionId, out var ignored);
 				};
 
 				s.OnMessageHandler = message =>
@@ -54,7 +54,7 @@ namespace JsonServices.WebSocketSharp
 						var sessionId = s.ID.ToString();
 						MessageReceived?.Invoke(this, new MessageEventArgs
 						{
-							SessionId = sessionId,
+							ConnectionId = sessionId,
 							Data = message.Data,
 						});
 					});
@@ -75,7 +75,7 @@ namespace JsonServices.WebSocketSharp
 			}
 		}
 
-		public ISession GetSession(string sessionId) => Sessions[sessionId];
+		public IConnection GetConnection(string sessionId) => WebSocketSessions[sessionId];
 
 		public void Send(string sessionId, string data)
 		{
@@ -88,7 +88,7 @@ namespace JsonServices.WebSocketSharp
 		{
 			try
 			{
-				var session = Sessions[sessionId];
+				var session = WebSocketSessions[sessionId];
 				var tcs = new TaskCompletionSource<bool>();
 				session.Context.WebSocket.SendAsync(data, result =>
 				{
@@ -107,7 +107,7 @@ namespace JsonServices.WebSocketSharp
 			{
 				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
 				{
-					SessionId = sessionId,
+					ConnectionId = sessionId,
 					Data = data,
 					Exception = ex,
 				});

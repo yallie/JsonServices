@@ -7,14 +7,14 @@ namespace JsonServices.Transport
 	{
 		void Start();
 
-		void Send(string sessionId, string data);
+		void Send(string connectionId, string data);
 
 		event EventHandler<MessageEventArgs> MessageReceived;
 
 		event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 
-		IEnumerable<ISession> ActiveSessions { get; }
+		IEnumerable<IConnection> Connections { get; }
 
-		ISession GetSession(string sessionId);
+		IConnection GetConnection(string connectionId);
 	}
 }

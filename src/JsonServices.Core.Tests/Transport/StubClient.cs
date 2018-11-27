@@ -4,7 +4,7 @@ using JsonServices.Transport;
 
 namespace JsonServices.Tests.Transport
 {
-	internal class StubClient : IClient, ISession
+	internal class StubClient : IClient, IConnection
 	{
 		public StubClient(StubServer server)
 		{
@@ -18,7 +18,7 @@ namespace JsonServices.Tests.Transport
 
 		public void Dispose() => Server = null;
 
-		public string SessionId { get; } = Guid.NewGuid().ToString();
+		public string ConnectionId { get; } = Guid.NewGuid().ToString();
 
 		private StubServer Server { get; set; }
 
@@ -30,13 +30,13 @@ namespace JsonServices.Tests.Transport
 		{
 			try
 			{
-				Server?.Receive(SessionId, data);
+				Server?.Receive(ConnectionId, data);
 			}
 			catch (Exception ex)
 			{
 				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
 				{
-					SessionId = SessionId,
+					ConnectionId = ConnectionId,
 					Data = data,
 					Exception = ex,
 				});
@@ -47,7 +47,7 @@ namespace JsonServices.Tests.Transport
 		{
 			var args = new MessageEventArgs
 			{
-				SessionId = SessionId,
+				ConnectionId = ConnectionId,
 				Data = data,
 			};
 

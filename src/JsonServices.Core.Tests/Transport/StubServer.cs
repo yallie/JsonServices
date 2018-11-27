@@ -18,17 +18,17 @@ namespace JsonServices.Tests.Transport
 
 		private Dictionary<string, StubClient> Clients { get; } = new Dictionary<string, StubClient>();
 
-		public IEnumerable<ISession> ActiveSessions => Clients.Values;
+		public IEnumerable<IConnection> Connections => Clients.Values;
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
 		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 
-		public ISession GetSession(string sessionId) => Clients[sessionId];
+		public IConnection GetConnection(string sessionId) => Clients[sessionId];
 
 		public void Connect(StubClient client)
 		{
-			Clients[client.SessionId] = client;
+			Clients[client.ConnectionId] = client;
 		}
 
 		public void Send(string sessionId, string data)
@@ -42,7 +42,7 @@ namespace JsonServices.Tests.Transport
 			{
 				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
 				{
-					SessionId = sessionId,
+					ConnectionId = sessionId,
 					Data = data,
 					Exception = ex,
 				});
@@ -53,7 +53,7 @@ namespace JsonServices.Tests.Transport
 		{
 			var args = new MessageEventArgs
 			{
-				SessionId = sessionId,
+				ConnectionId = sessionId,
 				Data = data,
 			};
 

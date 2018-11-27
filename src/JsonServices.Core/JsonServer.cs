@@ -132,7 +132,7 @@ namespace JsonServices
 			if (request == null || !request.IsNotification)
 			{
 				var data = Serializer.SerializeResponse(response);
-				Server.Send(args.SessionId, data);
+				Server.Send(args.ConnectionId, data);
 			}
 		}
 	}

@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using ISession = JsonServices.Transport.ISession;
+using IConnection = JsonServices.Transport.IConnection;
 
 namespace JsonServices.WebSocketSharp
 {
-	public class WebSocketSession : WebSocketBehavior, ISession
+	public class WebSocketSession : WebSocketBehavior, IConnection
 	{
 		internal const string ServiceName = "/Default";
 
-		public string SessionId => ID.ToString();
+		public string ConnectionId => ID.ToString();
 
 		public Action<MessageEventArgs> OnMessageHandler { get; set; }
 
