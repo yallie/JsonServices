@@ -15,12 +15,12 @@ namespace JsonServices.Exceptions
 			Code = code;
 		}
 
-		private string codeKey = nameof(JsonServicesException) + "." + nameof(Code);
+		private static readonly string CodeKey = nameof(JsonServicesException) + "." + nameof(Code);
 
 		public int Code
 		{
-			get { return Data[codeKey] != null ? Convert.ToInt32(Data[codeKey]) : 0; }
-			set { Data[codeKey] = value; }
+			get { return Data[CodeKey] != null ? Convert.ToInt32(Data[CodeKey]) : 0; }
+			set { Data[CodeKey] = value; }
 		}
 	}
 }

@@ -23,8 +23,10 @@ namespace JsonServices.Tests
 			Assert.Throws<ArgumentNullException>(() => new JsonClient(new StubClient(new StubServer()), new StubMessageTypeProvider(), null));
 		}
 
-		[Test, Ignore("TODO: not implemented yet")]
-		public async Task JsonClientSupportsSubscriptions()
+		private Task Timeout => Task.Delay(500);
+
+		[Test]
+		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()
 		{
 			// fake transport and serializer
 			var server = new StubServer();
@@ -45,43 +47,100 @@ namespace JsonServices.Tests
 			// subscribe to jc events
 			var jcounter = 0;
 			var jcancel = default(bool?);
+			var jtcs = new TaskCompletionSource<bool>();
 			var junsubscribe = await jc.Subscribe<CancelEventArgs>(
 				EventBroadcaster.BeforeShutdownEventName, (s, e) =>
 				{
 					jcounter++;
 					jcancel = e.Cancel;
+					jtcs.TrySetResult(true);
 				});
 
 			// subscribe to sc events
 			var scounter = 0;
 			var spropName = default(string);
-			var sunsubscribe = await sc.Subscribe<PropertyChangedEventArgs>(
+			var stcs = new TaskCompletionSource<bool>();
+			var sunsubscribe = await sc.Subscribe<MyCoolEventArgs>(
 				EventBroadcaster.AfterStartupEventName, (s, e) =>
 				{
 					scounter++;
 					spropName = e.PropertyName;
+					stcs.TrySetResult(true);
 				});
 
-			// call EventBroadcaster
+			// call EventBroadcaster.AfterStartup
 			await jc.Call(new EventBroadcaster
 			{
-				EventName = EventBroadcaster.AfterStartupEventName
+				EventName = EventBroadcaster.AfterStartupEventName,
 			});
 
-			/*/ sc is subscribed to AfterStartup event
+			// sc is subscribed to AfterStartup event, jc is not
+			await stcs.Task;
 			Assert.AreEqual(1, scounter);
 			Assert.AreEqual(0, jcounter);
-			Assert.NotNull(result);
-			Assert.AreEqual("0.01-alpha", result.Version);
+			Assert.AreEqual(nameof(EventBroadcaster), spropName);
 
-			// call GetVersion
-			msg = new GetVersion { IsInternal = true };
-			result = await jc.Call(msg);
-			Assert.NotNull(result);
-			Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie", result.Version);
+			// call EventBroadcaster.BeforeShutdown
+			await jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.BeforeShutdownEventName,
+			});
+
+			// js is subscribed to BeforeShutdown event, sc is not
+			await jtcs.Task;
+			Assert.AreEqual(1, scounter);
+			Assert.AreEqual(1, jcounter);
+			Assert.IsTrue(jcancel);
+
+			// restart both task completion sources
+			jtcs = new TaskCompletionSource<bool>();
+			stcs = new TaskCompletionSource<bool>();
+
+			// call EventBroadcaster.BeforeShutdown
+			await jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.BeforeShutdownEventName,
+			});
+
+			// js is subscribed to BeforeShutdown event, sc is not
+			await jtcs.Task;
+			Assert.AreEqual(1, scounter);
+			Assert.AreEqual(2, jcounter);
+			Assert.IsTrue(jcancel);
+
+			// unsubscribe sc from AfterStartup event
+			await sunsubscribe();
+
+			// call EventBroadcaster.AfterStartup
+			await jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.AfterStartupEventName,
+			});
+
+			// make sure that event is not handled anymore
+			await Task.WhenAny(stcs.Task, Timeout);
+			Assert.AreEqual(1, scounter);
+
+			// unsubscribe jc from BeforeShutdown event
+			await junsubscribe();
+			jtcs = new TaskCompletionSource<bool>();
+			scounter = 0;
+			jcounter = 0;
+
+			// call EventBroadcaster.BeforeShutdown
+			await jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.BeforeShutdownEventName,
+			});
+
+			// nobody is subscribed to BeforeShutdown event
+			await Task.WhenAny(jtcs.Task, Timeout);
+			Assert.AreEqual(0, scounter);
+			Assert.AreEqual(0, jcounter);
 
 			// make sure all incoming messages are processed
-			Assert.AreEqual(0, jc.PendingMessages.Count);*/
+			Assert.AreEqual(0, jc.PendingMessages.Count);
+			Assert.AreEqual(0, sc.PendingMessages.Count);
 		}
 	}
 }

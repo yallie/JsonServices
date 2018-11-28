@@ -8,8 +8,8 @@ namespace JsonServices.Services
 {
 	public interface IServiceExecutor
 	{
-		object Execute(string name, ExecutionContext context, object parameters);
+		object Execute(string name, ServiceExecutionContext context, object parameters);
 
-		void RegisterHandler(string name, Func<ExecutionContext, object, object> execute);
+		void RegisterHandler(string name, Func<ServiceExecutionContext, object, object> execute);
 	}
 }

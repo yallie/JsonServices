@@ -22,7 +22,10 @@ namespace JsonServices.Tests.Messages
 			switch (request.EventName)
 			{
 				case EventBroadcaster.AfterStartupEventName:
-					eventArgs = new PropertyChangedEventArgs(nameof(EventBroadcaster));
+					eventArgs = new MyCoolEventArgs
+					{
+						PropertyName = nameof(EventBroadcaster)
+					};
 					break;
 
 				case EventBroadcaster.BeforeShutdownEventName:

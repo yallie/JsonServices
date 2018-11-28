@@ -60,7 +60,7 @@ namespace JsonServices
 			{
 				// server doesn't ever handle response messages
 				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider);
-				var context = new ExecutionContext
+				var context = new ServiceExecutionContext
 				{
 					Server = this,
 					ConnectionId = args.ConnectionId,
@@ -148,7 +148,7 @@ namespace JsonServices
 			}
 		}
 
-		private ServerSubscriptionManager SubscriptionManager { get; }
+		public ServerSubscriptionManager SubscriptionManager { get; }
 
 		public void Broadcast(string eventName, EventArgs args)
 		{

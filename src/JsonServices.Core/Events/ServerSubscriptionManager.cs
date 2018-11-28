@@ -28,9 +28,9 @@ namespace JsonServices.Events
 			return eventSubs.GetOrAdd(connectionId, n => new ConcurrentDictionary<string, ServerSubscription>());
 		}
 
-		public void Add(string connectionId, ServerSubscription sub)
+		public void Add(ServerSubscription sub)
 		{
-			var subs = GetSubscriptions(sub.EventName, connectionId);
+			var subs = GetSubscriptions(sub.EventName, sub.ConnectionId);
 			subs[sub.SubscriptionId] = sub;
 		}
 

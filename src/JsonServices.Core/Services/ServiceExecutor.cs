@@ -4,16 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Events;
 using JsonServices.Exceptions;
 
 namespace JsonServices.Services
 {
 	public class ServiceExecutor : IServiceExecutor
 	{
-		private ConcurrentDictionary<string, Func<ExecutionContext, object, object>> RegisteredHandlers { get; } =
-			new ConcurrentDictionary<string, Func<ExecutionContext, object, object>>();
+		public ServiceExecutor()
+		{
+			// built-in services: subscription/unsubscription
+			RegisterHandler(SubscriptionMessage.MessageName, (ctx, param) =>
+			{
+				new SubscriptionService().Execute(ctx, (SubscriptionMessage)param);
+				return null;
+			});
+		}
 
-		public virtual object Execute(string name, ExecutionContext context, object parameters)
+		private ConcurrentDictionary<string, Func<ServiceExecutionContext, object, object>> RegisteredHandlers { get; } =
+			new ConcurrentDictionary<string, Func<ServiceExecutionContext, object, object>>();
+
+		public virtual object Execute(string name, ServiceExecutionContext context, object parameters)
 		{
 			if (RegisteredHandlers.TryGetValue(name, out var handler))
 			{
@@ -23,7 +34,7 @@ namespace JsonServices.Services
 			throw new MethodNotFoundException(name);
 		}
 
-		public virtual void RegisterHandler(string name, Func<ExecutionContext, object, object> handler)
+		public virtual void RegisterHandler(string name, Func<ServiceExecutionContext, object, object> handler)
 		{
 			RegisteredHandlers[name ?? throw new ArgumentNullException(nameof(name))] =
 				handler ?? throw new ArgumentNullException(nameof(handler));
