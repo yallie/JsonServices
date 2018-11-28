@@ -36,7 +36,8 @@ namespace JsonServices.Tests
 
 			// json server and client
 			var js = new JsonServer(server, serializer, executor).Start();
-			var jc = new JsonClient(client, serializer).Connect();
+			var jc = new JsonClient(client, serializer);
+			await jc.ConnectAsync();
 
 			// call GetVersion
 			var msg = new GetVersion();
@@ -66,7 +67,8 @@ namespace JsonServices.Tests
 
 			// json server and client
 			var js = new JsonServer(server, serializer, executor).Start();
-			var jc = new JsonClient(client, serializer).Connect();
+			var jc = new JsonClient(client, serializer);
+			await jc.ConnectAsync();
 
 			// normal call
 			var msg = new Calculate

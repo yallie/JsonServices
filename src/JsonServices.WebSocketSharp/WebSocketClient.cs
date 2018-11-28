@@ -20,16 +20,11 @@ namespace JsonServices.WebSocketSharp
 			WebSocket.OnMessage += OnMessageReceived;
 		}
 
-		public void Connect()
-		{
-			WebSocket.Connect();
-		}
+		public Task ConnectAsync() => Task.Run(() => WebSocket.Connect());
 
 		private WebSocket WebSocket { get; set; }
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
-
-		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 
 		private void OnMessageReceived(object sender, WsMessageEventArgs e)
 		{
@@ -54,40 +49,21 @@ namespace JsonServices.WebSocketSharp
 			}
 		}
 
-		public void Send(string data)
+		public async Task SendAsync(string data)
 		{
-			#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-			SendAsync(data);
-			#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-		}
-
-		private async Task SendAsync(string data)
-		{
-			try
+			var tcs = new TaskCompletionSource<bool>();
+			WebSocket.SendAsync(data, result =>
 			{
-				var tcs = new TaskCompletionSource<bool>();
-				WebSocket.SendAsync(data, result =>
+				if (result)
 				{
-					if (result)
-					{
-						tcs.TrySetResult(true);
-						return;
-					}
+					tcs.TrySetResult(true);
+					return;
+				}
 
-					tcs.TrySetException(new Exception("Error sending data"));
-				});
+				tcs.TrySetException(new Exception("Error sending data"));
+			});
 
-				await tcs.Task.ConfigureAwait(false);
-			}
-			catch (Exception ex)
-			{
-				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
-				{
-					////SessionId = sessionId,
-					Data = data,
-					Exception = ex,
-				});
-			}
+			await tcs.Task.ConfigureAwait(false);
 		}
 	}
 }

@@ -131,8 +131,9 @@ namespace JsonServices
 			// skip response if the request was a one-way notification
 			if (request == null || !request.IsNotification)
 			{
+				// TODO: handle send exceptions
 				var data = Serializer.Serialize(response);
-				Server.Send(args.ConnectionId, data);
+				await Server.SendAsync(args.ConnectionId, data);
 			}
 		}
 	}

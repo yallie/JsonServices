@@ -1,15 +1,14 @@
 using System;
+using System.Threading.Tasks;
 
 namespace JsonServices.Transport
 {
 	public interface IClient : IDisposable
 	{
-		void Connect();
+		Task ConnectAsync();
 
-		void Send(string data);
+		Task SendAsync(string data);
 
 		event EventHandler<MessageEventArgs> MessageReceived;
-
-		event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 	}
 }

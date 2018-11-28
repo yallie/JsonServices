@@ -27,8 +27,10 @@ namespace JsonServices.WebSocketSharp.Tests
 
 			// json server and client
 			using (var js = new JsonServer(server, serializer, executor).Start())
-			using (var jc = new JsonClient(client, serializer).Connect())
+			using (var jc = new JsonClient(client, serializer))
 			{
+				await jc.ConnectAsync();
+
 				// call GetVersion
 				var msg = new GetVersion();
 				var result = await jc.Call(msg);
@@ -55,8 +57,10 @@ namespace JsonServices.WebSocketSharp.Tests
 
 			// json server and client
 			using (var js = new JsonServer(server, serializer, executor).Start())
-			using (var jc = new JsonClient(client, serializer).Connect())
+			using (var jc = new JsonClient(client, serializer))
 			{
+				await jc.ConnectAsync();
+
 				// normal call
 				var msg = new Calculate
 				{

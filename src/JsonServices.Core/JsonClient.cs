@@ -30,11 +30,7 @@ namespace JsonServices
 
 		private ISerializer Serializer { get; set; }
 
-		public JsonClient Connect()
-		{
-			Client.Connect();
-			return this;
-		}
+		public Task ConnectAsync() => Client.ConnectAsync();
 
 		public void Dispose()
 		{
@@ -67,7 +63,7 @@ namespace JsonServices
 			return null;
 		}
 
-		internal void SendMessage(RequestMessage requestMessage)
+		internal Task SendMessage(RequestMessage requestMessage)
 		{
 			var data = Serializer.Serialize(requestMessage);
 			if (!requestMessage.IsNotification)
@@ -78,19 +74,22 @@ namespace JsonServices
 				};
 			}
 
-			Client.Send(data);
+			return Client.SendAsync(data);
 		}
 
 		private void HandleClientMessage(object sender, MessageEventArgs args)
 		{
 			var msg = Serializer.Deserialize(args.Data);
+
+			// match the response with the pending request message
 			if (msg is ResponseMessage responseMessage)
 			{
 				HandleResponseMessage(responseMessage);
 				return;
 			}
 
-			// TODO: handle request message (server's event)
+			// handle request message (server-side event)
+			HandleRequestMessage((RequestMessage)msg);
 		}
 
 		private void HandleResponseMessage(ResponseMessage responseMessage)
@@ -115,6 +114,11 @@ namespace JsonServices
 
 			// signal the result
 			tcs.TrySetResult(responseMessage.Result);
+		}
+
+		private void HandleRequestMessage(RequestMessage msg)
+		{
+			throw new NotImplementedException();
 		}
 
 		private Task<object> GetResultTask(string messageId)

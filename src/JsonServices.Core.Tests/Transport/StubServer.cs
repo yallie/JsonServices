@@ -22,8 +22,6 @@ namespace JsonServices.Tests.Transport
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
-		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
-
 		public IConnection GetConnection(string sessionId) => Clients[sessionId];
 
 		public void Connect(StubClient client)
@@ -31,25 +29,13 @@ namespace JsonServices.Tests.Transport
 			Clients[client.ConnectionId] = client;
 		}
 
-		public void Send(string sessionId, string data)
+		public Task SendAsync(string sessionId, string data)
 		{
-			try
-			{
-				var client = Clients[sessionId];
-				client.Receive(data);
-			}
-			catch (Exception ex)
-			{
-				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
-				{
-					ConnectionId = sessionId,
-					Data = data,
-					Exception = ex,
-				});
-			}
+			var client = Clients[sessionId];
+			return client.ReceiveAsync(data);
 		}
 
-		internal void Receive(string sessionId, string data)
+		internal Task ReceiveAsync(string sessionId, string data)
 		{
 			var args = new MessageEventArgs
 			{
@@ -57,7 +43,7 @@ namespace JsonServices.Tests.Transport
 				Data = data,
 			};
 
-			ThreadPool.QueueUserWorkItem(x => MessageReceived?.Invoke(this, args));
+			return Task.Run(() => MessageReceived?.Invoke(this, args));
 		}
 	}
 }

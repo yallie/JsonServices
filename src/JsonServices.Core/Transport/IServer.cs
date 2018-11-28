@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JsonServices.Transport
 {
@@ -7,11 +8,9 @@ namespace JsonServices.Transport
 	{
 		void Start();
 
-		void Send(string connectionId, string data);
+		Task SendAsync(string connectionId, string data);
 
 		event EventHandler<MessageEventArgs> MessageReceived;
-
-		event EventHandler<MessageFailureEventArgs> MessageSendFailure;
 
 		IEnumerable<IConnection> Connections { get; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using JsonServices.Transport;
 
 namespace JsonServices.Tests.Transport
@@ -12,9 +13,7 @@ namespace JsonServices.Tests.Transport
 			Server.Connect(this);
 		}
 
-		public void Connect()
-		{
-		}
+		public Task ConnectAsync() => Task.FromResult(true); // Task.CompletedTask
 
 		public void Dispose() => Server = null;
 
@@ -24,26 +23,12 @@ namespace JsonServices.Tests.Transport
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
-		public event EventHandler<MessageFailureEventArgs> MessageSendFailure;
-
-		public void Send(string data)
+		public Task SendAsync(string data)
 		{
-			try
-			{
-				Server?.Receive(ConnectionId, data);
-			}
-			catch (Exception ex)
-			{
-				MessageSendFailure?.Invoke(this, new MessageFailureEventArgs
-				{
-					ConnectionId = ConnectionId,
-					Data = data,
-					Exception = ex,
-				});
-			}
+			return Server?.ReceiveAsync(ConnectionId, data);
 		}
 
-		internal void Receive(string data)
+		internal Task ReceiveAsync(string data)
 		{
 			var args = new MessageEventArgs
 			{
@@ -51,7 +36,7 @@ namespace JsonServices.Tests.Transport
 				Data = data,
 			};
 
-			ThreadPool.QueueUserWorkItem(x => MessageReceived?.Invoke(this, args));
+			return Task.Run(() => MessageReceived?.Invoke(this, args));
 		}
 	}
 }
