@@ -12,12 +12,10 @@ namespace JsonServices.Serialization
 	{
 		IMessageTypeProvider MessageTypeProvider { get; }
 
-		string SerializeRequest(RequestMessage message);
+		IMessageNameProvider MessageNameProvider { get; set; }
 
-		string SerializeResponse(ResponseMessage message);
+		string Serialize(IMessage message);
 
-		RequestMessage DeserializeRequest(string data);
-
-		ResponseMessage DeserializeResponse(string data, Func<string, string> getName);
+		IMessage Deserialize(string data);
 	}
 }

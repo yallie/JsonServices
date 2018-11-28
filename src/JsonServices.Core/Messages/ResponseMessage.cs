@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace JsonServices.Messages
 {
 	[DataContract]
-	public class ResponseMessage
+	public class ResponseMessage : IMessage
 	{
 		[DataMember(Name = "jsonrpc", EmitDefaultValue = true)]
 		public string Version => "2.0";

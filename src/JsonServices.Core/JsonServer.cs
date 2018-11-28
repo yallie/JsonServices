@@ -53,7 +53,7 @@ namespace JsonServices
 
 			try
 			{
-				request = Serializer.DeserializeRequest(args.Data);
+				request = (RequestMessage)Serializer.Deserialize(args.Data);
 
 				try
 				{
@@ -131,7 +131,7 @@ namespace JsonServices
 			// skip response if the request was a one-way notification
 			if (request == null || !request.IsNotification)
 			{
-				var data = Serializer.SerializeResponse(response);
+				var data = Serializer.Serialize(response);
 				Server.Send(args.ConnectionId, data);
 			}
 		}

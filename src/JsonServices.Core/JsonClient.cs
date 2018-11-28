@@ -9,16 +9,18 @@ using JsonServices.Events;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
+using JsonServices.Services;
 using JsonServices.Transport;
 
 namespace JsonServices
 {
-	public class JsonClient : IDisposable
+	public class JsonClient : IDisposable, IMessageNameProvider
 	{
 		public JsonClient(IClient client, ISerializer serializer)
 		{
 			Client = client ?? throw new ArgumentNullException(nameof(client));
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+			Serializer.MessageNameProvider = this;
 			Client.MessageReceived += HandleClientMessage;
 		}
 
@@ -54,9 +56,20 @@ namespace JsonServices
 		internal ConcurrentDictionary<string, PendingMessage> PendingMessages { get; } =
 			new ConcurrentDictionary<string, PendingMessage>();
 
+		public string GetMessageName(string messageId)
+		{
+			// get request message name by id
+			if (PendingMessages.TryGetValue(messageId, out var pmsg))
+			{
+				return pmsg.Name;
+			}
+
+			return null;
+		}
+
 		internal void SendMessage(RequestMessage requestMessage)
 		{
-			var data = Serializer.SerializeRequest(requestMessage);
+			var data = Serializer.Serialize(requestMessage);
 			if (!requestMessage.IsNotification)
 			{
 				PendingMessages[requestMessage.Id] = new PendingMessage
@@ -68,22 +81,21 @@ namespace JsonServices
 			Client.Send(data);
 		}
 
-		internal void HandleClientMessage(object sender, MessageEventArgs args)
+		private void HandleClientMessage(object sender, MessageEventArgs args)
 		{
-			// get request message name by id
-			string getName(string id)
+			var msg = Serializer.Deserialize(args.Data);
+			if (msg is ResponseMessage responseMessage)
 			{
-				if (PendingMessages.TryGetValue(id, out var pmsg))
-				{
-					return pmsg.Name;
-				}
-
-				return null;
+				HandleResponseMessage(responseMessage);
+				return;
 			}
 
-			// deserialize the response message
-			var replyMessage = Serializer.DeserializeResponse(args.Data, getName);
-			if (!PendingMessages.TryRemove(replyMessage.Id, out var pm))
+			// TODO: handle request message (server's event)
+		}
+
+		private void HandleResponseMessage(ResponseMessage responseMessage)
+		{
+			if (!PendingMessages.TryRemove(responseMessage.Id, out var pm))
 			{
 				// got the unknown answer message
 				// cannot throw here because we're on the worker thread
@@ -94,15 +106,15 @@ namespace JsonServices
 			var tcs = pm.CompletionSource;
 
 			// signal the remote exception
-			if (replyMessage.Error != null)
+			if (responseMessage.Error != null)
 			{
 				// TODO: improve exception handling
-				tcs.TrySetException(new JsonServicesException(replyMessage.Error.Code, replyMessage.Error.Message));
+				tcs.TrySetException(new JsonServicesException(responseMessage.Error.Code, responseMessage.Error.Message));
 				return;
 			}
 
 			// signal the result
-			tcs.TrySetResult(replyMessage.Result);
+			tcs.TrySetResult(responseMessage.Result);
 		}
 
 		private Task<object> GetResultTask(string messageId)
