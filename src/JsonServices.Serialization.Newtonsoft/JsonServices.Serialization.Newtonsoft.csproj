@@ -1,31 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>JsonServices.Tests</Title>
+    <Title>JsonServices.Serialization.Newtonsoft</Title>
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
-    <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
+    <Copyright>Copyright Alexey Yakovlev 2018. All Rights Reserved.</Copyright>
     <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
     <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
     <PackageTags>websockets json rpc events</PackageTags>
-    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
-    <RootNamespace>JsonServices.Tests</RootNamespace>
-    <AssemblyName>JsonServices.Tests</AssemblyName>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
+    <DebugInfo>full</DebugInfo>
+    <DebugSymbols>True</DebugSymbols>
+    <RootNamespace>JsonServices.Serialization.Newtonsoft</RootNamespace>
+    <AssemblyName>JsonServices.Serialization.Newtonsoft</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.11.2" />
-    <PackageReference Include="ServiceStack.Text" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
-    <ProjectReference Include="..\JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj" />
   </ItemGroup>
 
 </Project>

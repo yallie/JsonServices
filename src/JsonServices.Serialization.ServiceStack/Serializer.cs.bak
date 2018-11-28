@@ -11,7 +11,7 @@ using JsonServices.Serialization;
 using JsonServices.Services;
 using ServiceStack.Text;
 
-namespace JsonServices.Tests.Serialization.ServiceStack.Text
+namespace JsonServices.Serialization.ServiceStack
 {
 	public class Serializer : ISerializer
 	{

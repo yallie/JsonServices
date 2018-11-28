@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
-using JsonServices.Serialization;
+using JsonServices.Serialization.Newtonsoft.Internal;
 using JsonServices.Services;
 using Newtonsoft.Json;
 
-namespace JsonServices.Tests.Serialization.Newtonsoft.Json
+namespace JsonServices.Serialization.Newtonsoft
 {
 	public class Serializer : ISerializer
 	{
@@ -77,43 +72,6 @@ namespace JsonServices.Tests.Serialization.Newtonsoft.Json
 			}
 		}
 
-		[DataContract]
-		public class GenericMessage
-		{
-			[DataMember(Name = "jsonrpc")]
-			public string Version { get; set; }
-
-			[DataMember(Name = "method")]
-			public string Name { get; set; }
-
-			[DataMember(Name = "result")]
-			public object Result { get; set; }
-
-			[DataMember(Name = "error")]
-			public Error Error { get; set; }
-
-			[DataMember(Name = "id")]
-			public string Id { get; set; }
-
-			public bool IsValid => Version == "2.0" &&
-				(!string.IsNullOrWhiteSpace(Name) || !string.IsNullOrWhiteSpace(Id));
-
-			public bool IsRequest => Name != null;
-		}
-
-		private interface IRequestMessage
-		{
-			object Parameters { get; }
-		}
-
-		[DataContract]
-		public class RequestMsg<T> : IRequestMessage
-		{
-			[DataMember(Name = "params")]
-			public T Parameters { get; set; }
-			object IRequestMessage.Parameters => Parameters;
-		}
-
 		private RequestMessage DeserializeRequest(string data, string name, string id)
 		{
 			using (var sr = new StringReader(data))
@@ -131,19 +89,6 @@ namespace JsonServices.Tests.Serialization.Newtonsoft.Json
 					Id = id
 				};
 			}
-		}
-
-		private interface IResponseMessage
-		{
-			object Result { get; }
-		}
-
-		[DataContract]
-		public class ResponseMsg<T> : IResponseMessage
-		{
-			[DataMember(Name = "result")]
-			public T Result { get; set; }
-			object IResponseMessage.Result => Result;
 		}
 
 		public ResponseMessage DeserializeResponse(string data, string name, string id, Error error)

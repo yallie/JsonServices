@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
-using JsonServices.Serialization;
+using JsonServices.Serialization.ServiceStack.Internal;
 using JsonServices.Services;
 using ServiceStack.Text;
 
-namespace JsonServices.Tests.Serialization.ServiceStack.Text
+namespace JsonServices.Serialization.ServiceStack
 {
 	public class Serializer : ISerializer
 	{
@@ -74,43 +68,6 @@ namespace JsonServices.Tests.Serialization.ServiceStack.Text
 			}
 		}
 
-		[DataContract]
-		public class GenericMessage
-		{
-			[DataMember(Name = "jsonrpc")]
-			public string Version { get; set; }
-
-			[DataMember(Name = "method")]
-			public string Name { get; set; }
-
-			[DataMember(Name = "result")]
-			public string Result { get; set; }
-
-			[DataMember(Name = "error")]
-			public Error Error { get; set; }
-
-			[DataMember(Name = "id")]
-			public string Id { get; set; }
-
-			public bool IsValid => Version == "2.0" &&
-				(!string.IsNullOrWhiteSpace(Name) || !string.IsNullOrWhiteSpace(Id));
-
-			public bool IsRequest => Name != null;
-		}
-
-		private interface IRequestMessage
-		{
-			object Parameters { get; }
-		}
-
-		[DataContract]
-		public class RequestMsg<T> : IRequestMessage
-		{
-			[DataMember(Name = "params")]
-			public T Parameters { get; set; }
-			object IRequestMessage.Parameters => Parameters;
-		}
-
 		private RequestMessage DeserializeRequest(string data, string name, string id)
 		{
 			// pre-deserialize to get the message request type
@@ -125,19 +82,6 @@ namespace JsonServices.Tests.Serialization.ServiceStack.Text
 				Parameters = reqMsg.Parameters,
 				Id = id,
 			};
-		}
-
-		private interface IResponseMessage
-		{
-			object Result { get; }
-		}
-
-		[DataContract]
-		public class ResponseMsg<T> : IResponseMessage
-		{
-			[DataMember(Name = "result")]
-			public T Result { get; set; }
-			object IResponseMessage.Result => Result;
 		}
 
 		private ResponseMessage DeserializeResponse(string data, string name, string id, Error error)

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
+using JsonServices.Serialization.Newtonsoft;
 using JsonServices.Tests.Messages;
-using JsonServices.Tests.Serialization.Newtonsoft.Json;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 

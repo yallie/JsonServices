@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.WebSocketSharp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.WebSocketSharp.Tests", "JsonServices.WebSocketSharp.Tests\JsonServices.WebSocketSharp.Tests.csproj", "{80764200-0C00-4DA5-8480-276064535CE0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.Newtonsoft", "JsonServices.Serialization.Newtonsoft\JsonServices.Serialization.Newtonsoft.csproj", "{D794D209-493C-4592-BC08-EB19537A9032}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.ServiceStack", "JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj", "{B98958CF-992D-4AF0-8D0F-80295B91B6A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.Tests", "JsonServices.Serialization.Tests\JsonServices.Serialization.Tests.csproj", "{973654EC-A0CE-4A32-A024-FCC3FA917B32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,18 @@ Global
 		{80764200-0C00-4DA5-8480-276064535CE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80764200-0C00-4DA5-8480-276064535CE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80764200-0C00-4DA5-8480-276064535CE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D794D209-493C-4592-BC08-EB19537A9032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D794D209-493C-4592-BC08-EB19537A9032}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D794D209-493C-4592-BC08-EB19537A9032}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D794D209-493C-4592-BC08-EB19537A9032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B98958CF-992D-4AF0-8D0F-80295B91B6A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B98958CF-992D-4AF0-8D0F-80295B91B6A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B98958CF-992D-4AF0-8D0F-80295B91B6A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B98958CF-992D-4AF0-8D0F-80295B91B6A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

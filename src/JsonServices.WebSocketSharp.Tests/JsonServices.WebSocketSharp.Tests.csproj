@@ -37,7 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JsonServices.Core.Tests\JsonServices.Core.Tests.csproj" />
     <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
+    <ProjectReference Include="..\JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj" />
     <ProjectReference Include="..\JsonServices.WebSocketSharp\JsonServices.WebSocketSharp.csproj" />
   </ItemGroup>
 

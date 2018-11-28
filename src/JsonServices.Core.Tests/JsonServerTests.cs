@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Tests.Messages;
-using JsonServices.Tests.Serialization;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
 using NUnit.Framework;
-using StSerializer = JsonServices.Tests.Serialization.ServiceStack.Text.Serializer;
+using StSerializer = JsonServices.Serialization.ServiceStack.Serializer;
 
 namespace JsonServices.Tests
 {
