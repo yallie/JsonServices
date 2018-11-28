@@ -12,8 +12,8 @@ namespace JsonServices.Transport
 
 		event EventHandler<MessageEventArgs> MessageReceived;
 
-		IEnumerable<IConnection> Connections { get; }
+		IConnection TryGetConnection(string connectionId);
 
-		IConnection GetConnection(string connectionId);
+		IEnumerable<IConnection> Connections { get; }
 	}
 }

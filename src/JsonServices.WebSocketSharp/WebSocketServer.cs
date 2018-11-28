@@ -73,7 +73,8 @@ namespace JsonServices.WebSocketSharp
 			}
 		}
 
-		public IConnection GetConnection(string sessionId) => WebSocketSessions[sessionId];
+		public IConnection TryGetConnection(string sessionId) =>
+			WebSocketSessions.TryGetValue(sessionId, out var result) ? result : null;
 
 		public async Task SendAsync(string sessionId, string data)
 		{

@@ -246,11 +246,19 @@ namespace JsonServices
 			};
 
 			// notify the server about the new subscription
-			var request = subscription.CreateSubscriptionMessage();
-			Notify(request);
+			var subscrMessage = subscription.CreateSubscriptionMessage();
+			Notify(subscrMessage);
 
 			// register subscription in the subscription manager
-			return SubscriptionManager.Add(subscription);
+			var unsubscribe = SubscriptionManager.Add(subscription);
+			var unsubMessage = subscription.CreateUnsubscriptionMessage();
+
+			// return unsubscription action
+			return () =>
+			{
+				unsubscribe();
+				Notify(unsubMessage);
+			};
 		}
 	}
 }

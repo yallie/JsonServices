@@ -1,4 +1,5 @@
 /src/.vs
 *.user
+*.bak
 obj
 bin

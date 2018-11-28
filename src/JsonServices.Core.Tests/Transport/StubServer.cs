@@ -22,7 +22,8 @@ namespace JsonServices.Tests.Transport
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
-		public IConnection GetConnection(string sessionId) => Clients[sessionId];
+		public IConnection TryGetConnection(string sessionId) =>
+			Clients.TryGetValue(sessionId, out var result) ? result : null;
 
 		public void Connect(StubClient client)
 		{

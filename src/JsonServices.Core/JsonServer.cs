@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Events;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
@@ -20,6 +21,7 @@ namespace JsonServices
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			Executor = executor ?? throw new ArgumentNullException(nameof(executor));
 			Server.MessageReceived += HandleServerMessage;
+			SubscriptionManager = new ServerSubscriptionManager(Server);
 		}
 
 		public bool IsDisposed { get; private set; }
@@ -137,8 +139,20 @@ namespace JsonServices
 			}
 		}
 
+		private ServerSubscriptionManager SubscriptionManager { get; }
+
 		public void Broadcast(string eventName, EventArgs args)
 		{
+			// serialize the notification
+			var message = new RequestMessage
+			{
+				Name = eventName,
+				Parameters = args,
+			};
+
+			// fire and forget
+			var data = Serializer.Serialize(message);
+			SubscriptionManager.Broadcast(eventName, data, args);
 		}
 	}
 }
