@@ -18,10 +18,10 @@ namespace JsonServices.Tests
 		[Test]
 		public void JsonServerRequiresServices()
 		{
-			Assert.Throws<ArgumentNullException>(() => new JsonServer(null, null, null));
-			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), null, null));
-			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new Serializer(null), null));
-			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new Serializer(new StubMessageTypeProvider()), null));
+			Assert.Throws<ArgumentNullException>(() => new JsonServer(null, null, null, null));
+			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), null, null, null));
+			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), null, null));
+			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), new Serializer(), null));
 		}
 
 		[Test]
@@ -30,13 +30,13 @@ namespace JsonServices.Tests
 			// fake transport and serializer
 			var server = new StubServer();
 			var client = new StubClient(server);
-			var locator = new StubMessageTypeProvider();
-			var serializer = new Serializer(locator);
+			var serializer = new Serializer();
 			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			var js = new JsonServer(server, serializer, executor).Start();
-			var jc = new JsonClient(client, serializer);
+			var js = new JsonServer(server, provider, serializer, executor).Start();
+			var jc = new JsonClient(client, provider, serializer);
 			await jc.ConnectAsync();
 
 			// call GetVersion
@@ -61,13 +61,13 @@ namespace JsonServices.Tests
 			// fake transport and serializer
 			var server = new StubServer();
 			var client = new StubClient(server);
-			var locator = new StubMessageTypeProvider();
-			var serializer = new Serializer(locator);
+			var serializer = new Serializer();
 			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			var js = new JsonServer(server, serializer, executor).Start();
-			var jc = new JsonClient(client, serializer);
+			var js = new JsonServer(server, provider, serializer, executor).Start();
+			var jc = new JsonClient(client, provider, serializer);
 			await jc.ConnectAsync();
 
 			// normal call

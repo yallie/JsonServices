@@ -16,14 +16,6 @@ namespace JsonServices.Tests.Serialization
 	[TestFixture]
 	public class SerializerTestsServiceStack : SerializerTestsBase
 	{
-		protected override ISerializer Serializer { get; } =
-			new Serializer(new StubMessageTypeProvider(), new StubMessageNameProvider(typeof(GetVersion).FullName));
-
-		[Test]
-		public void RequiredAndOptionalArguments()
-		{
-			Assert.Throws<ArgumentNullException>(() => new Serializer(null, null));
-			Assert.DoesNotThrow(() => new Serializer(new StubMessageTypeProvider(), null));
-		}
+		protected override ISerializer Serializer { get; } = new Serializer();
 	}
 }

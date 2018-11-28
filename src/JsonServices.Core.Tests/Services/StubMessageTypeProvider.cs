@@ -16,6 +16,7 @@ namespace JsonServices.Tests.Services
 		{
 			Register(typeof(GetVersion).FullName, typeof(GetVersion));
 			Register(typeof(Calculate).FullName, typeof(Calculate));
+			Register(typeof(EventBroadcaster).FullName, typeof(EventBroadcaster));
 		}
 	}
 }

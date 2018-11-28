@@ -9,16 +9,6 @@ namespace JsonServices.Serialization.ServiceStack
 {
 	public class Serializer : ISerializer
 	{
-		public Serializer(IMessageTypeProvider provider, IMessageNameProvider nameProvider = null)
-		{
-			MessageTypeProvider = provider ?? throw new ArgumentNullException(nameof(provider));
-			MessageNameProvider = nameProvider;
-		}
-
-		public IMessageTypeProvider MessageTypeProvider { get; }
-
-		public IMessageNameProvider MessageNameProvider { get; set; }
-
 		public string Serialize(IMessage message)
 		{
 			using (var config = JsConfig.BeginScope())
@@ -29,49 +19,47 @@ namespace JsonServices.Serialization.ServiceStack
 			}
 		}
 
-		public IMessage Deserialize(string data)
+		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
 		{
+			// validate message, detect message type and name
+			var preview = (GenericMessage)JsonSerializer.DeserializeFromString(data, typeof(GenericMessage));
+			if (!preview.IsValid)
 			{
-				// validate message, detect message type and name
-				var preview = (GenericMessage)JsonSerializer.DeserializeFromString(data, typeof(GenericMessage));
-				if (!preview.IsValid)
+				throw new InvalidRequestException(data);
+			}
+
+			// detect message name
+			var name = preview.Name;
+			var isRequest = name != null;
+			if (name == null)
+			{
+				// server cannot handle a response message
+				if (nameProvider == null)
 				{
 					throw new InvalidRequestException(data);
 				}
 
-				// detect message name
-				var name = preview.Name;
-				var isRequest = name != null;
+				// invalid request id
+				name = nameProvider.GetMessageName(preview.Id);
 				if (name == null)
 				{
-					// server cannot handle a response message
-					if (MessageNameProvider == null)
-					{
-						throw new InvalidRequestException(data);
-					}
-
-					// invalid request id
-					name = MessageNameProvider.GetMessageName(preview.Id);
-					if (name == null)
-					{
-						throw new InvalidRequestException(name);
-					}
+					throw new InvalidRequestException(data);
 				}
-
-				// deserialize request or response message
-				if (isRequest)
-				{
-					return DeserializeRequest(data, name, preview.Id);
-				}
-
-				return DeserializeResponse(data, name, preview.Id, preview.Error);
 			}
+
+			// deserialize request or response message
+			if (isRequest)
+			{
+				return DeserializeRequest(data, name, preview.Id, typeProvider);
+			}
+
+			return DeserializeResponse(data, name, preview.Id, preview.Error, typeProvider);
 		}
 
-		private RequestMessage DeserializeRequest(string data, string name, string id)
+		private RequestMessage DeserializeRequest(string data, string name, string id, IMessageTypeProvider typeProvider)
 		{
 			// pre-deserialize to get the message request type
-			var type = MessageTypeProvider.GetRequestType(name);
+			var type = typeProvider.GetRequestType(name);
 			var msgType = typeof(RequestMsg<>).MakeGenericType(new[] { type });
 
 			// deserialize the strong-typed message
@@ -84,13 +72,24 @@ namespace JsonServices.Serialization.ServiceStack
 			};
 		}
 
-		private ResponseMessage DeserializeResponse(string data, string name, string id, Error error)
+		private ResponseMessage DeserializeResponse(string data, string name, string id, Error error, IMessageTypeProvider typeProvider)
 		{
 			// pre-deserialize to get the bulk of the message
-			var type = MessageTypeProvider.GetResponseType(name);
-			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
+			var type = typeProvider.GetResponseType(name);
+
+			// handle void messages
+			if (type == typeof(void))
+			{
+				return new ResponseMessage
+				{
+					Result = null,
+					Error = error,
+					Id = id,
+				};
+			}
 
 			// deserialize the strong-typed message
+			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 			var respMsg = (IResponseMessage)JsonSerializer.DeserializeFromString(data, msgType);
 			return new ResponseMessage
 			{

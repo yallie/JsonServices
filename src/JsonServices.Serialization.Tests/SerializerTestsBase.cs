@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
+using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
@@ -16,6 +17,10 @@ namespace JsonServices.Tests.Serialization
 	public abstract class SerializerTestsBase
 	{
 		protected abstract ISerializer Serializer { get; }
+
+		private IMessageTypeProvider TypeProvider { get; } = new StubMessageTypeProvider();
+
+		private IMessageNameProvider NameProvider { get; } = new StubMessageNameProvider(typeof(GetVersion).FullName);
 
 		[Test]
 		public void SerializerCanSerializeRequestOneWayMessage()
@@ -124,7 +129,7 @@ namespace JsonServices.Tests.Serialization
 		public void SerializerCanDeserializeRequestOneWayMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true}}";
-			var msg = Serializer.Deserialize(data) as RequestMessage;
+			var msg = Serializer.Deserialize(data, TypeProvider, NameProvider) as RequestMessage;
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
@@ -138,7 +143,7 @@ namespace JsonServices.Tests.Serialization
 		public void SerializerCanDeserializeRequestMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true},\"id\":\"123\"}";
-			var msg = Serializer.Deserialize(data) as RequestMessage;
+			var msg = Serializer.Deserialize(data, TypeProvider, NameProvider) as RequestMessage;
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
@@ -153,14 +158,14 @@ namespace JsonServices.Tests.Serialization
 		{
 			// missing id, cannot determine what's that message was sent for
 			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"}}";
-			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data));
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data, TypeProvider, NameProvider));
 		}
 
 		[Test]
 		public void SerializerCanDeserializeResponseMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"312\"}";
-			var msg = Serializer.Deserialize(data) as ResponseMessage;
+			var msg = Serializer.Deserialize(data, TypeProvider, NameProvider) as ResponseMessage;
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);
@@ -175,14 +180,43 @@ namespace JsonServices.Tests.Serialization
 		{
 			// missing id, cannot determine what's that message was sent for
 			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"}}";
-			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data));
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data, TypeProvider, NameProvider));
 		}
 
 		[Test]
 		public void SerializerCanDeserializeResponseMessageWithError()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"332\"}";
-			var msg = Serializer.Deserialize(data) as ResponseMessage;
+			var msg = Serializer.Deserialize(data, TypeProvider, NameProvider) as ResponseMessage;
+
+			Assert.NotNull(msg);
+			Assert.AreEqual("2.0", msg.Version);
+			Assert.IsNull(msg.Result);
+			Assert.NotNull(msg.Error);
+			Assert.AreEqual(-3123, msg.Error.Code);
+			Assert.AreEqual("Something is rotten", msg.Error.Message);
+			Assert.IsNull(msg.Error.Data);
+			Assert.AreEqual("332", msg.Id);
+		}
+
+		[Test]
+		public void SerializerCanDeserializeResponseMessageOfTypeVoid()
+		{
+			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"332\"}";
+			var msg = Serializer.Deserialize(data, TypeProvider, new StubMessageNameProvider(typeof(EventBroadcaster).FullName)) as ResponseMessage;
+
+			Assert.NotNull(msg);
+			Assert.AreEqual("2.0", msg.Version);
+			Assert.IsNull(msg.Result);
+			Assert.IsNull(msg.Error);
+			Assert.AreEqual("332", msg.Id);
+		}
+
+		[Test]
+		public void SerializerCanDeserializeResponseMessageOfTypeVoidWithError()
+		{
+			var data = "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"332\"}";
+			var msg = Serializer.Deserialize(data, TypeProvider, new StubMessageNameProvider(typeof(EventBroadcaster).FullName)) as ResponseMessage;
 
 			Assert.NotNull(msg);
 			Assert.AreEqual("2.0", msg.Version);

@@ -21,13 +21,13 @@ namespace JsonServices.WebSocketSharp.Tests
 			// websocket transport
 			var server = new WebSocketServer("ws://localhost:8765");
 			var client = new WebSocketClient("ws://localhost:8765");
-			var locator = new StubMessageTypeProvider();
-			var serializer = new Serializer(locator);
+			var serializer = new Serializer();
 			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			using (var js = new JsonServer(server, serializer, executor).Start())
-			using (var jc = new JsonClient(client, serializer))
+			using (var js = new JsonServer(server, provider, serializer, executor).Start())
+			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await jc.ConnectAsync();
 
@@ -51,13 +51,13 @@ namespace JsonServices.WebSocketSharp.Tests
 			// websocket transport
 			var server = new WebSocketServer("ws://localhost:8765");
 			var client = new WebSocketClient("ws://localhost:8765");
-			var locator = new StubMessageTypeProvider();
-			var serializer = new Serializer(locator);
+			var serializer = new Serializer();
 			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			using (var js = new JsonServer(server, serializer, executor).Start())
-			using (var jc = new JsonClient(client, serializer))
+			using (var js = new JsonServer(server, provider, serializer, executor).Start())
+			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await jc.ConnectAsync();
 

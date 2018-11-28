@@ -23,13 +23,26 @@ namespace JsonServices.Tests.Services
 		public void StubLocatorReturnsGetVersionRequestAndResponse()
 		{
 			var locator = new StubMessageTypeProvider();
-			var reqType = locator.GetRequestType("JsonServices.Tests.Messages.GetVersion");
+			var reqType = locator.GetRequestType(typeof(GetVersion).FullName);
 			Assert.IsNotNull(reqType);
-			Assert.AreEqual("JsonServices.Tests.Messages.GetVersion", reqType.FullName);
+			Assert.AreEqual(typeof(GetVersion).FullName, reqType.FullName);
 
-			var respType = locator.GetResponseType("JsonServices.Tests.Messages.GetVersion");
+			var respType = locator.GetResponseType(typeof(GetVersion).FullName);
 			Assert.IsNotNull(respType);
-			Assert.AreEqual("JsonServices.Tests.Messages.GetVersionResponse", respType.FullName);
+			Assert.AreEqual(typeof(GetVersionResponse).FullName, respType.FullName);
+		}
+
+		[Test]
+		public void StubLocatorReturnsEventBroadcasterRequestAndResponse()
+		{
+			var locator = new StubMessageTypeProvider();
+			var reqType = locator.GetRequestType(typeof(EventBroadcaster).FullName);
+			Assert.IsNotNull(reqType);
+			Assert.AreEqual(typeof(EventBroadcaster).FullName, reqType.FullName);
+
+			var respType = locator.GetResponseType(typeof(EventBroadcaster).FullName);
+			Assert.IsNotNull(respType);
+			Assert.AreEqual(typeof(void).FullName, respType.FullName);
 		}
 	}
 }

@@ -15,9 +15,10 @@ namespace JsonServices
 {
 	public class JsonServer : IDisposable
 	{
-		public JsonServer(IServer server, ISerializer serializer, IServiceExecutor executor)
+		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor)
 		{
 			Server = server ?? throw new ArgumentNullException(nameof(server));
+			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			Executor = executor ?? throw new ArgumentNullException(nameof(executor));
 			Server.MessageReceived += HandleServerMessage;
@@ -27,6 +28,8 @@ namespace JsonServices
 		public bool IsDisposed { get; private set; }
 
 		public IServer Server { get; }
+
+		private IMessageTypeProvider MessageTypeProvider { get; }
 
 		private ISerializer Serializer { get; }
 
@@ -55,11 +58,17 @@ namespace JsonServices
 
 			try
 			{
-				request = (RequestMessage)Serializer.Deserialize(args.Data);
+				// server doesn't ever handle response messages
+				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider);
+				var context = new ExecutionContext
+				{
+					Server = this,
+					ConnectionId = args.ConnectionId,
+				};
 
 				try
 				{
-					var result = Executor.Execute(request.Name, request.Parameters);
+					var result = Executor.Execute(request.Name, context, request.Parameters);
 
 					// await task results
 					if (result is Task task)

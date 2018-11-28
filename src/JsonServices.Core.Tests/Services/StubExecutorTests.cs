@@ -20,17 +20,17 @@ namespace JsonServices.Tests.Services
 		[Test]
 		public void UnknownServiceNameThrowsAnException()
 		{
-			Assert.Throws<MethodNotFoundException>(() => Executor.Execute("Foo", null));
+			Assert.Throws<MethodNotFoundException>(() => Executor.Execute("Foo", null, null));
 		}
 
 		[Test]
 		public void StubExecutorExecutesGetVersionService()
 		{
-			Assert.Throws<ArgumentNullException>(() => Executor.Execute(GetVersionName, null));
+			Assert.Throws<ArgumentNullException>(() => Executor.Execute(GetVersionName, null, null));
 			Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie",
-				(Executor.Execute(GetVersionName, new GetVersion { IsInternal = true }) as GetVersionResponse).Version);
+				(Executor.Execute(GetVersionName, null, new GetVersion { IsInternal = true }) as GetVersionResponse).Version);
 			Assert.AreEqual("0.01-alpha",
-				(Executor.Execute(GetVersionName, new GetVersion { IsInternal = false }) as GetVersionResponse).Version);
+				(Executor.Execute(GetVersionName, null, new GetVersion { IsInternal = false }) as GetVersionResponse).Version);
 		}
 	}
 }

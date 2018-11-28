@@ -7,8 +7,13 @@ namespace JsonServices.Tests.Transport
 {
 	internal class StubClient : IClient, IConnection
 	{
-		public StubClient(StubServer server)
+		public StubClient(StubServer server, string connectionId = null)
 		{
+			if (!string.IsNullOrWhiteSpace(connectionId))
+			{
+				ConnectionId = connectionId;
+			}
+
 			Server = server;
 			Server.Connect(this);
 		}

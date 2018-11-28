@@ -10,14 +10,7 @@ namespace JsonServices.Serialization.Newtonsoft
 {
 	public class Serializer : ISerializer
 	{
-		public Serializer(IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider = null)
-		{
-			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
-			MessageNameProvider = nameProvider;
-			JsonSerializer = JsonSerializer.Create();
-		}
-
-		private JsonSerializer JsonSerializer { get; set; }
+		private JsonSerializer JsonSerializer { get; set; } = JsonSerializer.Create();
 
 		public IMessageTypeProvider MessageTypeProvider { get; }
 
@@ -32,7 +25,7 @@ namespace JsonServices.Serialization.Newtonsoft
 			}
 		}
 
-		public IMessage Deserialize(string data)
+		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
 		{
 			using (var sr = new StringReader(data))
 			{
@@ -49,13 +42,13 @@ namespace JsonServices.Serialization.Newtonsoft
 				if (name == null)
 				{
 					// server cannot handle a response message
-					if (MessageNameProvider == null)
+					if (nameProvider == null)
 					{
 						throw new InvalidRequestException(data);
 					}
 
 					// invalid request id
-					name = MessageNameProvider.GetMessageName(preview.Id);
+					name = nameProvider.GetMessageName(preview.Id);
 					if (name == null)
 					{
 						throw new InvalidRequestException(name);
@@ -65,19 +58,19 @@ namespace JsonServices.Serialization.Newtonsoft
 				// deserialize request or response message
 				if (isRequest)
 				{
-					return DeserializeRequest(data, name, preview.Id);
+					return DeserializeRequest(data, name, preview.Id, typeProvider);
 				}
 
-				return DeserializeResponse(data, name, preview.Id, preview.Error);
+				return DeserializeResponse(data, name, preview.Id, preview.Error, typeProvider);
 			}
 		}
 
-		private RequestMessage DeserializeRequest(string data, string name, string id)
+		private RequestMessage DeserializeRequest(string data, string name, string id, IMessageTypeProvider typeProvider)
 		{
 			using (var sr = new StringReader(data))
 			{
 				// get the message request type
-				var type = MessageTypeProvider.GetRequestType(name);
+				var type = typeProvider.GetRequestType(name);
 				var msgType = typeof(RequestMsg<>).MakeGenericType(new[] { type });
 
 				// deserialize the strong-typed message
@@ -91,15 +84,26 @@ namespace JsonServices.Serialization.Newtonsoft
 			}
 		}
 
-		public ResponseMessage DeserializeResponse(string data, string name, string id, Error error)
+		public ResponseMessage DeserializeResponse(string data, string name, string id, Error error, IMessageTypeProvider typeProvider)
 		{
 			using (var sr = new StringReader(data))
 			{
 				// pre-deserialize to get the bulk of the message
-				var type = MessageTypeProvider.GetResponseType(name);
-				var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
+				var type = typeProvider.GetResponseType(name);
+
+				// handle void messages
+				if (type == typeof(void))
+				{
+					return new ResponseMessage
+					{
+						Result = null,
+						Error = error,
+						Id = id,
+					};
+				}
 
 				// deserialize the strong-typed message
+				var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 				var respMsg = (IResponseMessage)JsonSerializer.Deserialize(sr, msgType);
 				return new ResponseMessage
 				{

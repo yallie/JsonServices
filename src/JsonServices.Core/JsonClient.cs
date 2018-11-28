@@ -16,19 +16,21 @@ namespace JsonServices
 {
 	public class JsonClient : IDisposable, IMessageNameProvider
 	{
-		public JsonClient(IClient client, ISerializer serializer)
+		public JsonClient(IClient client, IMessageTypeProvider typeProvider, ISerializer serializer)
 		{
 			Client = client ?? throw new ArgumentNullException(nameof(client));
+			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-			Serializer.MessageNameProvider = this;
 			Client.MessageReceived += HandleClientMessage;
 		}
 
 		public bool IsDisposed { get; private set; }
 
-		private IClient Client { get; set; }
+		private IClient Client { get; }
 
-		private ISerializer Serializer { get; set; }
+		private IMessageTypeProvider MessageTypeProvider { get; }
+
+		private ISerializer Serializer { get; }
 
 		public Task ConnectAsync() => Client.ConnectAsync();
 
@@ -84,7 +86,7 @@ namespace JsonServices
 
 		private void HandleClientMessage(object sender, MessageEventArgs args)
 		{
-			var msg = Serializer.Deserialize(args.Data);
+			var msg = Serializer.Deserialize(args.Data, MessageTypeProvider, this);
 
 			// match the response with the pending request message
 			if (msg is ResponseMessage responseMessage)
@@ -230,11 +232,11 @@ namespace JsonServices
 
 		private ClientSubscriptionManager SubscriptionManager { get; } = new ClientSubscriptionManager();
 
-		public Action Subscribe<TEventArgs>(string eventName, EventHandler<TEventArgs> eventHandler, Dictionary<string, string> eventFilter)
+		public async Task<Func<Task>> Subscribe<TEventArgs>(string eventName, EventHandler<TEventArgs> eventHandler, Dictionary<string, string> eventFilter = null)
 			where TEventArgs : EventArgs
 		{
 			// match event name with the argument type
-			Serializer.MessageTypeProvider.Register(eventName, typeof(TEventArgs));
+			MessageTypeProvider.Register(eventName, typeof(TEventArgs));
 
 			// prepare subscription metadata
 			var subscription = new ClientSubscription<TEventArgs>
@@ -247,17 +249,17 @@ namespace JsonServices
 
 			// notify the server about the new subscription
 			var subscrMessage = subscription.CreateSubscriptionMessage();
-			Notify(subscrMessage);
+			await Call(subscrMessage);
 
 			// register subscription in the subscription manager
 			var unsubscribe = SubscriptionManager.Add(subscription);
 			var unsubMessage = subscription.CreateUnsubscriptionMessage();
 
 			// return unsubscription action
-			return () =>
+			return async () =>
 			{
 				unsubscribe();
-				Notify(unsubMessage);
+				await Call(unsubMessage);
 			};
 		}
 	}
