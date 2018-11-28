@@ -10,8 +10,10 @@ namespace JsonServices.Serialization
 {
 	public interface ISerializer
 	{
+		// maps Name => Type
 		IMessageTypeProvider MessageTypeProvider { get; }
 
+		// maps Id => Name for response messages (optional, client-only)
 		IMessageNameProvider MessageNameProvider { get; set; }
 
 		string Serialize(IMessage message);

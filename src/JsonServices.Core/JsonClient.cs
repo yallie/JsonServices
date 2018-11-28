@@ -118,7 +118,8 @@ namespace JsonServices
 
 		private void HandleRequestMessage(RequestMessage msg)
 		{
-			// TODO: it's an event
+			// it's an event
+			SubscriptionManager.BroadcastAsync(msg.Name, (EventArgs)msg.Parameters);
 		}
 
 		private Task<object> GetResultTask(string messageId)
@@ -219,20 +220,29 @@ namespace JsonServices
 			return GetAsyncResult(requestMessage.Id);
 		}
 
-		public IDisposable Subscribe<TEventArgs>(string eventName, EventHandler<TEventArgs> handler, Dictionary<string, string> eventFilter)
+		private ClientSubscriptionManager SubscriptionManager { get; } = new ClientSubscriptionManager();
+
+		public Action Subscribe<TEventArgs>(string eventName, EventHandler<TEventArgs> eventHandler, Dictionary<string, string> eventFilter)
+			where TEventArgs : EventArgs
 		{
+			// match event name with the argument type
 			Serializer.MessageTypeProvider.Register(eventName, typeof(TEventArgs));
 
-			var request = new SubscriptionMessage
+			// prepare subscription metadata
+			var subscription = new ClientSubscription<TEventArgs>
 			{
-				Enabled = true,
-				EventName = eventName,
-				Filter = eventFilter,
 				SubscriptionId = GenerateMessageId(),
+				EventName = eventName,
+				EventFilter = eventFilter,
+				EventHandler = eventHandler,
 			};
 
+			// notify the server about the new subscription
+			var request = subscription.CreateSubscriptionMessage();
 			Notify(request);
-			return null;
+
+			// register subscription in the subscription manager
+			return SubscriptionManager.Add(subscription);
 		}
 	}
 }

@@ -136,5 +136,9 @@ namespace JsonServices
 				await Server.SendAsync(args.ConnectionId, data);
 			}
 		}
+
+		public void Broadcast(string eventName, EventArgs args)
+		{
+		}
 	}
 }

@@ -9,23 +9,21 @@ using JsonServices.Tests.Messages;
 
 namespace JsonServices.Tests.Services
 {
-	public class StubExecutor : IServiceExecutor
+	public class StubExecutor : ServiceExecutor
 	{
-		public object Execute(string name, object parameters)
+		public StubExecutor()
 		{
-			if (name == typeof(GetVersion).FullName)
+			RegisterHandler(typeof(GetVersion).FullName, parameters =>
 			{
 				var service = new GetVersionService();
 				return service.Execute((GetVersion)parameters);
-			}
+			});
 
-			if (name == typeof(Calculate).FullName)
+			RegisterHandler(typeof(Calculate).FullName, parameters =>
 			{
 				var service = new CalculateService();
 				return service.Execute((Calculate)parameters);
-			}
-
-			throw new MethodNotFoundException(name);
+			});
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace JsonServices.Events
 
 		public string EventName { get; set; }
 
-		public Dictionary<string, string> Filter { get; set; }
+		public Dictionary<string, string> EventFilter { get; set; }
 
 		public string SubscriptionId { get; set; }
 	}
