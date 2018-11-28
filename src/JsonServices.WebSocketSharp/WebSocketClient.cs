@@ -34,7 +34,7 @@ namespace JsonServices.WebSocketSharp
 			{
 				MessageReceived?.Invoke(this, new MessageEventArgs
 				{
-					Data = e.Data
+					Data = e.Data,
 				});
 			});
 		}

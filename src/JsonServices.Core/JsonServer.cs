@@ -82,7 +82,7 @@ namespace JsonServices
 					response = new ResponseMessage
 					{
 						Id = request.Id,
-						Result = result
+						Result = result,
 					};
 				}
 				catch (JsonServicesException ex)
@@ -96,7 +96,7 @@ namespace JsonServices
 							Code = ex.Code,
 							Message = ex.Message,
 							Data = ex.ToString(),
-						}
+						},
 					};
 				}
 				catch (Exception ex)
@@ -110,7 +110,7 @@ namespace JsonServices
 							Code = -32603, // internal error
 							Message = "Internal server error",
 							Data = ex.ToString(),
-						}
+						},
 					};
 				}
 			}
@@ -124,7 +124,7 @@ namespace JsonServices
 						Code = -32700,
 						Message = "Parse error",
 						Data = ex.ToString(),
-					}
+					},
 				};
 			}
 

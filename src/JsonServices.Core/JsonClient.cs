@@ -70,7 +70,7 @@ namespace JsonServices
 			{
 				PendingMessages[requestMessage.Id] = new PendingMessage
 				{
-					Name = requestMessage.Name
+					Name = requestMessage.Name,
 				};
 			}
 
@@ -118,7 +118,7 @@ namespace JsonServices
 
 		private void HandleRequestMessage(RequestMessage msg)
 		{
-			throw new NotImplementedException();
+			// TODO: it's an event
 		}
 
 		private Task<object> GetResultTask(string messageId)
@@ -228,7 +228,7 @@ namespace JsonServices
 				Enabled = true,
 				EventName = eventName,
 				Filter = eventFilter,
-				SubscriptionId = GenerateMessageId()
+				SubscriptionId = GenerateMessageId(),
 			};
 
 			Notify(request);

@@ -86,7 +86,7 @@ namespace JsonServices.Serialization.Newtonsoft
 				{
 					Name = name,
 					Parameters = reqMsg.Parameters,
-					Id = id
+					Id = id,
 				};
 			}
 		}
@@ -105,7 +105,7 @@ namespace JsonServices.Serialization.Newtonsoft
 				{
 					Result = respMsg.Result,
 					Error = error,
-					Id = id
+					Id = id,
 				};
 			}
 		}
