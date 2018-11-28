@@ -63,18 +63,23 @@ namespace JsonServices
 			return null;
 		}
 
-		internal Task SendMessage(RequestMessage requestMessage)
+		internal async Task<PendingMessage> SendMessage(RequestMessage requestMessage)
 		{
 			var data = Serializer.Serialize(requestMessage);
+
+			var result = default(PendingMessage);
 			if (!requestMessage.IsNotification)
 			{
-				PendingMessages[requestMessage.Id] = new PendingMessage
+				result = new PendingMessage
 				{
 					Name = requestMessage.Name,
 				};
+
+				PendingMessages[requestMessage.Id] = result;
 			}
 
-			return Client.SendAsync(data);
+			await Client.SendAsync(data);
+			return result;
 		}
 
 		private void HandleClientMessage(object sender, MessageEventArgs args)
@@ -132,21 +137,21 @@ namespace JsonServices
 			throw new InvalidOperationException($"Message {messageId} already handled");
 		}
 
-		internal object GetSyncResult(string messageId)
+		internal object GetSyncResult(PendingMessage pm)
 		{
 			// task.Result wraps the exception in AggregateException
 			// task.GetAwaiter().GetResult() does not
-			return GetResultTask(messageId).GetAwaiter().GetResult();
+			return pm.CompletionSource.Task.GetAwaiter().GetResult();
 		}
 
-		internal Task GetAsyncResult(string messageId)
+		internal Task GetAsyncResult(PendingMessage pm)
 		{
-			return GetResultTask(messageId);
+			return pm.CompletionSource.Task;
 		}
 
-		internal async Task<TResult> GetAsyncResult<TResult>(string messageId)
+		internal async Task<TResult> GetAsyncResult<TResult>(PendingMessage pm)
 		{
-			var result = await GetResultTask(messageId);
+			var result = await pm.CompletionSource.Task;
 			return (TResult)result;
 		}
 
@@ -181,10 +186,12 @@ namespace JsonServices
 				Parameters = request,
 			};
 
+			#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 			SendMessage(requestMessage);
+			#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 		}
 
-		public Task<TResponse> Call<TResponse>(IReturn<TResponse> request)
+		public async Task<TResponse> Call<TResponse>(IReturn<TResponse> request)
 		{
 			if (request == null)
 			{
@@ -198,11 +205,12 @@ namespace JsonServices
 				Parameters = request,
 			};
 
-			SendMessage(requestMessage);
-			return GetAsyncResult<TResponse>(requestMessage.Id);
+			var pm = await SendMessage(requestMessage);
+			var result = await GetAsyncResult<TResponse>(pm);
+			return result;
 		}
 
-		public Task Call(IReturnVoid request)
+		public async Task Call(IReturnVoid request)
 		{
 			if (request == null)
 			{
@@ -216,8 +224,8 @@ namespace JsonServices
 				Parameters = request,
 			};
 
-			SendMessage(requestMessage);
-			return GetAsyncResult(requestMessage.Id);
+			var pm = await SendMessage(requestMessage);
+			await GetAsyncResult(pm);
 		}
 
 		private ClientSubscriptionManager SubscriptionManager { get; } = new ClientSubscriptionManager();
