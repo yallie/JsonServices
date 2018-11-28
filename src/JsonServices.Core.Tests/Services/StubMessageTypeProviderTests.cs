@@ -10,19 +10,19 @@ using NUnit.Framework;
 namespace JsonServices.Tests.Services
 {
 	[TestFixture]
-	public class StubLocatorTests
+	public class StubMessageTypeProviderTests
 	{
 		[Test]
 		public void StubLocatorThrowsOnUnknownType()
 		{
-			Assert.Throws<MethodNotFoundException>(() => new StubLocator().GetRequestType("Foo"));
-			Assert.Throws<MethodNotFoundException>(() => new StubLocator().GetResponseType("Bar"));
+			Assert.Throws<MethodNotFoundException>(() => new StubMessageTypeProvider().GetRequestType("Foo"));
+			Assert.Throws<MethodNotFoundException>(() => new StubMessageTypeProvider().GetResponseType("Bar"));
 		}
 
 		[Test]
 		public void StubLocatorReturnsGetVersionRequestAndResponse()
 		{
-			var locator = new StubLocator();
+			var locator = new StubMessageTypeProvider();
 			var reqType = locator.GetRequestType("JsonServices.Tests.Messages.GetVersion");
 			Assert.IsNotNull(reqType);
 			Assert.AreEqual("JsonServices.Tests.Messages.GetVersion", reqType.FullName);

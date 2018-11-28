@@ -17,6 +17,13 @@ namespace JsonServices.Tests.Serialization
 	public class SerializerTestsNewtonsoft : SerializerTestsBase
 	{
 		protected override ISerializer Serializer { get; } =
-			new Serializer(new StubLocator(), new StubMessageNameProvider(typeof(GetVersion).FullName));
+			new Serializer(new StubMessageTypeProvider(), new StubMessageNameProvider(typeof(GetVersion).FullName));
+
+		[Test]
+		public void RequiredAndOptionalArguments()
+		{
+			Assert.Throws<ArgumentNullException>(() => new Serializer(null, null));
+			Assert.DoesNotThrow(() => new Serializer(new StubMessageTypeProvider(), null));
+		}
 	}
 }

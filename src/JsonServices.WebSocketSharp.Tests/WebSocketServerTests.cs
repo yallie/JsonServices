@@ -8,7 +8,7 @@ using JsonServices.Exceptions;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
-using StSerializer = JsonServices.Serialization.ServiceStack.Serializer;
+using Serializer = JsonServices.Serialization.ServiceStack.Serializer;
 
 namespace JsonServices.WebSocketSharp.Tests
 {
@@ -21,8 +21,8 @@ namespace JsonServices.WebSocketSharp.Tests
 			// websocket transport
 			var server = new WebSocketServer("ws://localhost:8765");
 			var client = new WebSocketClient("ws://localhost:8765");
-			var locator = new StubLocator();
-			var serializer = new StSerializer(locator);
+			var locator = new StubMessageTypeProvider();
+			var serializer = new Serializer(locator);
 			var executor = new StubExecutor();
 
 			// json server and client
@@ -49,8 +49,8 @@ namespace JsonServices.WebSocketSharp.Tests
 			// websocket transport
 			var server = new WebSocketServer("ws://localhost:8765");
 			var client = new WebSocketClient("ws://localhost:8765");
-			var locator = new StubLocator();
-			var serializer = new StSerializer(locator);
+			var locator = new StubMessageTypeProvider();
+			var serializer = new Serializer(locator);
 			var executor = new StubExecutor();
 
 			// json server and client

@@ -10,9 +10,9 @@ using JsonServices.Tests.Messages;
 
 namespace JsonServices.Tests.Services
 {
-	public class StubLocator : MessageTypeProvider
+	public class StubMessageTypeProvider : MessageTypeProvider
 	{
-		public StubLocator()
+		public StubMessageTypeProvider()
 		{
 			Register(typeof(GetVersion).FullName, typeof(GetVersion));
 			Register(typeof(Calculate).FullName, typeof(Calculate));
