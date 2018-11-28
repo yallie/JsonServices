@@ -10,13 +10,12 @@ using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 
-namespace JsonServices.Tests.Serialization.ServiceStack.Text
+namespace JsonServices.Tests.Serialization
 {
 	[TestFixture]
-	public class SerializerTests
+	public abstract class SerializerTestsBase
 	{
-		private ISerializer Serializer { get; } =
-			new Serializer(new StubLocator(), new StubMessageNameProvider(typeof(GetVersion).FullName));
+		protected abstract ISerializer Serializer { get; }
 
 		[Test]
 		public void SerializerCanSerializeRequestOneWayMessage()
