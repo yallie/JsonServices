@@ -83,12 +83,12 @@ export class ServiceExecutor extends React.Component<{}, IState> {
     public render() {
         return (
             <div>
-                <h1>Server address</h1>
+                <h2>Server address</h2>
                 <input type="text" value={this.state.webSocketAddress} onChange={this.editWebSocketAddress} />
                 <input type="button" value="Connect" onClick={this.connect} style={{ margin: 8 }}/>
                 <span>{this.state.webSocketStatus}</span>
 
-                <h1>GetVersion</h1>
+                <h2>GetVersion</h2>
                 <label style={{ marginRight: 8 }}>
                     <input type="checkbox" checked={this.state.versionIsInternal} onChange={this.toggleVersionIsInternal}/>
                     IsInternal
@@ -98,7 +98,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                     Result: {this.state.version}
                 </label>
 
-                <h1>Message log</h1>
+                <h2>Message log</h2>
                 <pre>{this.state.messageLog}</pre>
             </div>
         );
