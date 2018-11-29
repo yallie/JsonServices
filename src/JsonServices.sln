@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Core", "JsonSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Core.Tests", "JsonServices.Core.Tests\JsonServices.Core.Tests.csproj", "{190240BF-FAC8-4FA5-967B-5FBE189EAC0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.WebSocketSharp", "JsonServices.WebSocketSharp\JsonServices.WebSocketSharp.csproj", "{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.WebSocketSharp", "JsonServices.Transport.WebSocketSharp\JsonServices.Transport.WebSocketSharp.csproj", "{1110783F-BFAB-4541-AD38-7C3CE7F6C9EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.WebSocketSharp.Tests", "JsonServices.WebSocketSharp.Tests\JsonServices.WebSocketSharp.Tests.csproj", "{80764200-0C00-4DA5-8480-276064535CE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.WebSocketSharp.Tests", "JsonServices.Transport.WebSocketSharp.Tests\JsonServices.Transport.WebSocketSharp.Tests.csproj", "{80764200-0C00-4DA5-8480-276064535CE0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.Newtonsoft", "JsonServices.Serialization.Newtonsoft\JsonServices.Serialization.Newtonsoft.csproj", "{D794D209-493C-4592-BC08-EB19537A9032}"
 EndProject

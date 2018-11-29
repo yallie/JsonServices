@@ -9,7 +9,7 @@ using WebSocketSharp;
 using MessageEventArgs = JsonServices.Transport.MessageEventArgs;
 using WsMessageEventArgs = WebSocketSharp.MessageEventArgs;
 
-namespace JsonServices.WebSocketSharp
+namespace JsonServices.Transport.WebSocketSharp
 {
 	public class WebSocketClient : IClient
 	{

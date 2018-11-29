@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>JsonServices.WebSocketSharp</Title>
+    <Title>JsonServices.Transport.WebSocketSharp</Title>
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
     <Copyright>Copyright Alexey Yakovlev 2018. All Rights Reserved.</Copyright>
@@ -17,8 +17,8 @@
     <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
     <DebugInfo>full</DebugInfo>
     <DebugSymbols>True</DebugSymbols>
-    <RootNamespace>JsonServices.WebSocketSharp</RootNamespace>
-    <AssemblyName>JsonServices.WebSocketSharp</AssemblyName>
+    <RootNamespace>JsonServices.Transport.WebSocketSharp</RootNamespace>
+    <AssemblyName>JsonServices.Transport.WebSocketSharp</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

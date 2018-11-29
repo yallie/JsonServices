@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using JsonServices.Transport;
 using WsSharpServer = WebSocketSharp.Server.WebSocketServer;
 
-namespace JsonServices.WebSocketSharp
+namespace JsonServices.Transport.WebSocketSharp
 {
 	public class WebSocketServer : IServer
 	{

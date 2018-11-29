@@ -10,7 +10,7 @@ using JsonServices.Tests.Services;
 using NUnit.Framework;
 using Serializer = JsonServices.Serialization.ServiceStack.Serializer;
 
-namespace JsonServices.WebSocketSharp.Tests
+namespace JsonServices.Transport.WebSocketSharp.Tests
 {
 	[TestFixture]
 	public class WebSocketServerTests

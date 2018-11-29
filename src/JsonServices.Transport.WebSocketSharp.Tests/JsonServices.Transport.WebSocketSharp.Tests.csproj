@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>JsonServices.WebSocketSharp.Tests</Title>
+    <Title>JsonServices.Transport.WebSocketSharp.Tests</Title>
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
     <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
@@ -17,8 +17,8 @@
     <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
     <DebugInfo>full</DebugInfo>
     <DebugSymbols>True</DebugSymbols>
-    <RootNamespace>JsonServices.WebSocketSharp.Tests</RootNamespace>
-    <AssemblyName>JsonServices.WebSocketSharp.Tests</AssemblyName>
+    <RootNamespace>JsonServices.Transport.WebSocketSharp.Tests</RootNamespace>
+    <AssemblyName>JsonServices.Transport.WebSocketSharp.Tests</AssemblyName>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
@@ -40,7 +40,7 @@
     <ProjectReference Include="..\JsonServices.Core.Tests\JsonServices.Core.Tests.csproj" />
     <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
     <ProjectReference Include="..\JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj" />
-    <ProjectReference Include="..\JsonServices.WebSocketSharp\JsonServices.WebSocketSharp.csproj" />
+    <ProjectReference Include="..\JsonServices.Transport.WebSocketSharp\JsonServices.Transport.WebSocketSharp.csproj" />
   </ItemGroup>
 
 </Project>

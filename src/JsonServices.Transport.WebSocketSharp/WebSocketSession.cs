@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using IConnection = JsonServices.Transport.IConnection;
+using WsMessageEventArgs = WebSocketSharp.MessageEventArgs;
 
-namespace JsonServices.WebSocketSharp
+namespace JsonServices.Transport.WebSocketSharp
 {
 	public class WebSocketSession : WebSocketBehavior, IConnection
 	{
@@ -15,9 +15,9 @@ namespace JsonServices.WebSocketSharp
 
 		public string ConnectionId => ID.ToString();
 
-		public Action<MessageEventArgs> OnMessageHandler { get; set; }
+		public Action<WsMessageEventArgs> OnMessageHandler { get; set; }
 
-		protected override void OnMessage(MessageEventArgs e)
+		protected override void OnMessage(WsMessageEventArgs e)
 		{
 			base.OnMessage(e);
 			OnMessageHandler?.Invoke(e);

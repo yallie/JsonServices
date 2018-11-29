@@ -22,11 +22,11 @@ namespace JsonServices.Tests.Events
 		{
 			var firedCounter = 0;
 			var cancel = false;
-			EventHandler<CancelEventArgs> handler = (s, e) =>
+			void handler(object s, CancelEventArgs e)
 			{
 				firedCounter++;
 				cancel = e.Cancel;
-			};
+			}
 
 			var subscription = new ClientSubscription<CancelEventArgs>
 			{

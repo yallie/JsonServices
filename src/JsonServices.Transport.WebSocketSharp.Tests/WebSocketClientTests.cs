@@ -9,7 +9,7 @@ using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 
-namespace JsonServices.WebSocketSharp.Tests
+namespace JsonServices.Transport.WebSocketSharp.Tests
 {
 	[TestFixture]
 	public class WebSocketClientTests
