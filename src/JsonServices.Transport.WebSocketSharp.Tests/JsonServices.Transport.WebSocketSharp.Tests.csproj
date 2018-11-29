@@ -20,7 +20,7 @@
     <RootNamespace>JsonServices.Transport.WebSocketSharp.Tests</RootNamespace>
     <AssemblyName>JsonServices.Transport.WebSocketSharp.Tests</AssemblyName>
     <ApplicationIcon />
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <StartupObject />
   </PropertyGroup>
 

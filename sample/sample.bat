@@ -1,7 +1,7 @@
 @echo off
 
 :: start server
-::start dotnet run --project sample-server --framework net45
+start dotnet run --project sample-server --framework net45
 if not "%1" == "" goto :skip_client
 
 :: start client

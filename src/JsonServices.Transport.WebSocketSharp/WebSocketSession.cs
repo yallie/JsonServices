@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using WsMessageEventArgs = WebSocketSharp.MessageEventArgs;
@@ -11,7 +7,7 @@ namespace JsonServices.Transport.WebSocketSharp
 {
 	public class WebSocketSession : WebSocketBehavior, IConnection
 	{
-		internal const string ServiceName = "/Default";
+		internal const string ServiceName = "/";
 
 		public string ConnectionId => ID.ToString();
 

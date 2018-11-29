@@ -17,6 +17,10 @@ export class JsonClient implements IJsonClient {
     private reconnects = 0;
     private pendingMessages: IPendingMessageQueue = {};
 
+    public traceMessage = (e: { isOutcoming: boolean, data: string }) => {
+        // do nothing by default
+    }
+
     public connectAsync(): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             // check if already connected
@@ -26,6 +30,12 @@ export class JsonClient implements IJsonClient {
             }
 
             this.webSocket = new WebSocket(this.url);
+
+            this.webSocket.onerror = error => {
+                this.connected = false;
+                this.webSocket = undefined;
+                reject(new Error("Couldn't connect to " + this.url));
+            }
 
             this.webSocket.onopen = () => {
                 this.connected = true;
@@ -51,6 +61,12 @@ export class JsonClient implements IJsonClient {
             }
 
             this.webSocket.onmessage = message => {
+                // trace incoming message
+                this.traceMessage({
+                    isOutcoming: false,
+                    data: message.data,
+                })
+
                 // if message is binary data, convert it to string
                 let json = typeof(message.data) === "string" ? message.data : "";
                 if (message.data instanceof ArrayBuffer) {
@@ -104,7 +120,6 @@ export class JsonClient implements IJsonClient {
         const messageId = this.generateMessageId();
         const msg = new RequestMessage(name, message, messageId);
         const serialized = JSON.stringify(msg);
-        alert(serialized);
 
         // prepare pending message
         const pendingMessage = new PendingMessage(messageId);
@@ -123,6 +138,13 @@ export class JsonClient implements IJsonClient {
                 return;
             }
 
+            // trace outcoming message
+            this.traceMessage({
+                isOutcoming: true,
+                data: serialized
+            });
+
+            // send it
             this.webSocket.send(serialized);
         });
     }
@@ -130,7 +152,7 @@ export class JsonClient implements IJsonClient {
     // outgoing message ids
     private lastMessageId = 0;
     private generateMessageId() {
-        return this.lastMessageId++ + "";
+        return ++this.lastMessageId + "";
     }
 
     // stolen from the ServiceStack client
