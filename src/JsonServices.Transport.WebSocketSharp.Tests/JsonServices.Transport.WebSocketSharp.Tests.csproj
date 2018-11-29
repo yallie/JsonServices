@@ -20,13 +20,9 @@
     <RootNamespace>JsonServices.Transport.WebSocketSharp.Tests</RootNamespace>
     <AssemblyName>JsonServices.Transport.WebSocketSharp.Tests</AssemblyName>
     <ApplicationIcon />
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <StartupObject />
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Program.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />

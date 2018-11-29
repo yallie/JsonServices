@@ -3,3 +3,4 @@
 *.bak
 obj
 bin
+/src/JsonServices.TypeScript.Sample/client/*.js
