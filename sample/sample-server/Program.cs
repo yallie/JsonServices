@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests.Services;
+using JsonServices.Transport.WebSocketSharp;
 
-namespace JsonServices.Transport.WebSocketSharp.Tests
+namespace JsonServices.Sample.Server
 {
 	class Program
 	{
@@ -18,7 +19,7 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
 
-			// json server and client
+			// json server
 			using (var js = new JsonServer(server, provider, serializer, executor).Start())
 			{
 				Console.WriteLine("Server started. Press ENTER to quit.");
