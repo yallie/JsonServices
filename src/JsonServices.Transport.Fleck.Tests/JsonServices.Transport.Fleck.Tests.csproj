@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>JsonServices.Transport.WebSocketSharp.Tests</Title>
+    <Title>JsonServices.Transport.Fleck.Tests</Title>
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
     <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
@@ -17,8 +17,8 @@
     <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
     <DebugInfo>full</DebugInfo>
     <DebugSymbols>True</DebugSymbols>
-    <RootNamespace>JsonServices.Transport.WebSocketSharp.Tests</RootNamespace>
-    <AssemblyName>JsonServices.Transport.WebSocketSharp.Tests</AssemblyName>
+    <RootNamespace>JsonServices.Transport.Fleck.Tests</RootNamespace>
+    <AssemblyName>JsonServices.Transport.Fleck.Tests</AssemblyName>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />

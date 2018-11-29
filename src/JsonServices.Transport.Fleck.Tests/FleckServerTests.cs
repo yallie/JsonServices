@@ -20,8 +20,8 @@ namespace JsonServices.Transport.Fleck.Tests
 		public async Task CallGetVersionService()
 		{
 			// websocket transport
-			var server = new FleckServer("ws://127.0.0.1:8765");
-			var client = new WebSocketClient("ws://127.0.0.1:8765");
+			var server = new FleckServer("ws://127.0.0.1:8788");
+			var client = new WebSocketClient("ws://127.0.0.1:8788");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
@@ -50,8 +50,8 @@ namespace JsonServices.Transport.Fleck.Tests
 		public async Task CallCalculateService()
 		{
 			// websocket transport
-			var server = new FleckServer("ws://127.0.0.1:8765");
-			var client = new WebSocketClient("ws://127.0.0.1:8765");
+			var server = new FleckServer("ws://127.0.0.1:8789");
+			var client = new WebSocketClient("ws://127.0.0.1:8789");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();

@@ -21,9 +21,9 @@ namespace JsonServices.Transport.Fleck.Tests
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()
 		{
 			// websocket transport
-			var server = new FleckServer("ws://127.0.0.1:8765");
-			var client = new WebSocketClient("ws://127.0.0.1:8765");
-			var secondClient = new WebSocketClient("ws://127.0.0.1:8765");
+			var server = new FleckServer("ws://127.0.0.1:8787");
+			var client = new WebSocketClient("ws://127.0.0.1:8787");
+			var secondClient = new WebSocketClient("ws://127.0.0.1:8787");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();

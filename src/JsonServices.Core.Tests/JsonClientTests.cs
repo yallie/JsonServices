@@ -30,18 +30,23 @@ namespace JsonServices.Tests
 		{
 			// fake transport and serializer
 			var server = new StubServer();
-			var client = new StubClient(server, "jc");
-			var serializer = new Serializer();
+			var serverSerializer = new Serializer();
+			var serverProvider = new StubMessageTypeProvider();
 			var executor = new StubExecutor();
-			var provider = new StubMessageTypeProvider();
+
+			var client = new StubClient(server, "jc");
+			var clientProvider = new StubMessageTypeProvider();
+			var clientSerializer = new Serializer();
 
 			// json server and client
-			var js = new JsonServer(server, provider, serializer, executor).Start();
-			var jc = new JsonClient(client, provider, serializer);
+			var js = new JsonServer(server, serverProvider, serverSerializer, executor).Start();
+			var jc = new JsonClient(client, clientProvider, clientSerializer);
 			await jc.ConnectAsync();
 
 			// second client
-			var sc = new JsonClient(new StubClient(server, "sc"), provider, serializer);
+			var secondClientProvider = new StubMessageTypeProvider();
+			var secondClientSerializer = new Serializer();
+			var sc = new JsonClient(new StubClient(server, "sc"), secondClientProvider, secondClientSerializer);
 			await sc.ConnectAsync();
 
 			// subscribe to jc events
