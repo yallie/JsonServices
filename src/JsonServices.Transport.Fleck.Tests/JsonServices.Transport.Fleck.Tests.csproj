@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>JsonServices.Transport.WebSocketSharp.Tests</Title>
+    <Version>0.0.0.1</Version>
+    <Authors>yallie</Authors>
+    <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
+    <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
+    <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
+    <PackageTags>websockets json rpc events</PackageTags>
+    <TargetFrameworks>net45</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
+    <DebugInfo>full</DebugInfo>
+    <DebugSymbols>True</DebugSymbols>
+    <RootNamespace>JsonServices.Transport.WebSocketSharp.Tests</RootNamespace>
+    <AssemblyName>JsonServices.Transport.WebSocketSharp.Tests</AssemblyName>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.2" />
+    <PackageReference Include="ServiceStack.Text" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JsonServices.Core.Tests\JsonServices.Core.Tests.csproj" />
+    <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
+    <ProjectReference Include="..\JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj" />
+    <ProjectReference Include="..\JsonServices.Transport.Fleck\JsonServices.Transport.Fleck.csproj" />
+    <ProjectReference Include="..\JsonServices.Transport.WebSocketSharp\JsonServices.Transport.WebSocketSharp.csproj" />
+  </ItemGroup>
+
+</Project>

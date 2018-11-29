@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.Tests", "JsonServices.Serialization.Tests\JsonServices.Serialization.Tests.csproj", "{973654EC-A0CE-4A32-A024-FCC3FA917B32}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.Fleck", "JsonServices.Transport.Fleck\JsonServices.Transport.Fleck.csproj", "{3BE7EC89-2AC4-4C08-871B-2279222ED0AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.Fleck.Tests", "JsonServices.Transport.Fleck.Tests\JsonServices.Transport.Fleck.Tests.csproj", "{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{973654EC-A0CE-4A32-A024-FCC3FA917B32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE7EC89-2AC4-4C08-871B-2279222ED0AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE7EC89-2AC4-4C08-871B-2279222ED0AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE7EC89-2AC4-4C08-871B-2279222ED0AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE7EC89-2AC4-4C08-871B-2279222ED0AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

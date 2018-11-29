@@ -110,3 +110,17 @@ Server-side notification:
 ```
 ← { "jsonrpc": "2.0", "method": "MessageSent", params: { "text": "Hello world!" } }
 ```
+
+## WebSocketSharp vs Fleck transport comparison
+
+### WebSocketSharp
+
+* Implements both client and server
+* Supports both IP addresses and host names, i.e. ws://localhost:8765
+* .NET 4.5 only
+
+### Fleck
+
+* Implements only server (WebSocketSharp client can connect to Flex server)
+* Supports only IP addresses, i.e. ws://127.0.0.1:8765
+* .NET 4.5 and .NET Standard 2.0
