@@ -49,6 +49,7 @@ namespace JsonServices
 			public string Name { get; set; }
 			public TaskCompletionSource<object> CompletionSource { get; set; } =
 				new TaskCompletionSource<object>();
+			public override string ToString() => Name;
 		}
 
 		internal ConcurrentDictionary<string, PendingMessage> PendingMessages { get; } =
@@ -162,7 +163,7 @@ namespace JsonServices
 		internal string GenerateMessageId()
 		{
 			var id = Interlocked.Increment(ref lastMessageId);
-			return id.ToString();
+			return DebugName + id;
 		}
 
 		internal string GetName(object request)
@@ -262,5 +263,9 @@ namespace JsonServices
 				await Call(unsubMessage);
 			};
 		}
+
+		public string DebugName { get; set; }
+
+		public override string ToString() => DebugName ?? base.ToString();
 	}
 }

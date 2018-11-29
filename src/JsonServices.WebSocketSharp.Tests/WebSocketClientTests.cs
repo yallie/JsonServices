@@ -16,7 +16,7 @@ namespace JsonServices.WebSocketSharp.Tests
 	{
 		private Task Timeout => Task.Delay(500);
 
-		[Test, Ignore("TODO: doesn't work yet")]
+		[Test]
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()
 		{
 			// websocket transport
@@ -30,8 +30,12 @@ namespace JsonServices.WebSocketSharp.Tests
 			// json server and client
 			using (var js = new JsonServer(server, provider, serializer, executor).Start())
 			using (var jc = new JsonClient(client, provider, serializer))
-			using (var sc = new JsonClient(client, provider, serializer))
+			using (var sc = new JsonClient(secondClient, provider, serializer))
 			{
+				// set names for easier debugging
+				jc.DebugName = "First";
+				sc.DebugName = "Second";
+
 				// connect both clients
 				await jc.ConnectAsync();
 				await sc.ConnectAsync();
@@ -67,7 +71,7 @@ namespace JsonServices.WebSocketSharp.Tests
 				});
 
 				// sc is subscribed to AfterStartup event, jc is not
-				await stcs.Task;
+				await Task.WhenAny(stcs.Task, Timeout);
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(0, jcounter);
 				Assert.AreEqual(nameof(EventBroadcaster), spropName);
