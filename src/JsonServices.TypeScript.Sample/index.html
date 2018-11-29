@@ -5,11 +5,21 @@
     <meta charset="utf-8" />
     <title>TypeScript HTML App</title>
     <link rel="stylesheet" href="app.css" type="text/css" />
-    <script src="app.js"></script>
+    <script src="client/app.js"></script>
 </head>
 <body>
-    <h1>TypeScript HTML App</h1>
+    <h1>JsonServices WebSocket client sample</h1>
 
-    <div id="content"></div>
+	<form id="sendForm">
+		<input id="sendText" placeholder="Text to send" />
+	</form>
+
+    <pre id="incoming"></pre>
+
+	<form id="sendForm2">
+		<input type="button" id="sample1" value="Sample: GetVersion"/>
+		<input type="button" id="sample2" value="Sample: Calculate(3 + 5)"/>
+		<input type="button" id="sample3" value="Sample: Calculate(123 / 0)"/>
+	</form>
 </body>
 </html>
