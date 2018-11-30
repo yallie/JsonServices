@@ -17,8 +17,9 @@ interface IState {
     calcResult: string,
     eventName: string,
     subscriptionStatus: string,
-    unsubscriptions: Array<{
+    subscriptions: Array<{
         eventName: string,
+        broadcast: () => void,
         unsubscribe: () => void
     }>
 }
@@ -39,7 +40,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             calcResult: '(not called)',
             eventName: 'IFoo.AfterStartup',
             subscriptionStatus: '(not subscribed)',
-            unsubscriptions: [],
+            subscriptions: [],
         };
     }
 
@@ -124,13 +125,6 @@ export class ServiceExecutor extends React.Component<{}, IState> {
         }
     }
 
-    // event handler
-    public handleEvent = (...args: any[]) => {
-        this.setState(oldState => ({
-            eventLog: oldState.eventLog + JSON.stringify(args) + "\n"
-        }));
-    }
-
     // subscribe to the given event
     public subscribeToEvent = async () => {
         if (this.client === undefined) {
@@ -142,20 +136,32 @@ export class ServiceExecutor extends React.Component<{}, IState> {
 
         try {
             // real unsubscription
+            const eventName = this.state.eventName;
             const unsub = await this.client.subscribe({
-                eventName: this.state.eventName,
-                eventHandler: this.handleEvent,
+                eventName,
+                eventHandler: (...args: any) => {
+                    this.setState(oldState => ({
+                        eventLog: oldState.eventLog +
+                            eventName + ":" + JSON.stringify(args) + "\n"
+                    }));
+                },
             });
 
             // our own unsubscription handler
-            const unsubscription = {
-                eventName: this.state.eventName,
+            const client = this.client;
+            const subscription = {
+                eventName,
+                broadcast: async () => {
+                    const msg = new EventBroadcaster();
+                    msg.EventName = eventName;
+                    await client.call(msg);
+                },
                 unsubscribe: async () => {
                     try {
                         await unsub;
                         this.setState(oldState => ({
                             subscriptionStatus: 'unsubscribed from ' + this.state.eventName,
-                            unsubscriptions: oldState.unsubscriptions.filter(v => v !== unsubscription)
+                            subscriptions: oldState.subscriptions.filter(v => v !== subscription)
                         }))
                     } catch (e) {
                         this.setState({
@@ -168,26 +174,13 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             // wohoo! we're subscribed to the event
             this.setState(oldState => ({
                 subscriptionStatus: 'subscribed to ' + this.state.eventName,
-                unsubscriptions: oldState.unsubscriptions.concat([ unsubscription ])
+                subscriptions: oldState.subscriptions.concat([ subscription ])
             }));
         } catch (e) {
             this.setState({
                 subscriptionStatus: 'error: ' + e.message
             })
         }
-    }
-
-    public broadcastEvent = async () => {
-        if (this.client === undefined) {
-            this.setState({
-                subscriptionStatus: 'not connected! try connecting first'
-            });
-            return;
-        }
-
-        const msg = new EventBroadcaster();
-        msg.EventName = this.state.eventName;
-        await this.client.call(msg);
     }
 
     public render() {
@@ -220,13 +213,23 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                 <h2>Subscribe and broadcast</h2>
                 <input type="text" value={this.state.eventName} placeholder="IFoo.AfterStartup or IBar.BeforeShutdown or whatever" onChange={this.editEventName}/>
                 <input type="button" value="Subscribe to event" onClick={this.subscribeToEvent} />
-                <input type="button" value="Broadcast event" onClick={this.broadcastEvent} />
+                <label style={{ marginLeft: 8 }}>
+                    Status: {this.state.subscriptionStatus}
+                </label>
                 {
-                    // unsubscription buttons
-                    this.state.unsubscriptions.map((uns, index) => <input key={index} type="button" value={"Unsubscribe from " + uns.eventName} onClick={uns.unsubscribe} />)
+                    // broadcast and unsubscription buttons
+                    this.state.subscriptions.map((sub, index) => (
+                        <div key={index} style={{ marginTop: 8 }}>
+                            <input type="button" value={"Broadcast event " + sub.eventName} onClick={sub.broadcast} />
+                            <input type="button" value={"Unsubscribe from " + sub.eventName} onClick={sub.unsubscribe} />
+                        </div>
+                    ))
                 }
 
-                <h2>Message log</h2>
+                <h2>Event log</h2>
+                <pre>{this.state.eventLog}</pre>
+
+                <h2>JSON-RPC message log</h2>
                 <pre>{this.state.messageLog}</pre>
             </div>
         );
