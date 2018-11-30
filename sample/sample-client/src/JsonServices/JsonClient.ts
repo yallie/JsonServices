@@ -1,4 +1,6 @@
-﻿import { IJsonClient } from './IJsonClient';
+﻿import { ClientSubscription } from './ClientSubscription';
+import { ClientSubscriptionManager } from './ClientSubscriptionManager';
+import { IJsonClient } from './IJsonClient';
 import { IReturn, IReturnVoid } from './IReturn';
 import { ISubscription } from './ISubscription';
 import { IPendingMessageQueue, PendingMessage } from './PendingMessage';
@@ -10,6 +12,9 @@ export class JsonClient implements IJsonClient {
         reconnectInterval: 5000,
         maxReconnects: 10,
     }) {
+        // make sure that this argument stays
+        this.call = this.call.bind(this);
+        this.notify = this.notify.bind(this);
     }
 
     private webSocket?: WebSocket;
@@ -76,6 +81,8 @@ export class JsonClient implements IJsonClient {
                 // parse message and get its data
                 let parsedMessage: {
                     id?: string,
+                    method?: string,
+                    params?: object,
                     result?: object,
                     error?: object,
                 };
@@ -107,8 +114,8 @@ export class JsonClient implements IJsonClient {
                     return;
                 }
 
-                // it's a notification
-                // TODO: fire an event
+                // it's a notification, fire an event
+                this.subscriptionManager.broadcast(parsedMessage.method!, parsedMessage.params!);
             }
         });
     }
@@ -133,7 +140,7 @@ export class JsonClient implements IJsonClient {
 
             // fail early if not connected
             if (this.webSocket === undefined || !this.connected) {
-                this.pendingMessages[messageId] = undefined;
+                delete this.pendingMessages[messageId];
                 reject(new Error("WebSocket not connected"));
                 return;
             }
@@ -148,6 +155,27 @@ export class JsonClient implements IJsonClient {
             this.webSocket.send(serialized);
         });
     }
+
+    // one-way calls
+    public notify<T>(message: IReturn<T> | IReturnVoid): void {
+        const name = this.nameOf(message);
+        const msg = new RequestMessage(name, message);
+        const serialized = JSON.stringify(msg);
+
+        // fail if not connected
+        if (this.webSocket === undefined || !this.connected) {
+            throw new Error("WebSocket not connected");
+        }
+
+        // trace outcoming message
+        this.traceMessage({
+            isOutcoming: true,
+            data: serialized
+        });
+
+        // send it
+        this.webSocket.send(serialized);
+    };
 
     // outgoing message ids
     private lastMessageId = 0;
@@ -178,19 +206,26 @@ export class JsonClient implements IJsonClient {
         return str.substring(9, str.indexOf("(")); // "function ".length == 9
     };
 
-    // one-way calls
-    public notify = (message: IReturnVoid): void => {
-        throw new Error("Notify is not implemented");
-    };
+    private subscriptionManager = new ClientSubscriptionManager();
 
-    // returns unsubscription method
-    public subscribe<T>(event: ISubscription<T>) {
-        if (event) {
-            throw new Error("Subscribe is not implemented");
-        }
+    // returns unsubscription function
+    public async subscribe(event: ISubscription): Promise<() => Promise<any>> {
+        const cs = new ClientSubscription();
+        cs.subscriptionId = this.generateMessageId();
+        cs.eventName = event.eventName;
+        cs.eventHandler = event.eventHandler;
+        cs.eventFilter = event.eventFilter;
 
-        return () => {
-            // nothing here
+        // notify the server about the new subscription
+        const subMessage = cs.createSubscriptionMessage();
+        await this.call(subMessage);
+
+        // return async unsubscription
+        const unsubscribe = this.subscriptionManager.add(cs);
+        const unsubMessage = cs.createUnsubscriptionMessage();
+        return async () => {
+            unsubscribe();
+            await this.call(unsubMessage);
         };
     };
 }

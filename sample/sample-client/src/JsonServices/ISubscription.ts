@@ -1,7 +1,7 @@
-export interface ISubscription<T> {
+export interface ISubscription {
     eventName: string;
-    handler: (eventArgs: T) => void;
-    filter?: {
+    eventHandler: (...args: any[]) => void;
+    eventFilter?: {
         [key: string]: string;
     };
 }

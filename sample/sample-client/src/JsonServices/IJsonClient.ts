@@ -10,5 +10,5 @@ export interface IJsonClient {
     notify(message: IReturnVoid): void;
 
     // returns unsubscription method
-    subscribe<T>(event: ISubscription<T>): () => void;
+    subscribe(event: ISubscription): Promise<() => Promise<any>>;
 }
