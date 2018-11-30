@@ -1,13 +1,18 @@
 import * as React from 'react';
 import JsonClient from './JsonServices/JsonClient';
+import { Calculate } from './Messages/Calculate';
 import { GetVersion } from './Messages/GetVersion';
 
 interface IState {
-    messageLog: string;
-    version: string;
-    versionIsInternal: boolean;
     webSocketAddress: string;
     webSocketStatus: string;
+    messageLog: string;
+    versionIsInternal: boolean;
+    versionResult: string;
+    calcFirst: string,
+    calcOperation: string,
+    calcSecond: string,
+    calcResult: string,
 }
 
 export class ServiceExecutor extends React.Component<{}, IState> {
@@ -16,9 +21,13 @@ export class ServiceExecutor extends React.Component<{}, IState> {
         this.state = {
             webSocketAddress: "ws://localhost:8765/", //  window.location.toString().replace("http", "ws"),
             webSocketStatus: 'Not connected',
-            versionIsInternal: true,
             messageLog: '',
-            version: '(not called)',
+            versionIsInternal: false,
+            versionResult: '(not called)',
+            calcFirst: '353',
+            calcOperation: '+',
+            calcSecond: '181',
+            calcResult: '(not called)',
         };
     }
 
@@ -46,10 +55,18 @@ export class ServiceExecutor extends React.Component<{}, IState> {
         }));
     }
 
+    // event handlers for HTML elements
+    private editWebSocketAddress = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ webSocketAddress: e.currentTarget.value });
+    private toggleVersionIsInternal = (e: React.ChangeEvent<HTMLInputElement>) => this.setState(o => ({ versionIsInternal: !o.versionIsInternal }));
+    private editFirst = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcFirst: e.currentTarget.value });
+    private editSecond = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcSecond: e.currentTarget.value });
+    private editOperation = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcOperation: e.currentTarget.value });
+
+    // call GetVersion service
     private getVersion = async () => {
         if (this.client === undefined) {
             this.setState({
-                version: 'not connected! try connecting first'
+                versionResult: 'not connected! try connecting first'
             });
             return;
         }
@@ -59,25 +76,39 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             getVersion.IsInternal = this.state.versionIsInternal;
             const result = await this.client.call(getVersion);
             this.setState({
-                version: result.Version
+                versionResult: result.Version
             })
         } catch (e) {
             this.setState({
-                version: 'error: ' + e.message
+                versionResult: 'error: ' + e.message
             })
         }
     }
 
-    private editWebSocketAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            webSocketAddress: e.currentTarget.value
-        });
-    }
+    // call Calculate service
+    private calculate = async () => {
+        if (this.client === undefined) {
+            this.setState({
+                calcResult: 'not connected! try connecting first'
+            });
+            return;
+        }
 
-    private toggleVersionIsInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState(o => ({
-            versionIsInternal: !o.versionIsInternal
-        }));
+        try {
+            const calculate = new Calculate();
+            calculate.FirstOperand = parseFloat(this.state.calcFirst);
+            calculate.Operation = this.state.calcOperation;
+            calculate.SecondOperand = parseFloat(this.state.calcSecond);
+
+            const result = await this.client.call(calculate);
+            this.setState({
+                calcResult: result.Result
+            })
+        } catch (e) {
+            this.setState({
+                calcResult: 'error: ' + e.message
+            })
+        }
     }
 
     public render() {
@@ -91,11 +122,20 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                 <h2>GetVersion</h2>
                 <label style={{ marginRight: 8 }}>
                     <input type="checkbox" checked={this.state.versionIsInternal} onChange={this.toggleVersionIsInternal}/>
-                    IsInternal
+                    Internal version details
                 </label>
                 <input type="button" value="GetVersion" onClick={this.getVersion} />
                 <label style={{ marginLeft: 8 }}>
-                    Result: {this.state.version}
+                    Result: {this.state.versionResult}
+                </label>
+
+                <h2>Calculate</h2>
+                <input type="text" value={this.state.calcFirst} onChange={this.editFirst}/>
+                <input type="text" value={this.state.calcOperation} onChange={this.editOperation}/>
+                <input type="text" value={this.state.calcSecond} onChange={this.editSecond}/>
+                <input type="button" value="=" onClick={this.calculate} />
+                <label style={{ marginLeft: 8 }}>
+                    Result: {this.state.calcResult}
                 </label>
 
                 <h2>Message log</h2>
