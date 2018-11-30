@@ -9,6 +9,7 @@ interface IState {
     webSocketStatus: string;
     messageLog: string;
     eventLog: string;
+    activeDemo: 'getVersion' | 'calculate' | 'events',
     versionIsInternal: boolean;
     versionResult: string;
     calcFirst: string,
@@ -32,6 +33,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             webSocketStatus: 'Not connected',
             messageLog: '',
             eventLog: '',
+            activeDemo: 'getVersion',
             versionIsInternal: false,
             versionResult: '(not called)',
             calcFirst: '353',
@@ -77,6 +79,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
     private editEventName = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ eventName: e.currentTarget.value });
     private clearEventLog = (e: React.MouseEvent<HTMLAnchorElement>) => this.setState({ eventLog: '' });
     private clearMessageLog = (e: React.MouseEvent<HTMLAnchorElement>) => this.setState({ messageLog: '' });
+    private selectActiveDemo = (e: React.ChangeEvent<HTMLSelectElement>) => this.setState({ activeDemo: e.currentTarget.value as any });
 
     // call GetVersion service
     private getVersion = async () => {
@@ -186,13 +189,8 @@ export class ServiceExecutor extends React.Component<{}, IState> {
     }
 
     public render() {
-        return (
+        const getVersionDemo = this.client && this.state.activeDemo === 'getVersion' ? (
             <div>
-                <h2>Server address</h2>
-                <input type="text" value={this.state.webSocketAddress} onChange={this.editWebSocketAddress} />
-                <input type="button" value="Connect" onClick={this.connect} style={{ margin: 8 }}/>
-                <span>{this.state.webSocketStatus}</span>
-
                 <h2>GetVersion</h2>
                 <label style={{ marginRight: 8 }}>
                     <input type="checkbox" checked={this.state.versionIsInternal} onChange={this.toggleVersionIsInternal}/>
@@ -202,7 +200,11 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                 <label style={{ marginLeft: 8 }}>
                     Result: {this.state.versionResult}
                 </label>
+            </div>
+        ) : null;
 
+        const calculateDemo = this.client && this.state.activeDemo === 'calculate' ? (
+            <div>
                 <h2>Calculate</h2>
                 <input type="text" value={this.state.calcFirst} onChange={this.editFirst}/>
                 <input type="text" value={this.state.calcOperation} onChange={this.editOperation}/>
@@ -211,7 +213,11 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                 <label style={{ marginLeft: 8 }}>
                     Result: {this.state.calcResult}
                 </label>
+            </div>
+        ) : null;
 
+        const eventDemo = this.client && this.state.activeDemo === 'events' ? (
+            <div>
                 <h2>Subscribe and broadcast</h2>
                 <input type="text" value={this.state.eventName} placeholder="IFoo.AfterStartup or IBar.BeforeShutdown or whatever" onChange={this.editEventName}/>
                 <input type="button" value="Subscribe to event" onClick={this.subscribeToEvent} />
@@ -230,6 +236,34 @@ export class ServiceExecutor extends React.Component<{}, IState> {
 
                 <h2>Event log (<a href="#" onClick={this.clearEventLog}>clear</a>)</h2>
                 <pre>{this.state.eventLog}</pre>
+            </div>
+        ) : null;
+
+        return (
+            <div>
+                <label>
+                    Server address:
+                    &nbsp;
+                    <input type="text" value={this.state.webSocketAddress} onChange={this.editWebSocketAddress} />
+                    <input type="button" value="Connect" onClick={this.connect} style={{ margin: 8 }}/>
+                    <span>{this.state.webSocketStatus}</span>
+                </label>
+
+                <div>
+                    <label>
+                        Select a demo:
+                        &nbsp;
+                        <select value={this.state.activeDemo} onChange={this.selectActiveDemo}>
+                            <option value='getVersion'>GetVersion service demo</option>
+                            <option value='calculate'>Calculate service demo</option>
+                            <option value='events'>Events and subscriptions demo</option>
+                        </select>
+                    </label>
+                </div>
+
+                {getVersionDemo}
+                {calculateDemo}
+                {eventDemo}
 
                 <h2>JSON-RPC message log (<a href="#" onClick={this.clearMessageLog}>clear</a>)</h2>
                 <pre>{this.state.messageLog}</pre>
