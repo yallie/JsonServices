@@ -3,12 +3,12 @@ import { SubscriptionMessage } from './SubscriptionMessage';
 export class ClientSubscription {
     public subscriptionId: string;
     public eventName: string;
-    public eventHandler: (...args: any[]) => void;
+    public eventHandler: (...args: any) => void;
     public eventFilter?: {
         [key: string]: string;
     }
 
-    public invoke(...args: any[]) {
+    public invoke(...args: any) {
         // TODO:
         // 1. handle 'this' context
         // 2. apply eventFilter locally (we might get events matching other subscriber's event filter)

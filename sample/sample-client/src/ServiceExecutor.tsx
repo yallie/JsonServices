@@ -75,6 +75,8 @@ export class ServiceExecutor extends React.Component<{}, IState> {
     private editSecond = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcSecond: e.currentTarget.value });
     private editOperation = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcOperation: e.currentTarget.value });
     private editEventName = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ eventName: e.currentTarget.value });
+    private clearEventLog = (e: React.MouseEvent<HTMLAnchorElement>) => this.setState({ eventLog: '' });
+    private clearMessageLog = (e: React.MouseEvent<HTMLAnchorElement>) => this.setState({ messageLog: '' });
 
     // call GetVersion service
     private getVersion = async () => {
@@ -135,9 +137,9 @@ export class ServiceExecutor extends React.Component<{}, IState> {
         }
 
         try {
-            // real unsubscription
+            // subscribe and get unsubscription in return
             const eventName = this.state.eventName;
-            const unsub = await this.client.subscribe({
+            const unsubscribeAsync = await this.client.subscribe({
                 eventName,
                 eventHandler: (...args: any) => {
                     this.setState(oldState => ({
@@ -147,7 +149,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                 },
             });
 
-            // our own unsubscription handler
+            // add event subscription to the component state
             const client = this.client;
             const subscription = {
                 eventName,
@@ -158,7 +160,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                 },
                 unsubscribe: async () => {
                     try {
-                        await unsub;
+                        await unsubscribeAsync();
                         this.setState(oldState => ({
                             subscriptionStatus: 'unsubscribed from ' + this.state.eventName,
                             subscriptions: oldState.subscriptions.filter(v => v !== subscription)
@@ -226,10 +228,10 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                     ))
                 }
 
-                <h2>Event log</h2>
+                <h2>Event log (<a href="#" onClick={this.clearEventLog}>clear</a>)</h2>
                 <pre>{this.state.eventLog}</pre>
 
-                <h2>JSON-RPC message log</h2>
+                <h2>JSON-RPC message log (<a href="#" onClick={this.clearMessageLog}>clear</a>)</h2>
                 <pre>{this.state.messageLog}</pre>
             </div>
         );
