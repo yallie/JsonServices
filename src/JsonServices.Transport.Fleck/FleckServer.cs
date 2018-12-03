@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using FleckWebSocketServer = Fleck.WebSocketServer;
 
 namespace JsonServices.Transport.Fleck
@@ -66,9 +67,13 @@ namespace JsonServices.Transport.Fleck
 
 		public async Task SendAsync(string sessionId, string data)
 		{
-			var session = FleckSessions[sessionId];
-			var tcs = new TaskCompletionSource<bool>();
-			await session.Socket.Send(data);
+			if (FleckSessions.TryGetValue(sessionId, out var session))
+			{
+				await session.Socket.Send(data);
+				return;
+			}
+
+			throw new InternalErrorException($"Session not found: {sessionId}. Known sessions: {string.Join(", ", FleckSessions.Keys)}");
 		}
 	}
 }

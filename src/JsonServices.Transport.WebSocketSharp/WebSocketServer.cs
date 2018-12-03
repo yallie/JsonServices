@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using WsSharpServer = WebSocketSharp.Server.WebSocketServer;
 
 namespace JsonServices.Transport.WebSocketSharp
@@ -77,7 +78,11 @@ namespace JsonServices.Transport.WebSocketSharp
 
 		public async Task SendAsync(string sessionId, string data)
 		{
-			var session = WebSocketSessions[sessionId];
+			if (!WebSocketSessions.TryGetValue(sessionId, out var session))
+			{
+				throw new InternalErrorException($"Session not found: {sessionId}. Known sessions: {string.Join(", ", WebSocketSessions.Keys)}");
+			}
+
 			var tcs = new TaskCompletionSource<bool>();
 			session.Context.WebSocket.SendAsync(data, result =>
 			{
@@ -87,7 +92,7 @@ namespace JsonServices.Transport.WebSocketSharp
 					return;
 				}
 
-				tcs.TrySetException(new Exception("Error sending data"));
+				tcs.TrySetException(new InternalErrorException($"Error sending data to session {sessionId}."));
 			});
 
 			await tcs.Task.ConfigureAwait(false);
