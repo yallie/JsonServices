@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JsonServices.Serialization.ServiceStack;
+using JsonServices.Tests;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
@@ -12,27 +13,8 @@ using NUnit.Framework;
 namespace JsonServices.Transport.WebSocketSharp.Tests
 {
 	[TestFixture]
-	public class WebSocketClientTests
+	public class WebSocketClientTests : TestFixtureBase
 	{
-		private Task Timeout => Task.Delay(500);
-
-		private async Task Assert_NotTimedOut(Task task, string message = null, Task timeout = null)
-		{
-			if (await Task.WhenAny(task, timeout ?? Timeout) != task)
-			{
-				Assert.Fail(message ?? "The given task has timed out!");
-			}
-		}
-
-		private async Task Assert_TimedOut(Task task, string message = null, Task timeout = null)
-		{
-			timeout = timeout ?? Timeout;
-			if (await Task.WhenAny(task, timeout) != timeout)
-			{
-				Assert.Fail(message ?? "The given task has not timed out as it should!");
-			}
-		}
-
 		[Test]
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()
 		{
