@@ -12,30 +12,30 @@ namespace JsonServices.Tests
 	{
 		protected Task Timeout => Task.Delay(500);
 
-		protected async Task<TResult> Assert_NotTimedOut<TResult>(Task<TResult> task, string message = null, Task timeout = null)
+		protected async Task<TResult> Assert_NotTimedOut<TResult>(Task<TResult> task, string code = null, Task timeout = null)
 		{
 			if (await Task.WhenAny(task, timeout ?? Timeout) != task)
 			{
-				Assert.Fail(message ?? "The given task has timed out!");
+				Assert.Fail((code ?? "The given task") + " has timed out!");
 			}
 
 			return task.Result;
 		}
 
-		protected async Task Assert_NotTimedOut(Task task, string message = null, Task timeout = null)
+		protected async Task Assert_NotTimedOut(Task task, string code = null, Task timeout = null)
 		{
 			if (await Task.WhenAny(task, timeout ?? Timeout) != task)
 			{
-				Assert.Fail(message ?? "The given task has timed out!");
+				Assert.Fail((code ?? "The given task") + " has timed out!");
 			}
 		}
 
-		protected async Task Assert_TimedOut(Task task, string message = null, Task timeout = null)
+		protected async Task Assert_TimedOut(Task task, string code = null, Task timeout = null)
 		{
 			timeout = timeout ?? Timeout;
 			if (await Task.WhenAny(task, timeout) != timeout)
 			{
-				Assert.Fail(message ?? "The given task has not timed out as it should!");
+				Assert.Fail((code ?? "The given task") + " has not timed out as it should!");
 			}
 		}
 
