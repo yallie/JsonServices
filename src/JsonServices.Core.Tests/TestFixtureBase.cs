@@ -12,7 +12,7 @@ namespace JsonServices.Tests
 	[TestFixture]
 	public class TestFixtureBase
 	{
-		protected Task Timeout => Task.Delay(500);
+		protected Task Timeout => Task.Delay(1500);
 
 		protected async Task<TResult> Assert_NotTimedOut<TResult>(Task<TResult> task, string code = null, Task timeout = null)
 		{
