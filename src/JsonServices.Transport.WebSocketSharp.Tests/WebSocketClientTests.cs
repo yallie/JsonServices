@@ -16,6 +16,23 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 	{
 		private Task Timeout => Task.Delay(500);
 
+		private async Task Assert_NotTimedOut(Task task, string message = null, Task timeout = null)
+		{
+			if (await Task.WhenAny(task, timeout ?? Timeout) != task)
+			{
+				Assert.Fail(message ?? "The given task has timed out!");
+			}
+		}
+
+		private async Task Assert_TimedOut(Task task, string message = null, Task timeout = null)
+		{
+			timeout = timeout ?? Timeout;
+			if (await Task.WhenAny(task, timeout) != timeout)
+			{
+				Assert.Fail(message ?? "The given task has not timed out as it should!");
+			}
+		}
+
 		[Test]
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()
 		{
@@ -65,25 +82,25 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 					});
 
 				// call EventBroadcaster.AfterStartup
-				await jc.Call(new EventBroadcaster
+				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.AfterStartupEventName,
-				});
+				}));
 
 				// sc is subscribed to AfterStartup event, jc is not
-				await Task.WhenAny(stcs.Task, Timeout);
+				Assert.AreEqual(stcs.Task, await Task.WhenAny(stcs.Task, Timeout));
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(0, jcounter);
 				Assert.AreEqual(nameof(EventBroadcaster), spropName);
 
 				// call EventBroadcaster.BeforeShutdown
-				await jc.Call(new EventBroadcaster
+				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.BeforeShutdownEventName,
-				});
+				}));
 
 				// js is subscribed to BeforeShutdown event, sc is not
-				await Task.WhenAny(jtcs.Task, Timeout);
+				await Assert_NotTimedOut(jtcs.Task);
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(1, jcounter);
 				Assert.IsTrue(jcancel);
@@ -93,44 +110,44 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 				stcs = new TaskCompletionSource<bool>();
 
 				// call EventBroadcaster.BeforeShutdown
-				await jc.Call(new EventBroadcaster
+				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.BeforeShutdownEventName,
-				});
+				}));
 
 				// js is subscribed to BeforeShutdown event, sc is not
-				await Task.WhenAny(jtcs.Task, Timeout);
+				await Assert_NotTimedOut(jtcs.Task);
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(2, jcounter);
 				Assert.IsTrue(jcancel);
 
 				// unsubscribe sc from AfterStartup event
-				await sunsubscribe();
+				await Assert_NotTimedOut(sunsubscribe());
 
 				// call EventBroadcaster.AfterStartup
-				await jc.Call(new EventBroadcaster
+				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.AfterStartupEventName,
-				});
+				}));
 
 				// make sure that event is not handled anymore
-				await Task.WhenAny(stcs.Task, Timeout);
+				await Assert_TimedOut(stcs.Task);
 				Assert.AreEqual(1, scounter);
 
 				// unsubscribe jc from BeforeShutdown event
-				await junsubscribe();
+				await Assert_NotTimedOut(junsubscribe());
 				jtcs = new TaskCompletionSource<bool>();
 				scounter = 0;
 				jcounter = 0;
 
 				// call EventBroadcaster.BeforeShutdown
-				await jc.Call(new EventBroadcaster
+				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.BeforeShutdownEventName,
-				});
+				}));
 
 				// nobody is subscribed to BeforeShutdown event
-				await Task.WhenAny(jtcs.Task, Timeout);
+				await Assert_TimedOut(jtcs.Task);
 				Assert.AreEqual(0, scounter);
 				Assert.AreEqual(0, jcounter);
 
