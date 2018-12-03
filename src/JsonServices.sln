@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.Flec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.Fleck.Tests", "JsonServices.Transport.Fleck.Tests\JsonServices.Transport.Fleck.Tests.csproj", "{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.NetMQ", "JsonServices.Transport.NetMQ\JsonServices.Transport.NetMQ.csproj", "{5732A8B8-E573-4047-8AEF-3852E19A0B10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.NetMQ.Tests", "JsonServices.Transport.NetMQ.Tests\JsonServices.Transport.NetMQ.Tests.csproj", "{8B67C62A-CE01-48D2-9312-05AD04E961E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,14 @@ Global
 		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AFF2E5D-ACDA-4C60-9860-31290A4598A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5732A8B8-E573-4047-8AEF-3852E19A0B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5732A8B8-E573-4047-8AEF-3852E19A0B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5732A8B8-E573-4047-8AEF-3852E19A0B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5732A8B8-E573-4047-8AEF-3852E19A0B10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B67C62A-CE01-48D2-9312-05AD04E961E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B67C62A-CE01-48D2-9312-05AD04E961E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B67C62A-CE01-48D2-9312-05AD04E961E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B67C62A-CE01-48D2-9312-05AD04E961E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
