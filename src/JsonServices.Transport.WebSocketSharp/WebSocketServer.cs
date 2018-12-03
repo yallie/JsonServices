@@ -59,9 +59,14 @@ namespace JsonServices.Transport.WebSocketSharp
 
 				s.OnMessageHandler = message =>
 				{
+					// OnMessage can come earlier than OnOpen
+					var sessionId = s.ID.ToString();
+					WebSocketSessions[sessionId] = s;
+
+					// looks like OnMessageHandler is called inside a lock statement,
+					// so I'm using a thread pool to handle the message
 					ThreadPool.QueueUserWorkItem(x =>
 					{
-						var sessionId = s.ID.ToString();
 						MessageReceived?.Invoke(this, new MessageEventArgs
 						{
 							ConnectionId = sessionId,

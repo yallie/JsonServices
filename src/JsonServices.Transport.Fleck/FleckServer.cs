@@ -56,6 +56,8 @@ namespace JsonServices.Transport.Fleck
 
 				socket.OnMessage = message =>
 				{
+					// looks like OnMessage can come earlier than OnOpen
+					FleckSessions[session.ConnectionId] = session;
 					MessageReceived?.Invoke(this, new MessageEventArgs
 					{
 						ConnectionId = session.ConnectionId,
