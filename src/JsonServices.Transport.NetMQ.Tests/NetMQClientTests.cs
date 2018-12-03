@@ -8,6 +8,7 @@ using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
+using NetMQ;
 using NUnit.Framework;
 
 namespace JsonServices.Transport.NetMQ.Tests
@@ -38,6 +39,9 @@ namespace JsonServices.Transport.NetMQ.Tests
 				// execute core test
 				await TestSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
 			}
+
+			// fix unit test AppDomain unloading issue
+			NetMQConfig.Cleanup(false);
 		}
 	}
 }

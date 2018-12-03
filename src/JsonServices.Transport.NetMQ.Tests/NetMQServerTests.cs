@@ -8,6 +8,7 @@ using JsonServices.Exceptions;
 using JsonServices.Tests;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
+using NetMQ;
 using NUnit.Framework;
 using Serializer = JsonServices.Serialization.ServiceStack.Serializer;
 
@@ -32,6 +33,9 @@ namespace JsonServices.Transport.NetMQ.Tests
 			{
 				await CallGetVersionServiceCore(js, jc);
 			}
+
+			// fix unit test AppDomain unloading issue
+			NetMQConfig.Cleanup(false);
 		}
 
 		[Test]
@@ -50,6 +54,9 @@ namespace JsonServices.Transport.NetMQ.Tests
 			{
 				await CallCalculateServiceCore(js, jc);
 			}
+
+			// fix unit test AppDomain unloading issue
+			NetMQConfig.Cleanup(false);
 		}
 	}
 }

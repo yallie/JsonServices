@@ -49,7 +49,10 @@ namespace JsonServices.Transport.NetMQ
 
 		public event EventHandler<MessageEventArgs> ClientConnected;
 
-		public event EventHandler<MessageEventArgs> ClientDisconnected;
+		event EventHandler<MessageEventArgs> IServer.ClientDisconnected
+		{
+			add { } remove { } // event is not available for NetMQ transport
+		}
 
 		public void Start()
 		{
@@ -82,14 +85,14 @@ namespace JsonServices.Transport.NetMQ
 			var msg = args.Socket.ReceiveMultipartMessage();
 			if (msg == null || msg.FrameCount < 2)
 			{
-				// TODO: throw?
+				// TODO: throw? invalid message format
 				return;
 			}
 
 			// the first frame is ConnectionId
 			if (msg[0].BufferSize != 16)
 			{
-				// TODO: throw?
+				// TODO: throw? invalid client address
 				return;
 			}
 
@@ -102,11 +105,16 @@ namespace JsonServices.Transport.NetMQ
 				Data = Encoding.UTF8.GetString(data),
 			};
 
-			ReceivedQueue.Enqueue(message);
-			NetMQSessions[message.ConnectionId] = new NetMQSession
+			// register new client session if doesn't yet exist
+			NetMQSessions.GetOrAdd(message.ConnectionId, id =>
 			{
-				ConnectionId = message.ConnectionId,
-			};
+				var session = new NetMQSession { ConnectionId = id };
+				ClientConnected?.Invoke(this, new MessageEventArgs { ConnectionId = id });
+				return session;
+			});
+
+			// process the incoming message
+			ReceivedQueue.Enqueue(message);
 		}
 
 		private void ReceivedQueue_ReceiveReady(object sender, NetMQQueueEventArgs<MessageEventArgs> args)
