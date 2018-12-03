@@ -41,9 +41,13 @@ namespace JsonServices.Tests
 
 		protected async Task CallGetVersionServiceCore(JsonServer js, JsonClient jc)
 		{
-			// unhandled exception handlers
-			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}");
-			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}");
+			// event handlers
+			var connected = 0;
+			var disconnected = 0;
+			js.ClientConnected += (s, e) => connected++;
+			js.ClientDisconnected += (s, e) => disconnected++;
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
 
 			// start json server and connect the client
 			js.Start();
@@ -84,8 +88,12 @@ namespace JsonServices.Tests
 		protected async Task CallCalculateServiceCore(JsonServer js, JsonClient jc)
 		{
 			// unhandled exception handlers
-			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}");
-			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}");
+			var connected = 0;
+			var disconnected = 0;
+			js.ClientConnected += (s, e) => connected++;
+			js.ClientDisconnected += (s, e) => disconnected++;
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
 
 			// start json server and connect the client
 			js.Start();

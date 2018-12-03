@@ -38,6 +38,18 @@ namespace JsonServices
 
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
+		public event EventHandler<MessageEventArgs> ClientConnected
+		{
+			add { Server.ClientConnected += value; }
+			remove { Server.ClientConnected -= value; }
+		}
+
+		public event EventHandler<MessageEventArgs> ClientDisconnected
+		{
+			add { Server.ClientDisconnected += value; }
+			remove { Server.ClientDisconnected -= value; }
+		}
+
 		public JsonServer Start()
 		{
 			Server.Start();

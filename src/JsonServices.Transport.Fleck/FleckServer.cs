@@ -26,6 +26,10 @@ namespace JsonServices.Transport.Fleck
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
+		public event EventHandler<MessageEventArgs> ClientConnected;
+
+		public event EventHandler<MessageEventArgs> ClientDisconnected;
+
 		public void Start()
 		{
 			WebSocketServer.Start(socket =>
@@ -35,11 +39,19 @@ namespace JsonServices.Transport.Fleck
 				socket.OnOpen = () =>
 				{
 					FleckSessions[session.ConnectionId] = session;
+					ClientConnected?.Invoke(this, new MessageEventArgs
+					{
+						ConnectionId = session.ConnectionId,
+					});
 				};
 
 				socket.OnClose = () =>
 				{
 					FleckSessions.TryRemove(session.ConnectionId, out var ignored);
+					ClientDisconnected?.Invoke(this, new MessageEventArgs
+					{
+						ConnectionId = session.ConnectionId,
+					});
 				};
 
 				socket.OnMessage = message =>

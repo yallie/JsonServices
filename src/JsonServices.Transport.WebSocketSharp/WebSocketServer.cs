@@ -27,6 +27,10 @@ namespace JsonServices.Transport.WebSocketSharp
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
+		public event EventHandler<MessageEventArgs> ClientConnected;
+
+		public event EventHandler<MessageEventArgs> ClientDisconnected;
+
 		public void Start()
 		{
 			WsSharpServer.AddWebSocketService(WebSocketSession.ServiceName, () =>
@@ -37,12 +41,20 @@ namespace JsonServices.Transport.WebSocketSharp
 				{
 					var sessionId = s.ID.ToString();
 					WebSocketSessions[sessionId] = s;
+					ClientConnected?.Invoke(this, new MessageEventArgs
+					{
+						ConnectionId = sessionId,
+					});
 				};
 
 				s.OnCloseHandler = e =>
 				{
 					var sessionId = s.ID.ToString();
 					WebSocketSessions.TryRemove(sessionId, out var ignored);
+					ClientDisconnected?.Invoke(this, new MessageEventArgs
+					{
+						ConnectionId = sessionId,
+					});
 				};
 
 				s.OnMessageHandler = message =>

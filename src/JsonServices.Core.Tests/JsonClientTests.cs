@@ -52,9 +52,13 @@ namespace JsonServices.Tests
 		protected async Task TestSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc)
 		{
 			// unhandled exception handlers
-			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}");
-			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in jc (first client): {e.Exception}");
-			sc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in sc (second client): {e.Exception}");
+			var connected = 0;
+			var disconnected = 0;
+			js.ClientConnected += (s, e) => connected++;
+			js.ClientDisconnected += (s, e) => disconnected++;
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in jc (first client): {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			sc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in sc (second client): {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
 
 			// start json server and connect both clients
 			js.Start();

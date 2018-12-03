@@ -14,7 +14,18 @@ namespace JsonServices.Tests.Transport
 		{
 		}
 
-		public void Dispose() => Clients.Clear();
+		public void Dispose()
+		{
+			foreach (var connectionId in Clients.Keys)
+			{
+				ClientDisconnected?.Invoke(this, new MessageEventArgs
+				{
+					ConnectionId = connectionId
+				});
+			}
+
+			Clients.Clear();
+		}
 
 		private Dictionary<string, StubClient> Clients { get; } = new Dictionary<string, StubClient>();
 
@@ -22,12 +33,20 @@ namespace JsonServices.Tests.Transport
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 
+		public event EventHandler<MessageEventArgs> ClientConnected;
+
+		public event EventHandler<MessageEventArgs> ClientDisconnected;
+
 		public IConnection TryGetConnection(string sessionId) =>
 			Clients.TryGetValue(sessionId, out var result) ? result : null;
 
 		public void Connect(StubClient client)
 		{
 			Clients[client.ConnectionId] = client;
+			ClientConnected?.Invoke(this, new MessageEventArgs
+			{
+				ConnectionId = client.ConnectionId
+			});
 		}
 
 		public Task SendAsync(string sessionId, string data)
