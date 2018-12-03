@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Events;
 using JsonServices.Exceptions;
@@ -34,6 +35,8 @@ namespace JsonServices
 		private ISerializer Serializer { get; }
 
 		private IServiceExecutor Executor { get; }
+
+		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
 		public JsonServer Start()
 		{
@@ -142,9 +145,17 @@ namespace JsonServices
 			// skip response if the request was a one-way notification
 			if (request == null || !request.IsNotification)
 			{
-				// TODO: handle send exceptions
-				var data = Serializer.Serialize(response);
-				await Server.SendAsync(args.ConnectionId, data);
+				try
+				{
+					var data = Serializer.Serialize(response);
+					await Server.SendAsync(args.ConnectionId, data);
+				}
+				catch (Exception ex)
+				{
+					// report exceptions
+					var eargs = new ThreadExceptionEventArgs(ex);
+					UnhandledException?.Invoke(this, eargs);
+				}
 			}
 		}
 

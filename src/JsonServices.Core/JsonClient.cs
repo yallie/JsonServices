@@ -32,6 +32,8 @@ namespace JsonServices
 
 		private ISerializer Serializer { get; }
 
+		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
+
 		public Task ConnectAsync() => Client.ConnectAsync();
 
 		public void Dispose()
@@ -87,12 +89,22 @@ namespace JsonServices
 
 		private void HandleClientMessage(object sender, MessageEventArgs args)
 		{
-			var msg = Serializer.Deserialize(args.Data, MessageTypeProvider, this);
+			var msg = default(IMessage);
+			try
+			{
+				msg = Serializer.Deserialize(args.Data, MessageTypeProvider, this);
+			}
+			catch (Exception ex)
+			{
+				var eargs = new ThreadExceptionEventArgs(ex);
+				UnhandledException?.Invoke(this, eargs);
+				return;
+			}
 
 			// match the response with the pending request message
 			if (msg is ResponseMessage responseMessage)
 			{
-				HandleResponseMessage(responseMessage);
+				HandleResponseMessage(responseMessage, args.Data);
 				return;
 			}
 
@@ -100,13 +112,15 @@ namespace JsonServices
 			HandleRequestMessage((RequestMessage)msg);
 		}
 
-		private void HandleResponseMessage(ResponseMessage responseMessage)
+		private void HandleResponseMessage(ResponseMessage responseMessage, string debugData)
 		{
 			if (!PendingMessages.TryRemove(responseMessage.Id, out var pm))
 			{
 				// got the unknown answer message
 				// cannot throw here because we're on the worker thread
-				// TODO: find out what can be done
+				var ex = new InternalErrorException($"Got a response for the unknown message #{responseMessage.Id}: {debugData}");
+				var eargs = new ThreadExceptionEventArgs(ex);
+				UnhandledException?.Invoke(this, eargs);
 				return;
 			}
 

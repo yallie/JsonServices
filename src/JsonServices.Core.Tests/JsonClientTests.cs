@@ -51,6 +51,11 @@ namespace JsonServices.Tests
 
 		protected async Task TestSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc)
 		{
+			// unhandled exception handlers
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in jc (first client): {e.Exception}");
+			sc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in sc (second client): {e.Exception}");
+
 			// start json server and connect both clients
 			js.Start();
 			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
@@ -130,7 +135,7 @@ namespace JsonServices.Tests
 			}), "jc.Call(new EventBroadcaster(...AfterStartup)) #2");
 
 			// make sure that event is not handled anymore
-			await Assert_TimedOut(stcs.Task, "stcs.Task #2");
+			await Assert_TimedOut(stcs.Task, "stcs.Task #2", Task.Delay(500));
 			Assert.AreEqual(1, scounter);
 
 			// unsubscribe jc from BeforeShutdown event
@@ -146,7 +151,7 @@ namespace JsonServices.Tests
 			}), "jc.Call(new EventBroadcaster(...BeforeShutdown)) #3");
 
 			// nobody is subscribed to BeforeShutdown event
-			await Assert_TimedOut(jtcs.Task, "jtcs.Task #3");
+			await Assert_TimedOut(jtcs.Task, "jtcs.Task #3", Task.Delay(500));
 			Assert.AreEqual(0, scounter);
 			Assert.AreEqual(0, jcounter);
 

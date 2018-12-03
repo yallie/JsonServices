@@ -41,6 +41,10 @@ namespace JsonServices.Tests
 
 		protected async Task CallGetVersionServiceCore(JsonServer js, JsonClient jc)
 		{
+			// unhandled exception handlers
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}");
+
 			// start json server and connect the client
 			js.Start();
 			await jc.ConnectAsync();
@@ -79,6 +83,10 @@ namespace JsonServices.Tests
 
 		protected async Task CallCalculateServiceCore(JsonServer js, JsonClient jc)
 		{
+			// unhandled exception handlers
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}");
+
 			// start json server and connect the client
 			js.Start();
 			await jc.ConnectAsync();
