@@ -139,7 +139,7 @@ namespace JsonServices.Tests
 			}), "jc.Call(new EventBroadcaster(...AfterStartup)) #2");
 
 			// make sure that event is not handled anymore
-			await Assert_TimedOut(stcs.Task, "stcs.Task #2", Task.Delay(500));
+			await Assert_TimedOut(stcs.Task, "stcs.Task #2", Task.Delay(200));
 			Assert.AreEqual(1, scounter);
 
 			// unsubscribe jc from BeforeShutdown event
@@ -155,7 +155,7 @@ namespace JsonServices.Tests
 			}), "jc.Call(new EventBroadcaster(...BeforeShutdown)) #3");
 
 			// nobody is subscribed to BeforeShutdown event
-			await Assert_TimedOut(jtcs.Task, "jtcs.Task #3", Task.Delay(500));
+			await Assert_TimedOut(jtcs.Task, "jtcs.Task #3", Task.Delay(200));
 			Assert.AreEqual(0, scounter);
 			Assert.AreEqual(0, jcounter);
 
