@@ -20,8 +20,8 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		public async Task CallGetVersionServiceUsingWebSocketSharp()
 		{
 			// websocket transport
-			var server = new WebSocketServer("ws://localhost:8765");
-			var client = new WebSocketClient("ws://localhost:8765");
+			var server = new WebSocketServer("ws://localhost:8766");
+			var client = new WebSocketClient("ws://localhost:8766");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
@@ -38,8 +38,8 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		public async Task CallCalculateServiceUsingWebSocketSharp()
 		{
 			// websocket transport
-			var server = new WebSocketServer("ws://localhost:8765");
-			var client = new WebSocketClient("ws://localhost:8765");
+			var server = new WebSocketServer("ws://localhost:8767");
+			var client = new WebSocketClient("ws://localhost:8767");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();

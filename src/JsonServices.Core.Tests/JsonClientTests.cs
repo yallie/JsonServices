@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace JsonServices.Tests
 {
 	[TestFixture]
-	public class JsonClientTests : JsonServerTests
+	public class JsonClientTests : TestFixtureBase
 	{
 		[Test]
 		public void JsonClientRequiresServices()
@@ -37,14 +37,23 @@ namespace JsonServices.Tests
 			var clientSerializer = new Serializer();
 
 			// json server and client
-			var js = new JsonServer(server, serverProvider, serverSerializer, executor).Start();
+			var js = new JsonServer(server, serverProvider, serverSerializer, executor);
 			var jc = new JsonClient(client, clientProvider, clientSerializer);
-			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
 
 			// second client
 			var secondClientProvider = new StubMessageTypeProvider();
 			var secondClientSerializer = new Serializer();
 			var sc = new JsonClient(new StubClient(server, "sc"), secondClientProvider, secondClientSerializer);
+
+			// test core
+			await TestSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
+		}
+
+		protected async Task TestSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc)
+		{
+			// start json server and connect both clients
+			js.Start();
+			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
 			await Assert_NotTimedOut(sc.ConnectAsync(), "sc.ConnectAsync()");
 
 			// subscribe to jc events

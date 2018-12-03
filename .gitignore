@@ -4,3 +4,4 @@
 obj
 bin
 /src/JsonServices.TypeScript.Sample/client/*.js
+/src/TestResult.xml

@@ -1,0 +1,3 @@
+@echo off
+
+..\..\NUnit.Console-3.7.0\nunit3-console.exe "JsonServices.Core.Tests\bin\Debug\net45\JsonServices.Tests.dll" "JsonServices.Serialization.Tests\bin\Debug\net45\JsonServices.Serialization.Tests.dll" "JsonServices.Serialization.Tests\bin\Debug\net45\JsonServices.Tests.dll" "JsonServices.Transport.Fleck.Tests\bin\Debug\net45\JsonServices.Tests.dll" "JsonServices.Transport.Fleck.Tests\bin\Debug\net45\JsonServices.Transport.Fleck.Tests.dll" "JsonServices.Transport.WebSocketSharp.Tests\bin\Debug\net45\JsonServices.Tests.dll" "JsonServices.Transport.WebSocketSharp.Tests\bin\Debug\net45\JsonServices.Transport.WebSocketSharp.Tests.dll"
