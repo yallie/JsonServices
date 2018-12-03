@@ -43,6 +43,9 @@ namespace JsonServices.Transport.Fleck.Tests
 				result = await jc.Call(msg);
 				Assert.NotNull(result);
 				Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie", result.Version);
+
+				// make sure all incoming messages are processed
+				Assert.AreEqual(0, jc.PendingMessages.Count);
 			}
 		}
 
@@ -112,47 +115,10 @@ namespace JsonServices.Transport.Fleck.Tests
 				result = await jc.Call(msg);
 				Assert.NotNull(result);
 				Assert.AreEqual(534, result.Result);
-			}
-		}
 
-		// awaitable version of Assert.ThrowsAsync
-		private async Task<T> Assert_ThrowsAsync<T>(AsyncTestDelegate code)
-			where T : Exception
-		{
-			try
-			{
-				await code();
-				Assert.Fail("Exception is expected but not thrown.");
-				throw new InvalidOperationException();
+				// make sure all incoming messages are processed
+				Assert.AreEqual(0, jc.PendingMessages.Count);
 			}
-			catch (T ex)
-			{
-				// great, everything is fine
-				return ex;
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail($"Exception of type {typeof(T).Name} is expected, but {ex.GetType().Name} is thrown instead.");
-				throw;
-			}
-		}
-
-		private Task<bool> AsyncOperation(bool throwException)
-		{
-			var tcs = new TaskCompletionSource<bool>();
-			ThreadPool.QueueUserWorkItem(x =>
-			{
-				if (throwException)
-				{
-					tcs.SetException(new InvalidOperationException());
-				}
-				else
-				{
-					tcs.SetResult(true);
-				}
-			});
-
-			return tcs.Task;
 		}
 	}
 }

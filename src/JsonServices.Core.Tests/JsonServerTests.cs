@@ -87,20 +87,39 @@ namespace JsonServices.Tests
 			Assert.NotNull(result);
 			Assert.AreEqual(686, result.Result);
 
+			msg.Operation = "-";
+			result = await jc.Call(msg);
+			Assert.NotNull(result);
+			Assert.AreEqual(20, result.Result);
+
 			// call with error
 			msg.Operation = "#";
-			Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+			var ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+
+			// internal server error
+			Assert.AreEqual(-32603, ex.Code);
+			Assert.AreEqual("Internal server error", ex.Message);
 
 			// call with another error
 			msg.Operation = "%";
 			msg.SecondOperand = 0;
-			Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+			ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+
+			// internal server error
+			Assert.AreEqual(-32603, ex.Code);
+			Assert.AreEqual("Internal server error", ex.Message);
 
 			// normal call again
 			msg.Operation = "*";
 			result = await jc.Call(msg);
 			Assert.NotNull(result);
 			Assert.AreEqual(0, result.Result);
+
+			msg.Operation = "+";
+			msg.SecondOperand = 181;
+			result = await jc.Call(msg);
+			Assert.NotNull(result);
+			Assert.AreEqual(534, result.Result);
 
 			// make sure all incoming messages are processed
 			Assert.AreEqual(0, jc.PendingMessages.Count);
