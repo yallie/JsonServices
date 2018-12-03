@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace JsonServices.Tests
 {
 	[TestFixture]
-	public class TestFixtureBase
+	public class TestFixtureBase : IDisposable
 	{
 		protected Task Timeout => Task.Delay(1500);
 
@@ -116,6 +116,11 @@ namespace JsonServices.Tests
 			// so the problem is not NUnit, but either my code or WebSocketSharp
 			Assert.ThrowsAsync<InvalidOperationException>(
 				async () => await AsyncOperation(throwException: true));
+		}
+
+		public virtual void Dispose()
+		{
+			// handle per-fixture cleanup here
 		}
 	}
 }

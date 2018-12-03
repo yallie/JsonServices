@@ -39,9 +39,12 @@ namespace JsonServices.Transport.NetMQ.Tests
 				// execute core test
 				await TestSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
 			}
+		}
 
+		public override void Dispose()
+		{
 			// fix unit test AppDomain unloading issue
-			NetMQConfig.Cleanup(false);
+			NetMQConfig.Cleanup();
 		}
 	}
 }

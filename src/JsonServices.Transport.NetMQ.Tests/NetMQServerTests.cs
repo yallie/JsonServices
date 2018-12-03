@@ -33,9 +33,6 @@ namespace JsonServices.Transport.NetMQ.Tests
 			{
 				await CallGetVersionServiceCore(js, jc);
 			}
-
-			// fix unit test AppDomain unloading issue
-			NetMQConfig.Cleanup(false);
 		}
 
 		[Test]
@@ -54,9 +51,12 @@ namespace JsonServices.Transport.NetMQ.Tests
 			{
 				await CallCalculateServiceCore(js, jc);
 			}
+		}
 
+		public override void Dispose()
+		{
 			// fix unit test AppDomain unloading issue
-			NetMQConfig.Cleanup(false);
+			NetMQConfig.Cleanup();
 		}
 	}
 }
