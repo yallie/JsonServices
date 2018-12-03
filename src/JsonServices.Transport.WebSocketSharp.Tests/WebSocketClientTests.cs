@@ -43,34 +43,34 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 				var jcounter = 0;
 				var jcancel = default(bool?);
 				var jtcs = new TaskCompletionSource<bool>();
-				var junsubscribe = await jc.Subscribe<CancelEventArgs>(
+				var junsubscribe = await Assert_NotTimedOut(jc.Subscribe<CancelEventArgs>(
 					EventBroadcaster.BeforeShutdownEventName, (s, e) =>
 					{
 						jcounter++;
 						jcancel = e.Cancel;
 						jtcs.TrySetResult(true);
-					});
+					}), "jc.Subscribe<CancelEventArgs>(...)");
 
 				// subscribe to sc events
 				var scounter = 0;
 				var spropName = default(string);
 				var stcs = new TaskCompletionSource<bool>();
-				var sunsubscribe = await sc.Subscribe<MyCoolEventArgs>(
+				var sunsubscribe = await Assert_NotTimedOut(sc.Subscribe<MyCoolEventArgs>(
 					EventBroadcaster.AfterStartupEventName, (s, e) =>
 					{
 						scounter++;
 						spropName = e.PropertyName;
 						stcs.TrySetResult(true);
-					});
+					}), "sc.Subscribe<MyCoolEventArgs>(...)");
 
 				// call EventBroadcaster.AfterStartup
 				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.AfterStartupEventName,
-				}));
+				}), "jc.Call(new EventBroadcaster...AfterStartup))");
 
 				// sc is subscribed to AfterStartup event, jc is not
-				Assert.AreEqual(stcs.Task, await Task.WhenAny(stcs.Task, Timeout));
+				await Assert_NotTimedOut(stcs.Task, "stcs.Task");
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(0, jcounter);
 				Assert.AreEqual(nameof(EventBroadcaster), spropName);
@@ -79,10 +79,10 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.BeforeShutdownEventName,
-				}));
+				}), "jc.Call(new EventBroadcaster(...BeforeShutdown))");
 
 				// js is subscribed to BeforeShutdown event, sc is not
-				await Assert_NotTimedOut(jtcs.Task);
+				await Assert_NotTimedOut(jtcs.Task, "jtcs.Task");
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(1, jcounter);
 				Assert.IsTrue(jcancel);
@@ -95,29 +95,29 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.BeforeShutdownEventName,
-				}));
+				}), "jc.Call(new EventBroadcaster(...BeforeShutdown)) #2");
 
 				// js is subscribed to BeforeShutdown event, sc is not
-				await Assert_NotTimedOut(jtcs.Task);
+				await Assert_NotTimedOut(jtcs.Task, "jtcs.Task #2");
 				Assert.AreEqual(1, scounter);
 				Assert.AreEqual(2, jcounter);
 				Assert.IsTrue(jcancel);
 
 				// unsubscribe sc from AfterStartup event
-				await Assert_NotTimedOut(sunsubscribe());
+				await Assert_NotTimedOut(sunsubscribe(), "sunsubscribe()");
 
 				// call EventBroadcaster.AfterStartup
 				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.AfterStartupEventName,
-				}));
+				}), "jc.Call(new EventBroadcaster(...AfterStartup)) #2");
 
 				// make sure that event is not handled anymore
-				await Assert_TimedOut(stcs.Task);
+				await Assert_TimedOut(stcs.Task, "stcs.Task #2");
 				Assert.AreEqual(1, scounter);
 
 				// unsubscribe jc from BeforeShutdown event
-				await Assert_NotTimedOut(junsubscribe());
+				await Assert_NotTimedOut(junsubscribe(), "junsubscribe()");
 				jtcs = new TaskCompletionSource<bool>();
 				scounter = 0;
 				jcounter = 0;
@@ -126,10 +126,10 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 				await Assert_NotTimedOut(jc.Call(new EventBroadcaster
 				{
 					EventName = EventBroadcaster.BeforeShutdownEventName,
-				}));
+				}), "jc.Call(new EventBroadcaster(...BeforeShutdown)) #3");
 
 				// nobody is subscribed to BeforeShutdown event
-				await Assert_TimedOut(jtcs.Task);
+				await Assert_TimedOut(jtcs.Task, "jtcs.Task #3");
 				Assert.AreEqual(0, scounter);
 				Assert.AreEqual(0, jcounter);
 
