@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Exceptions;
+using JsonServices.Tests;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
@@ -14,10 +15,10 @@ using WebSocketClient = JsonServices.Transport.WebSocketSharp.WebSocketClient;
 namespace JsonServices.Transport.Fleck.Tests
 {
 	[TestFixture]
-	public class FleckServerTests
+	public class FleckServerTests : JsonServerTests
 	{
 		[Test]
-		public async Task CallGetVersionService()
+		public async Task CallGetVersionServiceUsingFleckServer()
 		{
 			// websocket transport
 			var server = new FleckServer("ws://127.0.0.1:8788");
@@ -27,30 +28,15 @@ namespace JsonServices.Transport.Fleck.Tests
 			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			using (var js = new JsonServer(server, provider, serializer, executor).Start())
+			using (var js = new JsonServer(server, provider, serializer, executor))
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
-				await jc.ConnectAsync();
-
-				// call GetVersion
-				var msg = new GetVersion();
-				var result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual("0.01-alpha", result.Version);
-
-				// call GetVersion
-				msg = new GetVersion { IsInternal = true };
-				result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie", result.Version);
-
-				// make sure all incoming messages are processed
-				Assert.AreEqual(0, jc.PendingMessages.Count);
+				await CallGetVersionServiceCore(js, jc);
 			}
 		}
 
 		[Test]
-		public async Task CallCalculateService()
+		public async Task CallCalculateServiceUsingFleckServer()
 		{
 			// websocket transport
 			var server = new FleckServer("ws://127.0.0.1:8789");
@@ -60,64 +46,10 @@ namespace JsonServices.Transport.Fleck.Tests
 			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			using (var js = new JsonServer(server, provider, serializer, executor).Start())
+			using (var js = new JsonServer(server, provider, serializer, executor))
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
-				await jc.ConnectAsync();
-
-				// normal call
-				var msg = new Calculate
-				{
-					FirstOperand = 353,
-					SecondOperand = 181,
-					Operation = "+",
-				};
-
-				var result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual(534, result.Result);
-
-				msg.SecondOperand = 333;
-				result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual(686, result.Result);
-
-				msg.Operation = "-";
-				result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual(20, result.Result);
-
-				// call with error
-				msg.Operation = "#";
-				var ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
-
-				// internal server error
-				Assert.AreEqual(-32603, ex.Code);
-				Assert.AreEqual("Internal server error", ex.Message);
-
-				// call with another error
-				msg.Operation = "%";
-				msg.SecondOperand = 0;
-				ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
-
-				// internal server error
-				Assert.AreEqual(-32603, ex.Code);
-				Assert.AreEqual("Internal server error", ex.Message);
-
-				// normal call again
-				msg.Operation = "*";
-				result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual(0, result.Result);
-
-				msg.Operation = "+";
-				msg.SecondOperand = 181;
-				result = await jc.Call(msg);
-				Assert.NotNull(result);
-				Assert.AreEqual(534, result.Result);
-
-				// make sure all incoming messages are processed
-				Assert.AreEqual(0, jc.PendingMessages.Count);
+				await CallCalculateServiceCore(js, jc);
 			}
 		}
 	}

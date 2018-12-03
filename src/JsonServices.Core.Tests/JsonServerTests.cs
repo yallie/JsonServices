@@ -13,7 +13,7 @@ using Serializer = JsonServices.Serialization.ServiceStack.Serializer;
 namespace JsonServices.Tests
 {
 	[TestFixture]
-	public class JsonServerTests
+	public class JsonServerTests : TestFixtureBase
 	{
 		[Test]
 		public void JsonServerRequiresServices()
@@ -34,20 +34,26 @@ namespace JsonServices.Tests
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
 
-			// json server and client
-			var js = new JsonServer(server, provider, serializer, executor).Start();
+			var js = new JsonServer(server, provider, serializer, executor);
 			var jc = new JsonClient(client, provider, serializer);
+			await CallGetVersionServiceCore(js, jc);
+		}
+
+		protected async Task CallGetVersionServiceCore(JsonServer js, JsonClient jc)
+		{
+			// start json server and connect the client
+			js.Start();
 			await jc.ConnectAsync();
 
 			// call GetVersion
 			var msg = new GetVersion();
-			var result = await jc.Call(msg);
+			var result = await Assert_NotTimedOut(jc.Call(msg), "jc.Call(msg)");
 			Assert.NotNull(result);
 			Assert.AreEqual("0.01-alpha", result.Version);
 
 			// call GetVersion
 			msg = new GetVersion { IsInternal = true };
-			result = await jc.Call(msg);
+			result = await Assert_NotTimedOut(jc.Call(msg), "jc.Call(msg...IsInternal)");
 			Assert.NotNull(result);
 			Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie", result.Version);
 
@@ -66,8 +72,15 @@ namespace JsonServices.Tests
 			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			var js = new JsonServer(server, provider, serializer, executor).Start();
+			var js = new JsonServer(server, provider, serializer, executor);
 			var jc = new JsonClient(client, provider, serializer);
+			await CallCalculateServiceCore(js, jc);
+		}
+
+		protected async Task CallCalculateServiceCore(JsonServer js, JsonClient jc)
+		{
+			// start json server and connect the client
+			js.Start();
 			await jc.ConnectAsync();
 
 			// normal call
@@ -78,23 +91,24 @@ namespace JsonServices.Tests
 				Operation = "+",
 			};
 
-			var result = await jc.Call(msg);
+			var result = await Assert_NotTimedOut(jc.Call(msg), "353 + 181");
 			Assert.NotNull(result);
 			Assert.AreEqual(534, result.Result);
 
 			msg.SecondOperand = 333;
-			result = await jc.Call(msg);
+			result = await Assert_NotTimedOut(jc.Call(msg), "353 + 333");
 			Assert.NotNull(result);
 			Assert.AreEqual(686, result.Result);
 
 			msg.Operation = "-";
-			result = await jc.Call(msg);
+			result = await Assert_NotTimedOut(jc.Call(msg), "353 - 333");
 			Assert.NotNull(result);
 			Assert.AreEqual(20, result.Result);
 
 			// call with error
 			msg.Operation = "#";
-			var ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+			var ex = Assert.ThrowsAsync<JsonServicesException>(async () =>
+				await Assert_NotTimedOut(jc.Call(msg), "353 # 333"));
 
 			// internal server error
 			Assert.AreEqual(-32603, ex.Code);
@@ -103,7 +117,8 @@ namespace JsonServices.Tests
 			// call with another error
 			msg.Operation = "%";
 			msg.SecondOperand = 0;
-			ex = Assert.ThrowsAsync<JsonServicesException>(async () => await jc.Call(msg));
+			ex = Assert.ThrowsAsync<JsonServicesException>(async () =>
+				await Assert_NotTimedOut(jc.Call(msg), "353 % 0"));
 
 			// internal server error
 			Assert.AreEqual(-32603, ex.Code);
@@ -111,13 +126,13 @@ namespace JsonServices.Tests
 
 			// normal call again
 			msg.Operation = "*";
-			result = await jc.Call(msg);
+			result = await Assert_NotTimedOut(jc.Call(msg), "353 * 0");
 			Assert.NotNull(result);
 			Assert.AreEqual(0, result.Result);
 
 			msg.Operation = "+";
 			msg.SecondOperand = 181;
-			result = await jc.Call(msg);
+			result = await Assert_NotTimedOut(jc.Call(msg), "353 + 181 again");
 			Assert.NotNull(result);
 			Assert.AreEqual(534, result.Result);
 

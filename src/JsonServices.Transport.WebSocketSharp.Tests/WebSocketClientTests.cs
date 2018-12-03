@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace JsonServices.Transport.WebSocketSharp.Tests
 {
 	[TestFixture]
-	public class WebSocketClientTests : TestFixtureBase
+	public class WebSocketClientTests : JsonServerTests
 	{
 		[Test]
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()

@@ -14,7 +14,7 @@ using WebSocketClient = JsonServices.Transport.WebSocketSharp.WebSocketClient;
 namespace JsonServices.Transport.Fleck.Tests
 {
 	[TestFixture]
-	public class FleckClientTests : TestFixtureBase
+	public class FleckClientTests : JsonServerTests
 	{
 		[Test]
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()

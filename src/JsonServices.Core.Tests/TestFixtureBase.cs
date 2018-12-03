@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,28 +16,52 @@ namespace JsonServices.Tests
 
 		protected async Task<TResult> Assert_NotTimedOut<TResult>(Task<TResult> task, string code = null, Task timeout = null)
 		{
-			if (await Task.WhenAny(task, timeout ?? Timeout) != task)
+			try
 			{
-				Assert.Fail((code ?? "The given task") + " has timed out!");
-			}
+				if (await Task.WhenAny(task, timeout ?? Timeout) != task)
+				{
+					Assert.Fail((code ?? "The given task") + " has timed out!");
+				}
 
-			return task.Result;
+				return task.Result;
+			}
+			catch (AggregateException ex)
+			{
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				throw;
+			}
 		}
 
 		protected async Task Assert_NotTimedOut(Task task, string code = null, Task timeout = null)
 		{
-			if (await Task.WhenAny(task, timeout ?? Timeout) != task)
+			try
 			{
-				Assert.Fail((code ?? "The given task") + " has timed out!");
+				if (await Task.WhenAny(task, timeout ?? Timeout) != task)
+				{
+					Assert.Fail((code ?? "The given task") + " has timed out!");
+				}
+			}
+			catch (AggregateException ex)
+			{
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				throw;
 			}
 		}
 
 		protected async Task Assert_TimedOut(Task task, string code = null, Task timeout = null)
 		{
-			timeout = timeout ?? Timeout;
-			if (await Task.WhenAny(task, timeout) != timeout)
+			try
 			{
-				Assert.Fail((code ?? "The given task") + " has not timed out as it should!");
+				timeout = timeout ?? Timeout;
+				if (await Task.WhenAny(task, timeout) != timeout)
+				{
+					Assert.Fail((code ?? "The given task") + " has not timed out as it should!");
+				}
+			}
+			catch (AggregateException ex)
+			{
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				throw;
 			}
 		}
 

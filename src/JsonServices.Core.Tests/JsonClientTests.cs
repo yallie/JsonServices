@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace JsonServices.Tests
 {
 	[TestFixture]
-	public class JsonClientTests : TestFixtureBase
+	public class JsonClientTests : JsonServerTests
 	{
 		[Test]
 		public void JsonClientRequiresServices()
