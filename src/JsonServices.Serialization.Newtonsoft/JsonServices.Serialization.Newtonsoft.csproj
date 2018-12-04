@@ -15,10 +15,13 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
-    <DebugInfo>full</DebugInfo>
-    <DebugSymbols>True</DebugSymbols>
     <RootNamespace>JsonServices.Serialization.Newtonsoft</RootNamespace>
     <AssemblyName>JsonServices.Serialization.Newtonsoft</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

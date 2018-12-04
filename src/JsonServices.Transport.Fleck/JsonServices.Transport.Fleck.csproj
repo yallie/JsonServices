@@ -15,10 +15,13 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
-    <DebugInfo>full</DebugInfo>
-    <DebugSymbols>True</DebugSymbols>
     <RootNamespace>JsonServices.Transport.Fleck</RootNamespace>
     <AssemblyName>JsonServices.Transport.Fleck</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

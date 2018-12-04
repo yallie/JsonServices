@@ -15,13 +15,16 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
-    <DebugInfo>full</DebugInfo>
-    <DebugSymbols>True</DebugSymbols>
     <RootNamespace>JsonServices.Transport.WebSocketSharp.Tests</RootNamespace>
     <AssemblyName>JsonServices.Transport.WebSocketSharp.Tests</AssemblyName>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
