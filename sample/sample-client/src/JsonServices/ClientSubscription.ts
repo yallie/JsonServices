@@ -11,7 +11,7 @@ export class ClientSubscription {
 
     public invoke = (eventArgs: object) => {
         // TODO: handle 'this' context?
-        // apply eventFilter locally (we might get events matching other subscriber's event filter)
+        // apply eventFilter locally (we might get events matching other local subscriber's event filter)
         if (EventFilter.matches(this.eventFilter, eventArgs)) {
             this.eventHandler(eventArgs);
         }
