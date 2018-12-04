@@ -144,7 +144,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             const eventName = this.state.eventName;
             const unsubscribeAsync = await this.client.subscribe({
                 eventName,
-                eventHandler: (...args: any) => {
+                eventHandler: (args) => {
                     this.setState(oldState => ({
                         eventLog: oldState.eventLog +
                             eventName + ":" + JSON.stringify(args) + "\n"
