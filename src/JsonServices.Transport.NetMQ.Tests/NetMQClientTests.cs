@@ -39,9 +39,9 @@ namespace JsonServices.Transport.NetMQ.Tests
 		public async Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingNetMQServer()
 		{
 			// ZeroMQ tcp transport
-			var server = new NetMQServer("tcp://127.0.0.1:8793");
-			var client = new NetMQClient("tcp://127.0.0.1:8793");
-			var secondClient = new NetMQClient("tcp://127.0.0.1:8793");
+			var server = new NetMQServer("tcp://127.0.0.1:8794");
+			var client = new NetMQClient("tcp://127.0.0.1:8794");
+			var secondClient = new NetMQClient("tcp://127.0.0.1:8794");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
