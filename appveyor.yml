@@ -2,8 +2,22 @@ version: 1.0.{build}
 image: Visual Studio 2017
 
 before_build:
-- ps: nuget restore src\JsonServices.sln
+- nuget restore src\JsonServices.sln
+- choco install opencover.portable
+- choco install codecov
 
 build:
   project: src\JsonServices.sln
   verbosity: minimal
+
+test_script:
+- OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Core.Tests\bin\Debug\net45\JsonServices.Tests.dll" -output:".\JsonServices.Tests.xml"
+- codecov -f "JsonServices.Tests.xml"
+- OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Serialization.Tests\bin\Debug\net45\JsonServices.Serialization.Tests.dll" -output:".\JsonServices.Serialization.Tests.xml"
+- codecov -f "JsonServices.Serialization.Tests.xml"
+- OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Transport.Fleck.Tests\bin\Debug\net45\JsonServices.Transport.Fleck.Tests.dll" -output:".\JsonServices.Transport.Fleck.Tests.xml"
+- codecov -f "JsonServices.Transport.Fleck.Tests.xml"
+- OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Transport.NetMQ.Tests\bin\Debug\net45\JsonServices.Transport.NetMQ.Tests.dll" -output:".\JsonServices.Transport.NetMQ.Tests.xml"
+- codecov -f "JsonServices.Transport.NetMQ.Tests.xml"
+- OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Transport.WebSocketSharp.Tests\bin\Debug\net45\JsonServices.Transport.WebSocketSharp.Tests.dll" -output:".\JsonServices.Transport.WebSocketSharp.Tests.xml"
+- codecov -f "JsonServices.Transport.WebSocketSharp.Tests.xml"
