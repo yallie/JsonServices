@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
-using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 
