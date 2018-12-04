@@ -11,6 +11,12 @@ build:
   verbosity: minimal
 
 test_script:
+- dotnet test --no-build src\JsonServices.Core.Tests
+- dotnet test --no-build src\JsonServices.Serialization.Tests
+- dotnet test --no-build src\JsonServices.Transport.Fleck.Tests
+- dotnet test --no-build src\JsonServices.Transport.NetMQ.Tests
+- dotnet test --no-build src\JsonServices.Transport.WebSocketSharp.Tests
+
 - OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Core.Tests\bin\Debug\net45\JsonServices.Tests.dll" -output:".\JsonServices.Tests.xml"
 - codecov -f "JsonServices.Tests.xml"
 - OpenCover.Console.exe -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Serialization.Tests\bin\Debug\net45\JsonServices.Serialization.Tests.dll" -output:".\JsonServices.Serialization.Tests.xml"
