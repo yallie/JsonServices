@@ -1,3 +1,4 @@
+import { EventFilter } from './EventFilter';
 import { SubscriptionMessage } from './SubscriptionMessage';
 
 export class ClientSubscription {
@@ -8,11 +9,12 @@ export class ClientSubscription {
         [key: string]: string;
     }
 
-    public invoke(eventArgs: object) {
-        // TODO:
-        // 1. handle 'this' context?
-        // 2. apply eventFilter locally (we might get events matching other subscriber's event filter)
-        this.eventHandler(eventArgs);
+    public invoke = (eventArgs: object) => {
+        // TODO: handle 'this' context?
+        // apply eventFilter locally (we might get events matching other subscriber's event filter)
+        if (EventFilter.matches(this.eventFilter, eventArgs)) {
+            this.eventHandler(eventArgs);
+        }
     }
 
     public createSubscriptionMessage = () => {

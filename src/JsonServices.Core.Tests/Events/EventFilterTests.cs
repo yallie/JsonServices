@@ -41,6 +41,7 @@ namespace JsonServices.Tests.Events
 			Assert.IsTrue(EventFilter.Matches(default(string), string.Empty));
 			Assert.IsTrue(EventFilter.Matches(string.Empty, string.Empty));
 			Assert.IsTrue(EventFilter.Matches("foo", "SomeFoo"));
+			Assert.IsFalse(EventFilter.Matches("goo", "SomeFoo"));
 		}
 
 		[Test]
