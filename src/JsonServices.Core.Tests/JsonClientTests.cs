@@ -163,5 +163,166 @@ namespace JsonServices.Tests
 			Assert.AreEqual(0, jc.PendingMessages.Count);
 			Assert.AreEqual(0, sc.PendingMessages.Count);
 		}
+
+		[Test]
+		public async Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptions()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var serverSerializer = new Serializer();
+			var serverProvider = new StubMessageTypeProvider();
+			var executor = new StubExecutor();
+
+			var client = new StubClient(server, "jc");
+			var clientProvider = new StubMessageTypeProvider();
+			var clientSerializer = new Serializer();
+
+			// json server and client
+			var js = new JsonServer(server, serverProvider, serverSerializer, executor);
+			var jc = new JsonClient(client, clientProvider, clientSerializer);
+
+			// second client
+			var secondClientProvider = new StubMessageTypeProvider();
+			var secondClientSerializer = new Serializer();
+			var sc = new JsonClient(new StubClient(server, "sc"), secondClientProvider, secondClientSerializer);
+
+			// test core
+			await TestFilteredSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
+		}
+
+		protected async Task TestFilteredSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc)
+		{
+			// unhandled exception handlers
+			var connected = 0;
+			var disconnected = 0;
+			js.ClientConnected += (s, e) => connected++;
+			js.ClientDisconnected += (s, e) => disconnected++;
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in jc (first client): {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			sc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception in sc (second client): {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+
+			// start json server and connect both clients
+			js.Start();
+			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
+			await Assert_NotTimedOut(sc.ConnectAsync(), "sc.ConnectAsync()");
+
+			// subscribe to jc events
+			var jcounter = 0;
+			var jeventArgs = default(FilteredEventArgs);
+			var jtcs = new TaskCompletionSource<bool>();
+			var junsubscribe = await Assert_NotTimedOut(jc.Subscribe<FilteredEventArgs>(
+				EventBroadcaster.FilteredEventName, (s, e) =>
+				{
+					jcounter++;
+					jeventArgs = e;
+					jtcs.TrySetResult(true);
+				},
+				new Dictionary<string, string>
+				{
+					{ nameof(FilteredEventArgs.StringProperty), "Twain" }
+				}), "jc.Subscribe<FilteredEventArgs>(...)");
+
+			// subscribe to sc events
+			var scounter = 0;
+			var seventArgs = default(FilteredEventArgs);
+			var stcs = new TaskCompletionSource<bool>();
+			var sunsubscribe = await Assert_NotTimedOut(sc.Subscribe<FilteredEventArgs>(
+				EventBroadcaster.FilteredEventName, (s, e) =>
+				{
+					scounter++;
+					seventArgs = e;
+					stcs.TrySetResult(true);
+				},
+				new Dictionary<string, string>
+				{
+					{ nameof(FilteredEventArgs.StringProperty), "Mark" }
+				}), "sc.Subscribe<FilteredEventArgs>(...)");
+
+			// call EventBroadcaster.FilteredEvent
+			await Assert_NotTimedOut(jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.FilteredEventName,
+				StringArgument = "Mark Hamill",
+			}), "jc.Call(new EventBroadcaster...FilteredEvent...Mark Hamill))");
+
+			// sc is subscribed to Mark filtered event, jc is not
+			await Assert_NotTimedOut(stcs.Task, "stcs.Task");
+			Assert.AreEqual(1, scounter);
+			Assert.AreEqual(0, jcounter);
+			Assert.AreEqual("Mark Hamill", seventArgs.StringProperty);
+
+			// restart both task completion sources
+			jtcs = new TaskCompletionSource<bool>();
+			stcs = new TaskCompletionSource<bool>();
+
+			// call EventBroadcaster.FilteredEvent
+			await Assert_NotTimedOut(jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.FilteredEventName,
+				StringArgument = "Mark Twain",
+			}), "jc.Call(new EventBroadcaster(...FilteredEvent...Mark Twain))");
+
+			// js and sc are both subscribed to this filtered event
+			await Assert_NotTimedOut(jtcs.Task, "jtcs.Task");
+			await Assert_NotTimedOut(stcs.Task, "stcs.Task");
+			Assert.AreEqual(2, scounter);
+			Assert.AreEqual(1, jcounter);
+			Assert.AreEqual("Mark Twain", jeventArgs.StringProperty);
+			Assert.AreEqual("Mark Twain", seventArgs.StringProperty);
+
+			// restart both task completion sources
+			jtcs = new TaskCompletionSource<bool>();
+			stcs = new TaskCompletionSource<bool>();
+
+			// call EventBroadcaster.FilteredEvent
+			await Assert_NotTimedOut(sc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.FilteredEventName,
+				StringArgument = "TWAIN driver"
+			}), "sc.Call(new EventBroadcaster(...FilteredEvent...TWAIN driver))");
+
+			// jc is subscribed to TWAIN filtered event, sc is not
+			await Assert_NotTimedOut(jtcs.Task, "jtcs.Task #2");
+			Assert.AreEqual(2, scounter);
+			Assert.AreEqual(2, jcounter);
+			Assert.AreEqual("TWAIN driver", jeventArgs.StringProperty);
+
+			// unsubscribe sc from the filtered event
+			await Assert_NotTimedOut(sunsubscribe(), "sunsubscribe()");
+
+			// call EventBroadcaster.FilteredEvent
+			await Assert_NotTimedOut(jc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.FilteredEventName,
+				StringArgument = "Mark Knopfler"
+			}), "jc.Call(new EventBroadcaster(...FilteredEvent...Mark Knopfler))");
+
+			// make sure that event is not handled anymore
+			await Assert_TimedOut(stcs.Task, "stcs.Task #2", Task.Delay(200));
+			Assert.AreEqual(2, scounter);
+			Assert.AreEqual(2, jcounter);
+
+			// unsubscribe jc from the filtered event
+			await Assert_NotTimedOut(junsubscribe(), "junsubscribe()");
+			jtcs = new TaskCompletionSource<bool>();
+			scounter = 0;
+			jcounter = 0;
+
+			// call EventBroadcaster.FilteredEvent
+			await Assert_NotTimedOut(sc.Call(new EventBroadcaster
+			{
+				EventName = EventBroadcaster.FilteredEventName,
+				StringArgument = "Twain, Mark",
+			}), "sc.Call(new EventBroadcaster(...FilteredEvent...Twain, Mark))");
+
+			// nobody is subscribed to BeforeShutdown event
+			await Assert_TimedOut(jtcs.Task, "jtcs.Task #3", Task.Delay(200));
+			Assert.AreEqual(0, scounter);
+			Assert.AreEqual(0, jcounter);
+
+			// make sure all incoming messages are processed
+			Assert.AreEqual(0, jc.PendingMessages.Count);
+			Assert.AreEqual(0, sc.PendingMessages.Count);
+		}
 	}
 }

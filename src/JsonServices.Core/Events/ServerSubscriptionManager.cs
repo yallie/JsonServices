@@ -52,8 +52,8 @@ namespace JsonServices.Events
 				let connectionId = pair.Key
 				let subscriptions = pair.Value.Values
 				let conn = Server.TryGetConnection(connectionId)
-				where conn != null // TODO: check for empty filter or a filter that accepts args
-				where subscriptions.Any(s => s.EventFilter == null || !s.EventFilter.Any())
+				where conn != null
+				where subscriptions.Any(s => s.EventFilter == null) || subscriptions.Any(s => s.EventFilter.Matches(args))
 				select Server.SendAsync(connectionId, data);
 
 			// TODO: decide where to handle exceptions

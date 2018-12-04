@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonServices.Tests.Messages
 {
@@ -30,6 +26,15 @@ namespace JsonServices.Tests.Messages
 
 				case EventBroadcaster.BeforeShutdownEventName:
 					eventArgs = new CancelEventArgs(true);
+					break;
+
+				case EventBroadcaster.FilteredEventName:
+					eventArgs = new FilteredEventArgs
+					{
+						StringProperty = request.StringArgument,
+						IntProperty = request.IntArgument,
+						BoolProperty = request.BoolArgument,
+					};
 					break;
 			}
 

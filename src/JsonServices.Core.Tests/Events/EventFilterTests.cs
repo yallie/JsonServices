@@ -56,6 +56,21 @@ namespace JsonServices.Tests.Events
 		}
 
 		[Test]
+		public void TestBooleanValueMatches()
+		{
+			Assert.IsTrue(EventFilter.Matches(default(string), true));
+			Assert.IsTrue(EventFilter.Matches(string.Empty, false));
+			Assert.IsTrue(EventFilter.Matches("True", true));
+			Assert.IsTrue(EventFilter.Matches("true", true));
+			Assert.IsFalse(EventFilter.Matches("True", false));
+			Assert.IsFalse(EventFilter.Matches("true", false));
+			Assert.IsTrue(EventFilter.Matches("FALSE", false));
+			Assert.IsTrue(EventFilter.Matches("false", false));
+			Assert.IsFalse(EventFilter.Matches("FALSE", true));
+			Assert.IsFalse(EventFilter.Matches("false", true));
+		}
+
+		[Test]
 		public void EventArgWithStringPropertyTests()
 		{
 			var arg = new EventArgWithStringProperty();

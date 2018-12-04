@@ -25,7 +25,10 @@ namespace JsonServices.Events
 
 		public void Invoke(object sender, EventArgs args)
 		{
-			EventHandler?.Invoke(sender, (TEventArgs)args);
+			if (EventHandler != null && EventFilter.Matches(args))
+			{
+				EventHandler?.Invoke(sender, (TEventArgs)args);
+			}
 		}
 
 		public SubscriptionMessage CreateSubscriptionMessage()

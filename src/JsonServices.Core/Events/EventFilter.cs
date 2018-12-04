@@ -69,6 +69,10 @@ namespace JsonServices.Events
 			{
 				return Matches(filterValue, decimalValue);
 			}
+			else if (propertyValue is bool boolValue)
+			{
+				return Matches(filterValue, boolValue);
+			}
 
 			return false;
 		}
@@ -95,6 +99,17 @@ namespace JsonServices.Events
 
 			var parts = filterValue.Split(',', ' ').Select(p => p.Trim()).Where(p => !string.IsNullOrWhiteSpace(p));
 			return parts.Any(p => p == decimalValue.ToString(CultureInfo.InvariantCulture));
+		}
+
+		internal static bool Matches(string filterValue, bool boolValue)
+		{
+			// empty filter matches anything
+			if (string.IsNullOrWhiteSpace(filterValue))
+			{
+				return true;
+			}
+
+			return StringComparer.InvariantCultureIgnoreCase.Compare(filterValue, boolValue.ToString()) == 0;
 		}
 	}
 }
