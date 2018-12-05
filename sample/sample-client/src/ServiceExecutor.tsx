@@ -4,6 +4,8 @@ import { Calculate } from './Messages/Calculate';
 import { EventBroadcaster } from './Messages/EventBroadcaster';
 import { GetVersion } from './Messages/GetVersion';
 
+const FilteredEvent = "FilteredEvent";
+
 interface IState {
     webSocketAddress: string;
     webSocketStatus: string;
@@ -17,9 +19,12 @@ interface IState {
     calcSecond: string,
     calcResult: string,
     eventName: string,
+    eventFilter: string;
     subscriptionStatus: string,
     subscriptions: Array<{
         eventName: string,
+        stringArgument: string,
+        onStringArgumentChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
         broadcast: () => void,
         unsubscribe: () => void
     }>
@@ -40,7 +45,8 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             calcOperation: '+',
             calcSecond: '181',
             calcResult: '(not called)',
-            eventName: 'IFoo.AfterStartup',
+            eventName: FilteredEvent,
+            eventFilter: '',
             subscriptionStatus: '(not subscribed)',
             subscriptions: [],
         };
@@ -77,6 +83,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
     private editSecond = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcSecond: e.currentTarget.value });
     private editOperation = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ calcOperation: e.currentTarget.value });
     private editEventName = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ eventName: e.currentTarget.value });
+    private editEventFilter = (e: React.ChangeEvent<HTMLInputElement>) => this.setState({ eventFilter: e.currentTarget.value });
     private clearEventLog = (e: React.MouseEvent<HTMLAnchorElement>) => this.setState({ eventLog: '' });
     private clearMessageLog = (e: React.MouseEvent<HTMLAnchorElement>) => this.setState({ messageLog: '' });
     private selectActiveDemo = (e: React.ChangeEvent<HTMLSelectElement>) => this.setState({ activeDemo: e.currentTarget.value as any });
@@ -142,8 +149,10 @@ export class ServiceExecutor extends React.Component<{}, IState> {
         try {
             // subscribe and get unsubscription in return
             const eventName = this.state.eventName;
+            const eventFilter = eventName === FilteredEvent ? { StringProperty: this.state.eventFilter } : undefined;
             const unsubscribeAsync = await this.client.subscribe({
                 eventName,
+                eventFilter,
                 eventHandler: (args) => {
                     this.setState(oldState => ({
                         eventLog: oldState.eventLog +
@@ -154,11 +163,22 @@ export class ServiceExecutor extends React.Component<{}, IState> {
 
             // add event subscription to the component state
             const client = this.client;
+            const rerender = () => this.setState(s => s);
             const subscription = {
-                eventName,
+                eventName: eventName === FilteredEvent ? `${eventName}(${this.state.eventFilter})` : eventName,
+                stringArgument: '',
+                onStringArgumentChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                    // note: self-reference 'subscription' instead of 'this'
+                    subscription.stringArgument = e.currentTarget.value;
+                    rerender();
+                },
                 broadcast: async () => {
                     const msg = new EventBroadcaster();
                     msg.EventName = eventName;
+                    if (eventName === FilteredEvent) {
+                        // note: self-reference 'subscription' instead of 'this'
+                        msg.StringArgument = subscription.stringArgument;
+                    }
                     await client.call(msg);
                 },
                 unsubscribe: async () => {
@@ -219,7 +239,16 @@ export class ServiceExecutor extends React.Component<{}, IState> {
         const eventDemo = this.client && this.state.activeDemo === 'events' ? (
             <div>
                 <h2>Subscribe and broadcast</h2>
-                <input type="text" value={this.state.eventName} placeholder="IFoo.AfterStartup or IBar.BeforeShutdown or whatever" onChange={this.editEventName}/>
+                <input type="text" list="events" value={this.state.eventName} onChange={this.editEventName}/>
+                <datalist id="events">
+                    <option value="IFoo.AfterStartup" />
+                    <option value="IBar.BeforeShutdown" />
+                    <option value={FilteredEvent} />
+                </datalist>
+                {
+                    (this.state.eventName === "FilteredEvent") &&
+                    <input type="text" placeholder="Filter" value={this.state.eventFilter} onChange={this.editEventFilter} />
+                }
                 <input type="button" value="Subscribe to event" onClick={this.subscribeToEvent} />
                 <label style={{ marginLeft: 8 }}>
                     Status: {this.state.subscriptionStatus}
@@ -228,6 +257,11 @@ export class ServiceExecutor extends React.Component<{}, IState> {
                     // broadcast and unsubscription buttons
                     this.state.subscriptions.map((sub, index) => (
                         <div key={index} style={{ marginTop: 8 }}>
+                            {
+                                // display StringArgument editor for the filtered event
+                                sub.eventName.startsWith(FilteredEvent) &&
+                                <input type="text" value={sub.stringArgument} onChange={sub.onStringArgumentChange} />
+                            }
                             <input type="button" value={"Broadcast event " + sub.eventName} onClick={sub.broadcast} />
                             <input type="button" value={"Unsubscribe from " + sub.eventName} onClick={sub.unsubscribe} />
                         </div>

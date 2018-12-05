@@ -15,7 +15,7 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\src\JsonServices.ruleset</CodeAnalysisRuleSet>
-    <DebugInfo>full</DebugInfo>
+    <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <RootNamespace>JsonServices.Sample.Server</RootNamespace>
     <AssemblyName>JsonServices.Sample.Server</AssemblyName>

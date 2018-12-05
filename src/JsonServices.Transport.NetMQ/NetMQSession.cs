@@ -1,7 +1,4 @@
-﻿using System;
-using NetMQ;
-
-namespace JsonServices.Transport.NetMQ
+﻿namespace JsonServices.Transport.NetMQ
 {
 	public class NetMQSession : IConnection
 	{
