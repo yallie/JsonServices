@@ -102,7 +102,7 @@ namespace JsonServices
 					}
 
 					// normal response
-					response = new ResponseMessage
+					response = new ResponseResultMessage
 					{
 						Id = request.Id,
 						Result = result,
@@ -111,7 +111,7 @@ namespace JsonServices
 				catch (JsonServicesException ex)
 				{
 					// service is not registered, parse error, internal error, etc
-					response = new ResponseMessage
+					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
 						Error = new Error
@@ -125,7 +125,7 @@ namespace JsonServices
 				catch (Exception ex)
 				{
 					// error executing the service
-					response = new ResponseMessage
+					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
 						Error = new Error
@@ -140,7 +140,7 @@ namespace JsonServices
 			catch (Exception ex)
 			{
 				// deserialization error
-				response = new ResponseMessage
+				response = new ResponseErrorMessage
 				{
 					Error = new Error
 					{

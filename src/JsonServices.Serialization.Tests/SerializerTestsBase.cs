@@ -55,7 +55,7 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanSerializeResponseOneWayMessage()
 		{
-			var msg = new ResponseMessage
+			var msg = new ResponseResultMessage
 			{
 				Result = new GetVersionResponse
 				{
@@ -71,7 +71,7 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanSerializeResponseMessage()
 		{
-			var msg = new ResponseMessage
+			var msg = new ResponseResultMessage
 			{
 				Id = "321",
 				Result = new GetVersionResponse
@@ -86,9 +86,27 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
+		public void SerializerCanSerializeResponseOneWayMessageWithNullResult()
+		{
+			var msg = new ResponseResultMessage();
+			var payload = Serializer.Serialize(msg);
+			Assert.NotNull(payload);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"result\":null}", payload);
+		}
+
+		[Test]
+		public void SerializerCanSerializeResponseMessageWithNullResult()
+		{
+			var msg = new ResponseResultMessage { Id = "111" };
+			var payload = Serializer.Serialize(msg);
+			Assert.NotNull(payload);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"result\":null,\"id\":\"111\"}", payload);
+		}
+
+		[Test]
 		public void SerializerCanSerializeResponseOneWayMessageWithError()
 		{
-			var msg = new ResponseMessage
+			var msg = new ResponseErrorMessage
 			{
 				Error = new Error
 				{
@@ -105,7 +123,7 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerCanSerializeResponseMessageWithError()
 		{
-			var msg = new ResponseMessage
+			var msg = new ResponseErrorMessage
 			{
 				Id = "112",
 				Error = new Error

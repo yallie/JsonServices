@@ -94,23 +94,13 @@ namespace JsonServices.Serialization.Newtonsoft
 				// handle void messages
 				if (type == typeof(void))
 				{
-					return new ResponseMessage
-					{
-						Result = null,
-						Error = error,
-						Id = id,
-					};
+					return ResponseMessage.Create(null, error, id);
 				}
 
 				// deserialize the strong-typed message
 				var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 				var respMsg = (IResponseMessage)JsonSerializer.Deserialize(sr, msgType);
-				return new ResponseMessage
-				{
-					Result = respMsg.Result,
-					Error = error,
-					Id = id,
-				};
+				return ResponseMessage.Create(respMsg.Result, error, id);
 			}
 		}
 	}
