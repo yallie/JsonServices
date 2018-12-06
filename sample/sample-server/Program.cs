@@ -1,30 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests.Services;
 using JsonServices.Transport.WebSocketSharp;
+using Topshelf;
+using Topshelf.Logging;
 
 namespace JsonServices.Sample.Server
 {
 	class Program
 	{
+		const string Url = "ws://localhost:8765";
+
+		const string ServiceName = "JsonServicesSampleServer";
+
 		static void Main()
 		{
-			// websocket transport
-			var server = new WebSocketServer("ws://localhost:8765");
-			var serializer = new Serializer();
-			var executor = new StubExecutor();
-			var provider = new StubMessageTypeProvider();
-
-			// json server
-			using (var js = new JsonServer(server, provider, serializer, executor).Start())
+			HostFactory.Run(config =>
 			{
-				Console.WriteLine("Server started. Press ENTER to quit.");
-				Console.ReadLine();
-			}
+				config.SetDescription("JsonServices Sample Server");
+				config.SetServiceName(ServiceName);
+				config.Service<JsonServer>(sc =>
+				{
+					var logger = HostLogger.Get<Program>();
+					sc.ConstructUsing(() =>
+					{
+						// websocket transport
+						var server = new WebSocketServer(Url);
+						var serializer = new Serializer();
+						var executor = new StubExecutor();
+						var provider = new StubMessageTypeProvider();
+						return new JsonServer(server, provider, serializer, executor);
+					});
+
+					sc.WhenStarted(js =>
+					{
+						logger.Info($"{ServiceName} starts listening: {Url}");
+						js.Start();
+					});
+
+					sc.WhenStopped(js =>
+					{
+						logger.Info($"{ServiceName} is stopping...");
+						js.Dispose();
+					});
+				});
+			});
 		}
 	}
 }

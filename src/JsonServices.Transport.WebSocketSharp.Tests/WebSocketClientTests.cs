@@ -13,9 +13,9 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptionsUsingWebSocketSharp()
 		{
 			// websocket-sharp transport
-			var server = new WebSocketServer("ws://localhost:8765");
-			var client = new WebSocketClient("ws://localhost:8765");
-			var secondClient = new WebSocketClient("ws://localhost:8765");
+			var server = new WebSocketServer("ws://localhost:8768");
+			var client = new WebSocketClient("ws://localhost:8768");
+			var secondClient = new WebSocketClient("ws://localhost:8768");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
@@ -38,9 +38,9 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		public async Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingNetMQServer()
 		{
 			// websocket-sharp transport
-			var server = new WebSocketServer("ws://localhost:8765");
-			var client = new WebSocketClient("ws://localhost:8765");
-			var secondClient = new WebSocketClient("ws://localhost:8765");
+			var server = new WebSocketServer("ws://localhost:8768");
+			var client = new WebSocketClient("ws://localhost:8768");
+			var secondClient = new WebSocketClient("ws://localhost:8768");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
