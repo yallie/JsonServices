@@ -2,6 +2,7 @@
 
 [![Appveyor build status](https://ci.appveyor.com/api/projects/status/l8sntux7xbx53rk6?svg=true)](https://ci.appveyor.com/project/yallie/jsonservices)
 [![Tests](https://img.shields.io/appveyor/tests/yallie/JsonServices.svg)](https://ci.appveyor.com/project/yallie/JsonServices/build/tests)
+[![Code coverage](https://codecov.io/gh/yallie/JsonServices/branch/master/graph/badge.svg)](https://codecov.io/gh/yallie/JsonServices)
 
 This is a simple library for message-based services running on top of the  
 WebSockets or ZeroMQ connection and based on JSON-RPC 2.0 Specification:  
@@ -112,16 +113,28 @@ Server-side notification:
 ← { "jsonrpc": "2.0", "method": "MessageSent", params: { "text": "Hello world!" } }
 ```
 
-## WebSocketSharp vs Fleck transport comparison
+## Transport-specific notes
 
-### WebSocketSharp
+### WebSockets (via WebSocketSharp)
 
 * Implements both client and server
 * Supports both IP addresses and host names, i.e. ws://localhost:8765
 * .NET 4.5 only
+* Chrome browser's WebSocket implementation connects to WebSocketSharp server
+* Node.js ws module seem to have troubles connecting to WebSocketSharp server
 
-### Fleck
+### WebSockets (via Fleck)
 
 * Implements only server (WebSocketSharp client can connect to Flex server)
 * Supports only IP addresses, i.e. ws://127.0.0.1:8765
 * .NET 4.5 and .NET Standard 2.0
+* Chrome browser's WebSocket implementation connects to Fleck server
+* Node.js ws module also connects to Fleck server
+
+### ZeroMQ (via NetMQ)
+
+* Implements both client and server
+* Supports only tcp protocol
+* .NET 4.5 and .NET Standard 2.0
+* Browsers are unable to connect to ZeroMQ endpoints
+* Node.js in theory should be able to connect using zeromq.js npm (not tested)
