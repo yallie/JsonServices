@@ -1,5 +1,7 @@
 ﻿import { ClientSubscription } from './ClientSubscription';
 import { ClientSubscriptionManager } from './ClientSubscriptionManager';
+import { CredentialsBase } from './CredentialsBase';
+import { ICredentials } from './ICredentials';
 import { IJsonClient } from './IJsonClient';
 import { IReturn, IReturnVoid } from './IReturn';
 import { ISubscription } from './ISubscription';
@@ -26,7 +28,10 @@ export class JsonClient implements IJsonClient {
         // do nothing by default
     }
 
-    public connectAsync(): Promise<boolean> {
+    public connectAsync(credentials?: ICredentials): Promise<boolean> {
+        // make sure to have some credentials
+        const creds = credentials || new CredentialsBase();
+
         return new Promise<boolean>((resolve, reject) => {
             // check if already connected
             if (this.webSocket) {
@@ -42,10 +47,20 @@ export class JsonClient implements IJsonClient {
                 reject(new Error("Couldn't connect to " + this.url));
             }
 
-            this.webSocket.onopen = () => {
+            this.webSocket.onopen = async () => {
                 this.connected = true;
-                this.reconnects = 0;
-                resolve(true);
+                try {
+                    // authenticate
+                    await creds.authenticate(this);
+
+                    // great, now we're connected
+                    this.reconnects = 0;
+                    resolve(true);
+                } catch (e) {
+                    // report failure
+                    this.connected = false;
+                    reject(e);
+                }
             }
 
             this.webSocket.onclose = closeEvent => {
