@@ -1,5 +1,7 @@
 version: 1.0.{build}
 image: Visual Studio 2017
+environment:
+  JsonServicesSampleServer: true
 
 before_build:
 - nuget restore src\JsonServices.sln
