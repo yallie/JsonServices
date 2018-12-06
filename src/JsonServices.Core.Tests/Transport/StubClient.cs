@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Transport;
@@ -25,6 +26,8 @@ namespace JsonServices.Tests.Transport
 		public string ConnectionId { get; } = Guid.NewGuid().ToString();
 
 		private StubServer Server { get; set; }
+
+		public IIdentity CurrentUser { get; set; }
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 

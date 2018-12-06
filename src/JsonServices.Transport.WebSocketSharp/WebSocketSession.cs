@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using WsMessageEventArgs = WebSocketSharp.MessageEventArgs;
@@ -10,6 +11,8 @@ namespace JsonServices.Transport.WebSocketSharp
 		internal const string ServiceName = "/";
 
 		public string ConnectionId => ID.ToString();
+
+		public IIdentity CurrentUser { get; set; }
 
 		public Action<WsMessageEventArgs> OnMessageHandler { get; set; }
 

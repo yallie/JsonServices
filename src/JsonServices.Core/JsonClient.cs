@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
@@ -32,7 +33,15 @@ namespace JsonServices
 
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
-		public Task ConnectAsync() => Client.ConnectAsync();
+		public async Task ConnectAsync(ICredentials credentials = null)
+		{
+			// establish connection
+			await Client.ConnectAsync();
+
+			// authenticate
+			credentials = credentials ?? new CredentialsBase();
+			await credentials.Authenticate(this);
+		}
 
 		public void Dispose()
 		{

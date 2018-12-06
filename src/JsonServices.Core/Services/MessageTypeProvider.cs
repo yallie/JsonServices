@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
@@ -16,6 +17,7 @@ namespace JsonServices.Services
 		public MessageTypeProvider()
 		{
 			// built-in messages
+			Register(AuthRequest.MessageName, typeof(AuthRequest));
 			Register(SubscriptionMessage.MessageName, typeof(SubscriptionMessage));
 		}
 

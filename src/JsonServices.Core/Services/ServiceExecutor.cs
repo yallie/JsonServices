@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
 
@@ -13,7 +14,13 @@ namespace JsonServices.Services
 	{
 		public ServiceExecutor()
 		{
-			// built-in services: subscription/unsubscription
+			// built-in services: authentication
+			RegisterHandler(AuthRequest.MessageName, (ctx, param) =>
+			{
+				return new AuthService().Authenticate(ctx, (AuthRequest)param);
+			});
+
+			// subscription/unsubscription
 			RegisterHandler(SubscriptionMessage.MessageName, (ctx, param) =>
 			{
 				new SubscriptionService().Execute(ctx, (SubscriptionMessage)param);

@@ -1,4 +1,5 @@
-﻿using Fleck;
+﻿using System.Security.Principal;
+using Fleck;
 
 namespace JsonServices.Transport.Fleck
 {
@@ -13,5 +14,7 @@ namespace JsonServices.Transport.Fleck
 		public IWebSocketConnection Socket { get; set; }
 
 		public string ConnectionId { get; }
+
+		public IIdentity CurrentUser { get; set; }
 	}
 }

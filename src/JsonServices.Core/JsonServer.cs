@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
@@ -13,7 +14,7 @@ namespace JsonServices
 {
 	public class JsonServer : IDisposable
 	{
-		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor)
+		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor, IAuthProvider authProvider = null)
 		{
 			Server = server ?? throw new ArgumentNullException(nameof(server));
 			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
@@ -21,6 +22,7 @@ namespace JsonServices
 			Executor = executor ?? throw new ArgumentNullException(nameof(executor));
 			Server.MessageReceived += HandleServerMessage;
 			SubscriptionManager = new ServerSubscriptionManager(Server);
+			AuthProvider = authProvider ?? new NullAuthProvider();
 		}
 
 		public bool IsDisposed { get; private set; }
@@ -32,6 +34,8 @@ namespace JsonServices
 		private ISerializer Serializer { get; }
 
 		private IServiceExecutor Executor { get; }
+
+		public IAuthProvider AuthProvider { get; }
 
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
