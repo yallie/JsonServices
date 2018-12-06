@@ -5,18 +5,21 @@ before_build:
 - nuget restore src\JsonServices.sln
 - choco install opencover.portable
 - choco install codecov
+- yarn install --cwd sample/sample-client
 
 build:
   project: src\JsonServices.sln
   verbosity: minimal
 
 test_script:
+# .NET unit tests
 - dotnet test --no-build src\JsonServices.Core.Tests
 - dotnet test --no-build src\JsonServices.Serialization.Tests
 - dotnet test --no-build src\JsonServices.Transport.Fleck.Tests
 - dotnet test --no-build src\JsonServices.Transport.NetMQ.Tests
 - dotnet test --no-build src\JsonServices.Transport.WebSocketSharp.Tests
 
+# .NET code coverage (skipped NetMQ due to strange behavior under OpenCover instrumentation)
 - OpenCover.Console.exe -returntargetcode -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Core.Tests\bin\Debug\net45\JsonServices.Tests.dll" -output:".\JsonServices.Tests.xml"
 - codecov -f "JsonServices.Tests.xml"
 - OpenCover.Console.exe -returntargetcode -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Serialization.Tests\bin\Debug\net45\JsonServices.Serialization.Tests.dll" -output:".\JsonServices.Serialization.Tests.xml"
@@ -27,3 +30,6 @@ test_script:
 #- codecov -f "JsonServices.Transport.NetMQ.Tests.xml"
 - OpenCover.Console.exe -returntargetcode -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Transport.WebSocketSharp.Tests\bin\Debug\net45\JsonServices.Transport.WebSocketSharp.Tests.dll" -output:".\JsonServices.Transport.WebSocketSharp.Tests.xml"
 - codecov -f "JsonServices.Transport.WebSocketSharp.Tests.xml"
+
+# TypeScript unit tests with coverage
+- yarn --cwd sample/sample-client test --coverage
