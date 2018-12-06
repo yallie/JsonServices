@@ -13,6 +13,7 @@ namespace JsonServices.Auth
 
 		public const string PasswordKey = "Password";
 
-		public Dictionary<string, string> Parameters { get; set; }
+		public Dictionary<string, string> Parameters { get; set; } =
+			new Dictionary<string, string>();
 	}
 }
