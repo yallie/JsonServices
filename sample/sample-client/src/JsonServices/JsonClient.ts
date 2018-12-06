@@ -1,4 +1,5 @@
-﻿import { ClientSubscription } from './ClientSubscription';
+﻿import * as WebSocket from 'isomorphic-ws';
+import { ClientSubscription } from './ClientSubscription';
 import { ClientSubscriptionManager } from './ClientSubscriptionManager';
 import { CredentialsBase } from './CredentialsBase';
 import { ICredentials } from './ICredentials';
@@ -28,7 +29,15 @@ export class JsonClient implements IJsonClient {
         // do nothing by default
     }
 
-    public connectAsync(credentials?: ICredentials): Promise<boolean> {
+    public disconnect() {
+        if (this.webSocket && this.connected) {
+            this.webSocket.close();
+            this.connected = false;
+            this.webSocket = undefined;
+        }
+    }
+
+    public connect(credentials?: ICredentials): Promise<boolean> {
         // make sure to have some credentials
         const creds = credentials || new CredentialsBase();
 
@@ -44,7 +53,7 @@ export class JsonClient implements IJsonClient {
             this.webSocket.onerror = error => {
                 this.connected = false;
                 this.webSocket = undefined;
-                reject(new Error("Couldn't connect to " + this.url));
+                reject(new Error("Couldn't connect to " + this.url + ": " + JSON.stringify(error)));
             }
 
             this.webSocket.onopen = async () => {
@@ -74,7 +83,7 @@ export class JsonClient implements IJsonClient {
 
                 this.reconnects++;
                 if (this.options.reconnect && (this.options.maxReconnects < this.reconnects || this.options.maxReconnects === 0)) {
-                    setTimeout(() => this.connectAsync(), this.options.reconnectInterval);
+                    setTimeout(() => this.connect(), this.options.reconnectInterval);
                 }
 
                 resolve(false);
@@ -84,7 +93,7 @@ export class JsonClient implements IJsonClient {
                 // trace incoming message
                 this.traceMessage({
                     isOutcoming: false,
-                    data: message.data,
+                    data: message.data.toString(),
                 })
 
                 // if message is binary data, convert it to string

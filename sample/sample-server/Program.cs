@@ -1,7 +1,7 @@
 ﻿using System;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests.Services;
-using JsonServices.Transport.WebSocketSharp;
+using JsonServices.Transport.Fleck;
 using Topshelf;
 using Topshelf.Logging;
 
@@ -9,7 +9,7 @@ namespace JsonServices.Sample.Server
 {
 	class Program
 	{
-		const string Url = "ws://localhost:8765";
+		const string Url = "ws://127.0.0.1:8765";
 
 		const string ServiceName = "JsonServicesSampleServer";
 
@@ -25,7 +25,7 @@ namespace JsonServices.Sample.Server
 					sc.ConstructUsing(() =>
 					{
 						// websocket transport
-						var server = new WebSocketServer(Url);
+						var server = new FleckServer(Url);
 						var serializer = new Serializer();
 						var executor = new StubExecutor();
 						var provider = new StubMessageTypeProvider();

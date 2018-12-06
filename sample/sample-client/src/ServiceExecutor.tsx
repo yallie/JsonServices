@@ -59,7 +59,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             this.client = new JsonClient(this.state.webSocketAddress);
             this.client.traceMessage = this.traceMessage;
 
-            await this.client.connectAsync();
+            await this.client.connect();
             this.setState({
                 webSocketStatus: 'Connected'
             });
