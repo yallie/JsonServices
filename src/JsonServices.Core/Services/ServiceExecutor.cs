@@ -31,8 +31,26 @@ namespace JsonServices.Services
 		private ConcurrentDictionary<string, Func<ServiceExecutionContext, object, object>> RegisteredHandlers { get; } =
 			new ConcurrentDictionary<string, Func<ServiceExecutionContext, object, object>>();
 
+		protected virtual bool IsAuthenticationRequired(string name, ServiceExecutionContext context, object parameters)
+		{
+			return name != AuthRequest.MessageName;
+		}
+
+		protected virtual void CheckAuthentication(string name, ServiceExecutionContext context, object parameters)
+		{
+			if (context.Connection.CurrentUser == null)
+			{
+				throw new AuthRequiredException(name);
+			}
+		}
+
 		public virtual object Execute(string name, ServiceExecutionContext context, object parameters)
 		{
+			if (IsAuthenticationRequired(name, context, parameters))
+			{
+				CheckAuthentication(name, context, parameters);
+			}
+
 			if (RegisteredHandlers.TryGetValue(name, out var handler))
 			{
 				return handler(context, parameters);

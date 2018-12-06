@@ -11,8 +11,10 @@ namespace JsonServices.Tests.Services
 {
 	public class StubExecutor : ServiceExecutor
 	{
-		public StubExecutor()
+		public StubExecutor(bool authenticationRequired = true)
 		{
+			AuthenticationRequired = authenticationRequired;
+
 			RegisterHandler(typeof(GetVersion).FullName, (s, p) =>
 			{
 				var service = new GetVersionService();
@@ -32,5 +34,10 @@ namespace JsonServices.Tests.Services
 				return null;
 			});
 		}
+
+		private bool AuthenticationRequired { get; }
+
+		protected override bool IsAuthenticationRequired(string name, ServiceExecutionContext ctx, object param) =>
+			AuthenticationRequired ? base.IsAuthenticationRequired(name, ctx, param) : false;
 	}
 }

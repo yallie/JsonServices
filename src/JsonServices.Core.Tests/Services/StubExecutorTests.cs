@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Services;
 using JsonServices.Tests.Messages;
@@ -13,7 +9,7 @@ namespace JsonServices.Tests.Services
 	[TestFixture]
 	public class StubExecutorTests
 	{
-		private IServiceExecutor Executor { get; } = new StubExecutor();
+		private IServiceExecutor Executor { get; } = new StubExecutor(authenticationRequired: false);
 
 		private string GetVersionName { get; } = typeof(GetVersion).FullName;
 

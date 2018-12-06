@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonServices.Exceptions
 {
+	[Serializable]
 	public class AuthFailedException : JsonServicesException
 	{
 		public AuthFailedException()
-			: base(1, "e")
+			: base(-32001, "Authentication failed")
 		{
 		}
 	}

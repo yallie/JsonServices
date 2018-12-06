@@ -8,7 +8,8 @@ namespace JsonServices.Auth
 		{
 			return new AuthResponse
 			{
-				AuthenticatedIdentity = new AnonymousIdentity(), // WindowsIdentity is not portable
+				// can't use WindowsIdentity.GetAnonymous() because it isn't portable
+				AuthenticatedIdentity = new AnonymousIdentity(),
 			};
 		}
 	}
