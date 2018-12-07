@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>JsonServices.Serialization.ServiceStack4</Title>
+    <Version>0.0.0.1</Version>
+    <Authors>yallie</Authors>
+    <Copyright>Copyright Alexey Yakovlev 2018. All Rights Reserved.</Copyright>
+    <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
+    <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
+    <PackageTags>websockets json rpc events</PackageTags>
+    <TargetFrameworks>net45</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
+    <RootNamespace>JsonServices.Serialization.ServiceStack4</RootNamespace>
+    <AssemblyName>JsonServices.Serialization.ServiceStack4</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ServiceStack.Text" Version="4.0.33" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\JsonServices.Serialization.ServiceStack\Serializer.cs" Link="Serializer.cs" />
+    <Compile Include="..\JsonServices.Serialization.ServiceStack\Internal\GenericMessage.cs" Link="Internal\GenericMessage.cs" />
+    <Compile Include="..\JsonServices.Serialization.ServiceStack\Internal\IRequestMessage.cs" Link="Internal\IRequestMessage.cs" />
+    <Compile Include="..\JsonServices.Serialization.ServiceStack\Internal\IResponseMessage.cs" Link="Internal\IResponseMessage.cs" />
+    <Compile Include="..\JsonServices.Serialization.ServiceStack\Internal\RequestMsg.cs" Link="Internal\RequestMsg.cs" />
+    <Compile Include="..\JsonServices.Serialization.ServiceStack\Internal\ResponseMsg.cs" Link="Internal\ResponseMsg.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-beta.61">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

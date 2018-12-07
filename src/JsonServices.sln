@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Transport.NetM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Sample.Server", "..\sample\sample-server\JsonServices.Sample.Server.csproj", "{2666B089-E237-46AF-9708-0503CD9F3EDD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.ServiceStack4", "JsonServices.Serialization.ServiceStack4\JsonServices.Serialization.ServiceStack4.csproj", "{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{2666B089-E237-46AF-9708-0503CD9F3EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2666B089-E237-46AF-9708-0503CD9F3EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2666B089-E237-46AF-9708-0503CD9F3EDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
