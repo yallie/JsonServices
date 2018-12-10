@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -93,6 +94,37 @@ namespace JsonServices.Tests
 		{
 			await Assert_ThrowsAsync<CustomAssertionException>(async () =>
 				await Assert_TimedOut(Throw(new Exception("Ignored"))));
+		}
+
+		protected Task<bool> AsyncOperation(bool throwException)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			ThreadPool.QueueUserWorkItem(x =>
+			{
+				if (throwException)
+				{
+					tcs.SetException(new InvalidOperationException());
+				}
+				else
+				{
+					tcs.SetResult(true);
+				}
+			});
+
+			return tcs.Task;
+		}
+
+		[Test]
+		public async Task MakeSureNUnitDoesntDeadlock()
+		{
+			// works fine
+			var result = await AsyncOperation(throwException: false);
+			Assert.IsTrue(result);
+
+			// suspected a deadlock here, but actually it works fine
+			// so the problem is not NUnit, but either my code or WebSocketSharp
+			Assert.ThrowsAsync<InvalidOperationException>(
+				async () => await AsyncOperation(throwException: true));
 		}
 	}
 }
