@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using JsonServices.Messages;
 using JsonServices.Transport;
 
 namespace JsonServices.Services
@@ -13,6 +15,8 @@ namespace JsonServices.Services
 		public string ConnectionId { get; set; }
 
 		public IConnection Connection => Server.Server.TryGetConnection(ConnectionId);
+
+		public RequestMessage RequestMessage { get; set; }
 
 		public IDictionary<string, object> Properties { get; } =
 			new ConcurrentDictionary<string, object>();

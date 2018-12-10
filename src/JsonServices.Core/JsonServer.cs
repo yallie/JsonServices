@@ -91,9 +91,12 @@ namespace JsonServices
 
 			try
 			{
+				// prepare request execution context
+				context = CreateRequestContext(args.ConnectionId);
+
 				// server doesn't ever handle response messages
 				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider, null);
-				context = CreateRequestContext(args.ConnectionId);
+				context.RequestMessage = request;
 
 				try
 				{
