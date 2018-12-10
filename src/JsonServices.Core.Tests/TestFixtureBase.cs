@@ -11,13 +11,21 @@ namespace JsonServices.Tests
 	{
 		protected Task Timeout => Task.Delay(1500);
 
+		[Serializable]
+		public class CustomAssertionException : Exception
+		{
+			public CustomAssertionException(string message) : base(message)
+			{
+			}
+		}
+
 		protected async Task<TResult> Assert_NotTimedOut<TResult>(Task<TResult> task, string code = null, Task timeout = null)
 		{
 			try
 			{
 				if (await Task.WhenAny(task, timeout ?? Timeout) != task)
 				{
-					Assert.Fail((code ?? "The given task") + " has timed out!");
+					throw new CustomAssertionException((code ?? "The given task") + " has timed out!");
 				}
 
 				return task.Result;
@@ -35,8 +43,10 @@ namespace JsonServices.Tests
 			{
 				if (await Task.WhenAny(task, timeout ?? Timeout) != task)
 				{
-					Assert.Fail((code ?? "The given task") + " has timed out!");
+					throw new CustomAssertionException((code ?? "The given task") + " has timed out!");
 				}
+
+				await task;
 			}
 			catch (AggregateException ex)
 			{
@@ -52,8 +62,10 @@ namespace JsonServices.Tests
 				timeout = timeout ?? Timeout;
 				if (await Task.WhenAny(task, timeout) != timeout)
 				{
-					Assert.Fail((code ?? "The given task") + " has not timed out as it should!");
+					throw new CustomAssertionException((code ?? "The given task") + " has not timed out as it should!");
 				}
+
+				await timeout;
 			}
 			catch (AggregateException ex)
 			{

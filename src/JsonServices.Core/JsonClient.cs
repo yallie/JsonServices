@@ -101,6 +101,26 @@ namespace JsonServices
 			{
 				msg = Serializer.Deserialize(args.Data, MessageTypeProvider, this);
 			}
+			catch (JsonServicesException ex)
+			{
+				if (ex.MessageId == null)
+				{
+					// don't know how to handle when message id is unknown
+					throw;
+				}
+
+				// handle it as an error response
+				msg = new ResponseErrorMessage
+				{
+					Id = ex.MessageId,
+					Error = new Error
+					{
+						Code = ex.Code,
+						Message = ex.Message,
+						Data = ex.ToString(),
+					},
+				};
+			}
 			catch (Exception ex)
 			{
 				var eargs = new ThreadExceptionEventArgs(ex);

@@ -240,5 +240,15 @@ namespace JsonServices.Tests.Serialization
 			Assert.IsNull(msg.Error.Data);
 			Assert.AreEqual("332", msg.Id);
 		}
+
+		[Test]
+		public void SerializerReportsMessageIdWhenMessageTypeIsUnrecognized()
+		{
+			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"Unknown\",\"params\":{\"IsInternal\":true},\"id\":\"23432423\"}";
+			var ex = Assert.Throws<MethodNotFoundException>(() => Serializer.Deserialize(data, TypeProvider, NameProvider));
+
+			Assert.NotNull(ex);
+			Assert.AreEqual("23432423", ex.MessageId);
+		}
 	}
 }

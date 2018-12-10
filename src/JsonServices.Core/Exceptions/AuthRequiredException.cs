@@ -1,18 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonServices.Exceptions
 {
 	[Serializable]
 	public class AuthRequiredException : JsonServicesException
 	{
+		public const int ErrorCode = -32002;
+
 		public AuthRequiredException(string name = null)
-			: base(-32002, "Authentication is required" +
+			: base(ErrorCode, "Authentication is required" +
 				  (!string.IsNullOrWhiteSpace(name) ? $": {name}" : string.Empty))
 		{
+		}
+
+		internal AuthRequiredException()
+			: this("test")
+		{
+			// for unit tests
 		}
 	}
 }

@@ -1,17 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonServices.Exceptions
 {
 	[Serializable]
 	public class InvalidRequestException : JsonServicesException
 	{
+		public const int ErrorCode = -32600;
+
 		public InvalidRequestException(string data)
-			: base(-32600, $"Invalid request. Request data: {data}")
+			: base(ErrorCode, $"Invalid request. Request data: {data}")
 		{
+		}
+
+		internal InvalidRequestException()
+			: this("test")
+		{
+			// for unit tests
 		}
 	}
 }

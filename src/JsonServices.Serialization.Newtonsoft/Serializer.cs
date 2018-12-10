@@ -33,7 +33,10 @@ namespace JsonServices.Serialization.Newtonsoft
 				var preview = (GenericMessage)JsonSerializer.Deserialize(sr, typeof(GenericMessage));
 				if (!preview.IsValid)
 				{
-					throw new InvalidRequestException(data);
+					throw new InvalidRequestException(data)
+					{
+						MessageId = preview.Id,
+					};
 				}
 
 				// detect message name
@@ -44,24 +47,43 @@ namespace JsonServices.Serialization.Newtonsoft
 					// server cannot handle a response message
 					if (nameProvider == null)
 					{
-						throw new InvalidRequestException(data);
+						throw new InvalidRequestException(data)
+						{
+							MessageId = preview.Id,
+						};
 					}
 
 					// invalid request id
 					name = nameProvider.GetMessageName(preview.Id);
 					if (name == null)
 					{
-						throw new InvalidRequestException(name);
+						throw new InvalidRequestException(name)
+						{
+							MessageId = preview.Id,
+						};
 					}
 				}
 
-				// deserialize request or response message
-				if (isRequest)
+				try
 				{
-					return DeserializeRequest(data, name, preview.Id, typeProvider);
-				}
+					// deserialize request or response message
+					if (isRequest)
+					{
+						return DeserializeRequest(data, name, preview.Id, typeProvider);
+					}
 
-				return DeserializeResponse(data, name, preview.Id, preview.Error, typeProvider);
+					return DeserializeResponse(data, name, preview.Id, preview.Error, typeProvider);
+				}
+				catch (JsonServicesException ex)
+				{
+					// make sure MessageId is reported
+					if (ex.MessageId == null)
+					{
+						ex.MessageId = preview.Id;
+					}
+
+					throw;
+				}
 			}
 		}
 

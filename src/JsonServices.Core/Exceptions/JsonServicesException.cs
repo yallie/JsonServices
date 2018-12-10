@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonServices.Exceptions
 {
@@ -15,12 +11,20 @@ namespace JsonServices.Exceptions
 			Code = code;
 		}
 
-		private static readonly string CodeKey = nameof(JsonServicesException) + "." + nameof(Code);
+		private const string CodeKey = nameof(JsonServicesException) + "." + nameof(Code);
 
 		public int Code
 		{
 			get { return Data[CodeKey] != null ? Convert.ToInt32(Data[CodeKey]) : 0; }
 			set { Data[CodeKey] = value; }
+		}
+
+		private const string MessageIdKey = nameof(JsonServicesException) + "." + nameof(MessageId);
+
+		public string MessageId
+		{
+			get { return Data[MessageIdKey] as string; }
+			set { Data[MessageIdKey] = value; }
 		}
 	}
 }

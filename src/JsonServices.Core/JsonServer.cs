@@ -141,6 +141,20 @@ namespace JsonServices
 					};
 				}
 			}
+			catch (JsonServicesException ex)
+			{
+				// report known error code
+				response = new ResponseErrorMessage
+				{
+					Id = ex.MessageId,
+					Error = new Error
+					{
+						Code = ex.Code,
+						Message = ex.Message,
+						Data = ex.ToString(),
+					},
+				};
+			}
 			catch (Exception ex)
 			{
 				// deserialization error

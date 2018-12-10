@@ -1,17 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonServices.Exceptions
 {
 	[Serializable]
 	public class InternalErrorException : JsonServicesException
 	{
+		public const int ErrorCode = -32603;
+
 		public InternalErrorException(string message)
-			: base(-32603, $"Internal error: {message}")
+			: base(ErrorCode, $"Internal error: {message}")
 		{
+		}
+
+		internal InternalErrorException()
+			: this("test")
+		{
+			// for unit tests
 		}
 	}
 }

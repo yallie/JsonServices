@@ -189,8 +189,9 @@ namespace JsonServices.Tests
 
 			// call UnregisteredService
 			var msg = new UnregisteredService();
-			Assert.ThrowsAsync<InvalidRequestException>(async () =>
-				await Assert_NotTimedOut(jc.Call(msg), "jc.Call(UnregisteredService msg)"));
+			var ex = await Assert_ThrowsAsync<JsonServicesException>(async () =>
+				await Assert_NotTimedOut(jc.Call(msg), "jc.Call(UnregisteredService)"));
+			Assert.AreEqual(MethodNotFoundException.ErrorCode, ex.Code);
 
 			// make sure all incoming messages are processed
 			Assert.AreEqual(0, jc.PendingMessages.Count);
