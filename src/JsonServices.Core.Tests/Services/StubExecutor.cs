@@ -31,7 +31,7 @@ namespace JsonServices.Tests.Services
 
 		private bool AuthenticationRequired { get; }
 
-		protected override bool IsAuthenticationRequired(string name, ServiceExecutionContext ctx, object param) =>
+		protected override bool IsAuthenticationRequired(string name, IRequestContext ctx, object param) =>
 			AuthenticationRequired ? base.IsAuthenticationRequired(name, ctx, param) : false;
 	}
 }

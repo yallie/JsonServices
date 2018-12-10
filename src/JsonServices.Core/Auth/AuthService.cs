@@ -4,7 +4,7 @@ namespace JsonServices.Auth
 {
 	public class AuthService
 	{
-		public AuthResponse Authenticate(ServiceExecutionContext context, AuthRequest authRequest)
+		public AuthResponse Authenticate(IRequestContext context, AuthRequest authRequest)
 		{
 			var response = context.Server.AuthProvider.Authenticate(context, authRequest);
 			if (response.Completed)

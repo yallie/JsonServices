@@ -18,7 +18,7 @@ namespace JsonServices.Tests.Auth
 
 		public bool IsCalled { get; set; }
 
-		public AuthResponse Authenticate(ServiceExecutionContext context, AuthRequest authRequest)
+		public AuthResponse Authenticate(IRequestContext context, AuthRequest authRequest)
 		{
 			Assert.IsNotNull(authRequest);
 			Assert.IsNotNull(authRequest.Parameters);

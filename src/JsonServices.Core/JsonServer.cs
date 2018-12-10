@@ -37,6 +37,8 @@ namespace JsonServices
 
 		public IAuthProvider AuthProvider { get; }
 
+		public event EventHandler<RequestContextEventArgs> InitRequestContext;
+
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
 		public event EventHandler<MessageEventArgs> ClientConnected
@@ -67,20 +69,31 @@ namespace JsonServices
 			}
 		}
 
+		private IRequestContext CreateRequestContext(string connectionId)
+		{
+			var ctx = new RequestContext
+			{
+				Server = this,
+				ConnectionId = connectionId,
+			};
+
+			var args = new RequestContextEventArgs();
+			args.RequestContext = ctx;
+			InitRequestContext?.Invoke(this, args);
+			return args.RequestContext ?? ctx;
+		}
+
 		private async void HandleServerMessage(object sender, MessageEventArgs args)
 		{
 			var request = default(RequestMessage);
 			var response = default(ResponseMessage);
+			var context = default(IRequestContext);
 
 			try
 			{
 				// server doesn't ever handle response messages
 				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider, null);
-				var context = new ServiceExecutionContext
-				{
-					Server = this,
-					ConnectionId = args.ConnectionId,
-				};
+				context = CreateRequestContext(args.ConnectionId);
 
 				try
 				{
@@ -168,20 +181,28 @@ namespace JsonServices
 					},
 				};
 			}
-
-			// skip response if the request was a one-way notification
-			if (request == null || !request.IsNotification)
+			finally
 			{
-				try
+				// skip response if the request was a one-way notification
+				if (request == null || !request.IsNotification)
 				{
-					var data = Serializer.Serialize(response);
-					await Server.SendAsync(args.ConnectionId, data);
+					try
+					{
+						var data = Serializer.Serialize(response);
+						await Server.SendAsync(args.ConnectionId, data);
+					}
+					catch (Exception ex)
+					{
+						// report exceptions
+						var eargs = new ThreadExceptionEventArgs(ex);
+						UnhandledException?.Invoke(this, eargs);
+					}
 				}
-				catch (Exception ex)
+
+				// dispose of the request context
+				if (context != null)
 				{
-					// report exceptions
-					var eargs = new ThreadExceptionEventArgs(ex);
-					UnhandledException?.Invoke(this, eargs);
+					context.Dispose();
 				}
 			}
 		}
