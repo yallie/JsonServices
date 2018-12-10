@@ -64,7 +64,7 @@ namespace JsonServices
 		internal ConcurrentDictionary<string, PendingMessage> PendingMessages { get; } =
 			new ConcurrentDictionary<string, PendingMessage>();
 
-		public string GetMessageName(string messageId)
+		public string TryGetMessageName(string messageId)
 		{
 			// get request message name by id
 			if (PendingMessages.TryGetValue(messageId, out var pmsg))

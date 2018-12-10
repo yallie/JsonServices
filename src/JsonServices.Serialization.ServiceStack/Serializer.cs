@@ -47,7 +47,7 @@ namespace JsonServices.Serialization.ServiceStack
 				}
 
 				// invalid request id
-				name = nameProvider.GetMessageName(preview.Id);
+				name = nameProvider.TryGetMessageName(preview.Id);
 				if (name == null)
 				{
 					throw new InvalidRequestException(data)

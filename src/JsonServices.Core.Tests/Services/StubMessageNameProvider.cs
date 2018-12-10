@@ -11,7 +11,7 @@ namespace JsonServices.Tests.Services
 
 		private string FakeName { get; }
 
-		public string GetMessageName(string messageId)
+		public string TryGetMessageName(string messageId)
 		{
 			return FakeName;
 		}

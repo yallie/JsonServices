@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
-using JsonServices.Messages;
 
 namespace JsonServices.Services
 {
@@ -27,35 +23,13 @@ namespace JsonServices.Services
 		private ConcurrentDictionary<string, Type> ResponseTypes { get; } =
 			new ConcurrentDictionary<string, Type>();
 
-		public Type GetRequestType(string name)
-		{
-			var result = TryGetRequestType(name);
-			if (result != null)
-			{
-				return result;
-			}
-
-			throw new MethodNotFoundException(name);
-		}
-
-		public Type GetResponseType(string name)
-		{
-			var result = TryGetResponseType(name);
-			if (result != null)
-			{
-				return result;
-			}
-
-			throw new MethodNotFoundException(name);
-		}
-
 		public void Register(string name, Type requestType, Type responseType = null)
 		{
 			RequestTypes[name] = requestType ?? throw new ArgumentNullException(nameof(requestType));
 			ResponseTypes[name] = responseType ?? TryGetResponseType(requestType) ?? typeof(void); // it's optional
 		}
 
-		protected virtual Type TryGetRequestType(string name)
+		public virtual Type TryGetRequestType(string name)
 		{
 			if (RequestTypes.TryGetValue(name, out var result))
 			{
@@ -65,7 +39,7 @@ namespace JsonServices.Services
 			return null;
 		}
 
-		protected virtual Type TryGetResponseType(string name)
+		public virtual Type TryGetResponseType(string name)
 		{
 			if (ResponseTypes.TryGetValue(name, out var result))
 			{

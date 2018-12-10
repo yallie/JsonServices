@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JsonServices.Services
+﻿namespace JsonServices.Services
 {
 	public interface IMessageNameProvider
 	{
-		string GetMessageName(string messageId);
+		string TryGetMessageName(string messageId);
 	}
 }

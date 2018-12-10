@@ -54,7 +54,7 @@ namespace JsonServices.Serialization.Newtonsoft
 					}
 
 					// invalid request id
-					name = nameProvider.GetMessageName(preview.Id);
+					name = nameProvider.TryGetMessageName(preview.Id);
 					if (name == null)
 					{
 						throw new InvalidRequestException(name)

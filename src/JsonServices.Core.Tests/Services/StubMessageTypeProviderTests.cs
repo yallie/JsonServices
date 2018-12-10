@@ -1,4 +1,5 @@
 ﻿using JsonServices.Exceptions;
+using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using NUnit.Framework;
 
