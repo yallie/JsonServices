@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JsonServices.Services;
 using NUnit.Framework;
 
@@ -35,6 +36,20 @@ namespace JsonServices.Tests.Services
 			var d = ctx.Properties["Disposable"] as Disposable;
 			Assert.NotNull(d);
 			Assert.IsTrue(d.IsDisposed);
+		}
+
+		[Test]
+		public async Task TestCurrentRequestContextProperty()
+		{
+			var ctx = new RequestContext();
+			ctx.Properties["Hello"] = "World";
+			JsonServer.RequestContextHolder.Value = ctx;
+
+			await Task.Yield();
+			Assert.AreSame(ctx, JsonServer.RequestContext);
+
+			await Task.Delay(10).ConfigureAwait(false);
+			Assert.AreSame(ctx, JsonServer.RequestContext);
 		}
 	}
 }
