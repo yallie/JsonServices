@@ -120,7 +120,7 @@ namespace JsonServices.Tests
 
 			// call with error
 			msg.Operation = "#";
-			var ex = Assert.ThrowsAsync<JsonServicesException>(async () =>
+			var ex = Assert.ThrowsAsync<InternalErrorException>(async () =>
 				await Assert_NotTimedOut(jc.Call(msg), "353 # 333"));
 
 			// internal server error
@@ -130,7 +130,7 @@ namespace JsonServices.Tests
 			// call with another error
 			msg.Operation = "%";
 			msg.SecondOperand = 0;
-			ex = Assert.ThrowsAsync<JsonServicesException>(async () =>
+			ex = Assert.ThrowsAsync<InternalErrorException>(async () =>
 				await Assert_NotTimedOut(jc.Call(msg), "353 % 0"));
 
 			// internal server error
@@ -189,7 +189,7 @@ namespace JsonServices.Tests
 
 			// call UnregisteredService
 			var msg = new UnregisteredService();
-			var ex = await Assert_ThrowsAsync<JsonServicesException>(async () =>
+			var ex = Assert.ThrowsAsync<MethodNotFoundException>(async () =>
 				await Assert_NotTimedOut(jc.Call(msg), "jc.Call(UnregisteredService)"));
 			Assert.AreEqual(MethodNotFoundException.ErrorCode, ex.Code);
 

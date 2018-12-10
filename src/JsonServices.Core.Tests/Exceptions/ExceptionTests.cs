@@ -1,5 +1,6 @@
 ﻿using System;
 using JsonServices.Exceptions;
+using JsonServices.Messages;
 using NUnit.Framework;
 
 namespace JsonServices.Tests.Exceptions
@@ -12,17 +13,20 @@ namespace JsonServices.Tests.Exceptions
 		{
 			var ex = new JsonServicesException(123, "Hello")
 			{
-				MessageId = "MsgId"
+				MessageId = "MsgId",
+				Details = "Divide by zero or whatever",
 			};
 
 			Assert.AreEqual(123, ex.Code);
 			Assert.AreEqual("Hello", ex.Message);
 			Assert.AreEqual("MsgId", ex.MessageId);
+			Assert.AreEqual("Divide by zero or whatever", ex.Details);
 		}
 
 		[Test]
 		public void ExceptionsHaveStandardCodesAndMessages()
 		{
+			Test<JsonServicesException>(0, nameof(JsonServicesException), "123");
 			Test<AuthFailedException>(AuthFailedException.ErrorCode, "Authentication failed", "3123123");
 			Test<AuthRequiredException>(AuthRequiredException.ErrorCode, "Authentication is required: test", "456456");
 			Test<InternalErrorException>(InternalErrorException.ErrorCode, "Internal error: test", "56657");
@@ -40,6 +44,55 @@ namespace JsonServices.Tests.Exceptions
 			Assert.AreEqual(code, ex.Code);
 			Assert.AreEqual(message, ex.Message);
 			Assert.AreEqual(messageId, ex.MessageId);
+		}
+
+		[Test]
+		public void GetExceptionTypesReturnsAllExceptionTypes()
+		{
+			var types = JsonServicesException.GetExceptionTypes();
+			Assert.AreEqual(typeof(AuthFailedException), types[AuthFailedException.ErrorCode]);
+			Assert.AreEqual(typeof(AuthRequiredException), types[AuthRequiredException.ErrorCode]);
+			Assert.AreEqual(typeof(InternalErrorException), types[InternalErrorException.ErrorCode]);
+			Assert.AreEqual(typeof(InvalidRequestException), types[InvalidRequestException.ErrorCode]);
+			Assert.AreEqual(typeof(MethodNotFoundException), types[MethodNotFoundException.ErrorCode]);
+			Assert.AreEqual(typeof(ParseErrorException), types[ParseErrorException.ErrorCode]);
+		}
+
+		[Test]
+		public void CreateExceptionsFromErrors()
+		{
+			Roundtrip<JsonServicesException>();
+			Roundtrip<AuthFailedException>();
+			Roundtrip<AuthRequiredException>();
+			Roundtrip<InternalErrorException>();
+			Roundtrip<InvalidRequestException>();
+			Roundtrip<MethodNotFoundException>();
+			Roundtrip<ParseErrorException>();
+		}
+
+		private void Roundtrip<TException>()
+			where TException : JsonServicesException
+		{
+			// source exception
+			var src = Activator.CreateInstance(typeof(TException), nonPublic: true) as TException;
+			src.Details = Guid.NewGuid().ToString();
+			src.MessageId = Guid.NewGuid().ToString();
+
+			// Exception -> JSON-RPC Error
+			var error = new Error
+			{
+				Code = src.Code,
+				Message = src.Message,
+				Data = src.Details,
+			};
+
+			// JSON-RPC Error -> Exception
+			var nex = JsonServicesException.Create(error, src.MessageId);
+			Assert.AreSame(src.GetType(), nex.GetType());
+			Assert.AreEqual(src.Code, nex.Code);
+			Assert.AreEqual(src.Message, nex.Message);
+			Assert.AreEqual(src.MessageId, nex.MessageId);
+			Assert.AreEqual(src.Details, nex.Details);
 		}
 	}
 }

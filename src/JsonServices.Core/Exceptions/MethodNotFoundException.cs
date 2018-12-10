@@ -1,4 +1,5 @@
 ﻿using System;
+using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
 {
@@ -10,6 +11,12 @@ namespace JsonServices.Exceptions
 		public MethodNotFoundException(string name)
 			: base(ErrorCode, $"Method not found: {name}")
 		{
+		}
+
+		public MethodNotFoundException(Error error)
+			: base(ErrorCode, error.Message)
+		{
+			Details = error.Data;
 		}
 
 		internal MethodNotFoundException()

@@ -1,4 +1,5 @@
 ﻿using System;
+using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
 {
@@ -10,6 +11,12 @@ namespace JsonServices.Exceptions
 		public InvalidRequestException(string data)
 			: base(ErrorCode, $"Invalid request. Request data: {data}")
 		{
+		}
+
+		public InvalidRequestException(Error error)
+			: base(ErrorCode, error.Message)
+		{
+			Details = error.Data;
 		}
 
 		internal InvalidRequestException()

@@ -1,4 +1,5 @@
 ﻿using System;
+using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
 {
@@ -11,6 +12,12 @@ namespace JsonServices.Exceptions
 			: base(ErrorCode, "Authentication is required" +
 				  (!string.IsNullOrWhiteSpace(name) ? $": {name}" : string.Empty))
 		{
+		}
+
+		public AuthRequiredException(Error error)
+			: base(ErrorCode, error.Message)
+		{
+			Details = error.Data;
 		}
 
 		internal AuthRequiredException()

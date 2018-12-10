@@ -156,8 +156,8 @@ namespace JsonServices
 			// signal the remote exception
 			if (responseMessage.Error != null)
 			{
-				// TODO: improve exception handling
-				tcs.TrySetException(new JsonServicesException(responseMessage.Error.Code, responseMessage.Error.Message));
+				var exception = JsonServicesException.Create(responseMessage.Error);
+				tcs.TrySetException(exception);
 				return;
 			}
 

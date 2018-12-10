@@ -1,4 +1,5 @@
 ﻿using System;
+using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
 {
@@ -10,6 +11,12 @@ namespace JsonServices.Exceptions
 		public InternalErrorException(string message)
 			: base(ErrorCode, $"Internal error: {message}")
 		{
+		}
+
+		public InternalErrorException(Error error)
+			: base(ErrorCode, error.Message)
+		{
+			Details = error.Data;
 		}
 
 		internal InternalErrorException()

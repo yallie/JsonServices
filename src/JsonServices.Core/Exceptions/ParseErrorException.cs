@@ -1,4 +1,5 @@
 ﻿using System;
+using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
 {
@@ -12,9 +13,16 @@ namespace JsonServices.Exceptions
 		{
 		}
 
+		public ParseErrorException(Error error)
+			: base(ErrorCode, error.Message)
+		{
+			Details = error.Data;
+		}
+
 		internal ParseErrorException()
 			: this("test")
 		{
+			// for unit tests
 		}
 	}
 }
