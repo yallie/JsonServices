@@ -45,5 +45,23 @@ namespace JsonServices.Transport.Fleck.Tests
 				await CallCalculateServiceCore(js, jc);
 			}
 		}
+
+		[Test]
+		public async Task CallUnregisteredServiceUsingFleckServer()
+		{
+			// websocket transport
+			var server = new FleckServer("ws://127.0.0.1:8789");
+			var client = new WebSocketClient("ws://127.0.0.1:8789");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallUnregisteredServiceCore(js, jc);
+			}
+		}
 	}
 }

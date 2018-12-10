@@ -12,7 +12,7 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		[Test]
 		public async Task CallGetVersionServiceUsingWebSocketSharp()
 		{
-			// websocket transport
+			// websocket-sharp transport
 			var server = new WebSocketServer("ws://localhost:8766");
 			var client = new WebSocketClient("ws://localhost:8766");
 			var serializer = new Serializer();
@@ -30,7 +30,7 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		[Test]
 		public async Task CallCalculateServiceUsingWebSocketSharp()
 		{
-			// websocket transport
+			// websocket-sharp transport
 			var server = new WebSocketServer("ws://localhost:8767");
 			var client = new WebSocketClient("ws://localhost:8767");
 			var serializer = new Serializer();
@@ -42,6 +42,24 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await CallCalculateServiceCore(js, jc);
+			}
+		}
+
+		[Test]
+		public async Task CallUnregisteredServiceUsingWebSocketSharp()
+		{
+			// websocket-sharp transport
+			var server = new WebSocketServer("ws://localhost:8767");
+			var client = new WebSocketClient("ws://localhost:8767");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallUnregisteredServiceCore(js, jc);
 			}
 		}
 	}

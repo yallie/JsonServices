@@ -13,7 +13,7 @@ namespace JsonServices.Transport.NetMQ.Tests
 		[Test]
 		public async Task CallGetVersionServiceUsingNetMQServer()
 		{
-			// websocket transport
+			// NetMQ transport
 			var server = new NetMQServer("tcp://127.0.0.1:8791");
 			var client = new NetMQClient("tcp://127.0.0.1:8791");
 			var serializer = new Serializer();
@@ -31,7 +31,7 @@ namespace JsonServices.Transport.NetMQ.Tests
 		[Test]
 		public async Task CallCalculateServiceUsingNetMQServer()
 		{
-			// websocket transport
+			// NetMQ transport
 			var server = new NetMQServer("tcp://127.0.0.1:8792");
 			var client = new NetMQClient("tcp://127.0.0.1:8792");
 			var serializer = new Serializer();
@@ -43,6 +43,24 @@ namespace JsonServices.Transport.NetMQ.Tests
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await CallCalculateServiceCore(js, jc);
+			}
+		}
+
+		[Test]
+		public async Task CallUnregisteredServiceUsingNetMQServer()
+		{
+			// NetMQ transport
+			var server = new NetMQServer("tcp://127.0.0.1:8792");
+			var client = new NetMQClient("tcp://127.0.0.1:8792");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallUnregisteredServiceCore(js, jc);
 			}
 		}
 

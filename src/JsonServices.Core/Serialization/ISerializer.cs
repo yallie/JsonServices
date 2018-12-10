@@ -12,6 +12,6 @@ namespace JsonServices.Serialization
 	{
 		string Serialize(IMessage message);
 
-		IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider = null);
+		IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider);
 	}
 }

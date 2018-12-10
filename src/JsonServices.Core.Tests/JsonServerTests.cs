@@ -152,5 +152,48 @@ namespace JsonServices.Tests
 			// make sure all incoming messages are processed
 			Assert.AreEqual(0, jc.PendingMessages.Count);
 		}
+
+		[Test]
+		public async Task CallUnregisteredService()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			var js = new JsonServer(server, provider, serializer, executor);
+			var jc = new JsonClient(client, provider, serializer);
+			await CallUnregisteredServiceCore(js, jc);
+		}
+
+		public class UnregisteredService : IReturnVoid
+		{
+		}
+
+		protected async Task CallUnregisteredServiceCore(JsonServer js, JsonClient jc)
+		{
+			// event handlers
+			var connected = 0;
+			var disconnected = 0;
+			js.ClientConnected += (s, e) => connected++;
+			js.ClientDisconnected += (s, e) => disconnected++;
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+
+			// start json server and connect the client
+			js.Start();
+			await jc.ConnectAsync();
+
+			// call UnregisteredService
+			var msg = new UnregisteredService();
+			Assert.ThrowsAsync<InvalidRequestException>(async () =>
+				await Assert_NotTimedOut(jc.Call(msg), "jc.Call(UnregisteredService msg)"));
+
+			// make sure all incoming messages are processed
+			Assert.AreEqual(0, jc.PendingMessages.Count);
+		}
 	}
 }

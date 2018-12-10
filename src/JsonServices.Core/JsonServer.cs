@@ -75,7 +75,7 @@ namespace JsonServices
 			try
 			{
 				// server doesn't ever handle response messages
-				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider);
+				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider, null);
 				var context = new ServiceExecutionContext
 				{
 					Server = this,
