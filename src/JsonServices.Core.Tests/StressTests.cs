@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Serialization.ServiceStack;
@@ -14,6 +15,8 @@ namespace JsonServices.Tests
 	public class StressTests : TestFixtureBase
 	{
 		protected override Task Timeout => Task.Delay(5000); // adjust for large number of clients
+
+		protected virtual int MaxParallelClients => MaxClientsWithExceptions;
 
 		protected virtual int MaxClientsWithoutExceptions => 1000;
 
@@ -129,16 +132,28 @@ namespace JsonServices.Tests
 			Assert.Multiple(async () =>
 			{
 				using (var js = CreateServer().Start())
+				using (var semaphore = new SemaphoreSlim(MaxParallelClients))
 				{
 					js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}.");
 
 					var clients = Enumerable.Range(100, maxClients).Select(async seed =>
 					{
-						var jc = CreateClient(js);
-						jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}.");
+						try
+						{
+							// limit the concurrency
+							await semaphore.WaitAsync();
 
-						await jc.ConnectAsync();
-						await ClientRoutine(jc, seed, allowExceptions);
+							// connect the client
+							var jc = CreateClient(js);
+							jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}.");
+
+							await jc.ConnectAsync();
+							await ClientRoutine(jc, seed, allowExceptions);
+						}
+						finally
+						{
+							semaphore.Release();
+						}
 					});
 
 					await Task.WhenAll(clients);
