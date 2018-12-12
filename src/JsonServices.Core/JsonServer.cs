@@ -25,12 +25,12 @@ namespace JsonServices
 			AuthProvider = authProvider ?? new NullAuthProvider();
 		}
 
-		public static IRequestContext RequestContext => RequestContextHolder.Value;
+		public static RequestContext RequestContext => RequestContextHolder.Value;
 
-		internal static AsyncLocal<IRequestContext> RequestContextHolder { get; } =
-			new AsyncLocal<IRequestContext>();
+		internal static AsyncLocal<RequestContext> RequestContextHolder { get; } =
+			new AsyncLocal<RequestContext>();
 
-		private static void ThreadContextChanged(AsyncLocalValueChangedArgs<IRequestContext> args)
+		private static void ThreadContextChanged(AsyncLocalValueChangedArgs<RequestContext> args)
 		{
 			// reset current request context value for the new thread
 			if (args.ThreadContextChanged && args.CurrentValue != null)
@@ -83,7 +83,7 @@ namespace JsonServices
 			}
 		}
 
-		private IRequestContext CreateRequestContext(string connectionId)
+		private RequestContext CreateRequestContext(string connectionId)
 		{
 			var ctx = new RequestContext
 			{
@@ -101,7 +101,7 @@ namespace JsonServices
 		{
 			var request = default(RequestMessage);
 			var response = default(ResponseMessage);
-			var context = default(IRequestContext);
+			var context = default(RequestContext);
 
 			try
 			{

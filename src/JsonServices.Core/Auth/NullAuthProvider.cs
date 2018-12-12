@@ -4,7 +4,7 @@ namespace JsonServices.Auth
 {
 	public class NullAuthProvider : IAuthProvider
 	{
-		public AuthResponse Authenticate(IRequestContext context, AuthRequest authRequest)
+		public AuthResponse Authenticate(RequestContext context, AuthRequest authRequest)
 		{
 			return new AuthResponse
 			{

@@ -4,7 +4,7 @@ namespace JsonServices.Events
 {
 	public class SubscriptionService
 	{
-		public void Execute(IRequestContext context, SubscriptionMessage message)
+		public void Execute(RequestContext context, SubscriptionMessage message)
 		{
 			if (message.Enabled)
 			{
@@ -16,7 +16,7 @@ namespace JsonServices.Events
 			}
 		}
 
-		private void Subscribe(IRequestContext context, SubscriptionMessage message)
+		private void Subscribe(RequestContext context, SubscriptionMessage message)
 		{
 			context.Server.SubscriptionManager.Add(new ServerSubscription
 			{
@@ -27,7 +27,7 @@ namespace JsonServices.Events
 			});
 		}
 
-		private void Unsubscribe(IRequestContext context, SubscriptionMessage message)
+		private void Unsubscribe(RequestContext context, SubscriptionMessage message)
 		{
 			context.Server.SubscriptionManager.Remove(message.EventName, context.ConnectionId, message.SubscriptionId);
 		}

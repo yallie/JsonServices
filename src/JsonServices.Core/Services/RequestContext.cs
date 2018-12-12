@@ -8,7 +8,7 @@ using JsonServices.Transport;
 
 namespace JsonServices.Services
 {
-	public class RequestContext : IRequestContext
+	public class RequestContext : IDisposable
 	{
 		public JsonServer Server { get; set; }
 

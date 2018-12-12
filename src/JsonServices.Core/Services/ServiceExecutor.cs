@@ -28,15 +28,15 @@ namespace JsonServices.Services
 			});
 		}
 
-		private ConcurrentDictionary<string, Func<IRequestContext, object, object>> RegisteredHandlers { get; } =
-			new ConcurrentDictionary<string, Func<IRequestContext, object, object>>();
+		private ConcurrentDictionary<string, Func<RequestContext, object, object>> RegisteredHandlers { get; } =
+			new ConcurrentDictionary<string, Func<RequestContext, object, object>>();
 
-		protected virtual bool IsAuthenticationRequired(string name, IRequestContext context, object parameters)
+		protected virtual bool IsAuthenticationRequired(string name, RequestContext context, object parameters)
 		{
 			return name != AuthRequest.MessageName;
 		}
 
-		protected virtual void CheckAuthentication(string name, IRequestContext context, object parameters)
+		protected virtual void CheckAuthentication(string name, RequestContext context, object parameters)
 		{
 			if (context.Connection.CurrentUser == null)
 			{
@@ -44,7 +44,7 @@ namespace JsonServices.Services
 			}
 		}
 
-		public virtual object Execute(string name, IRequestContext context, object parameters)
+		public virtual object Execute(string name, RequestContext context, object parameters)
 		{
 			if (IsAuthenticationRequired(name, context, parameters))
 			{
@@ -59,7 +59,7 @@ namespace JsonServices.Services
 			throw new MethodNotFoundException(name);
 		}
 
-		public virtual void RegisterHandler(string name, Func<IRequestContext, object, object> handler)
+		public virtual void RegisterHandler(string name, Func<RequestContext, object, object> handler)
 		{
 			RegisteredHandlers[name ?? throw new ArgumentNullException(nameof(name))] =
 				handler ?? throw new ArgumentNullException(nameof(handler));
