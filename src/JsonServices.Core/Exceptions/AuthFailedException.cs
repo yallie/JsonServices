@@ -8,7 +8,7 @@ namespace JsonServices.Exceptions
 	{
 		public const int ErrorCode = -32001;
 
-		public AuthFailedException(string message)
+		public AuthFailedException(string message = null)
 			: base(ErrorCode, message ?? "Authentication failed")
 		{
 		}
