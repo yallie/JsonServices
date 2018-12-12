@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using JsonServices.Services;
 using JsonServices.Tests.Messages;
@@ -19,14 +20,18 @@ namespace JsonServices.Tests.Services
 			Assert.Throws<MethodNotFoundException>(() => Executor.Execute("Foo", null));
 		}
 
-		[Test]
-		public void StubExecutorExecutesGetVersionService()
+		private async Task<string> Execute(GetVersion msg)
 		{
-			Assert.Throws<ArgumentNullException>(() => Executor.Execute(GetVersionName, null));
-			Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie",
-				(Executor.Execute(GetVersionName, new GetVersion { IsInternal = true }) as GetVersionResponse).Version);
-			Assert.AreEqual("0.01-alpha",
-				(Executor.Execute(GetVersionName, new GetVersion { IsInternal = false }) as GetVersionResponse).Version);
+			var result = await (Executor.Execute(GetVersionName, msg) as Task<GetVersionResponse>);
+			return result.Version;
+		}
+
+		[Test]
+		public async Task StubExecutorExecutesGetVersionService()
+		{
+			Assert.ThrowsAsync<ArgumentNullException>(async () => await Execute(null));
+			Assert.AreEqual("Version 0.01-alpha, build 12345, by yallie", await Execute(new GetVersion { IsInternal = true }));
+			Assert.AreEqual("0.01-alpha", await Execute(new GetVersion { IsInternal = false }));
 		}
 	}
 }

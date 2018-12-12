@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace JsonServices.Tests.Messages
 {
 	internal class GetVersionService
 	{
-		public GetVersionResponse Execute(GetVersion request)
+		public async Task<GetVersionResponse> Execute(GetVersion request)
 		{
 			if (request == null)
 			{
@@ -13,6 +14,9 @@ namespace JsonServices.Tests.Messages
 
 			if (request.IsInternal)
 			{
+				// simulate long-running operation
+				await Task.Delay(3);
+
 				return new GetVersionResponse
 				{
 					Version = "Version 0.01-alpha, build 12345, by yallie"

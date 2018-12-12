@@ -34,7 +34,7 @@ test_script:
 - OpenCover.Console.exe -returntargetcode -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\src\JsonServices.Transport.WebSocketSharp.Tests\bin\Debug\net46\JsonServices.Transport.WebSocketSharp.Tests.dll" -output:".\JsonServices.Transport.WebSocketSharp.Tests.xml"
 
 # TypeScript unit tests with coverage
-- yarn --cwd sample/sample-client test --coverage
+- yarn --cwd sample/sample-client test --coverage --ci
 
 after_test:
 # Stop sample JsonServices server 
