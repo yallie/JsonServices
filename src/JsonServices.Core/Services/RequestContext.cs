@@ -21,6 +21,20 @@ namespace JsonServices.Services
 		public IDictionary<string, object> Properties { get; } =
 			new ConcurrentDictionary<string, object>();
 
+		public static RequestContext Current => CurrentContextHolder.Value;
+
+		internal static AsyncLocal<RequestContext> CurrentContextHolder { get; } =
+			new AsyncLocal<RequestContext>();
+
+		private static void ThreadContextChanged(AsyncLocalValueChangedArgs<RequestContext> args)
+		{
+			// reset current request context value for the new thread
+			if (args.ThreadContextChanged && args.CurrentValue != null)
+			{
+				CurrentContextHolder.Value = null;
+			}
+		}
+
 		public virtual void Dispose()
 		{
 			var props = Properties;

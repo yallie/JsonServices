@@ -4,9 +4,10 @@ namespace JsonServices.Auth
 {
 	public class AuthService
 	{
-		public AuthResponse Authenticate(RequestContext context, AuthRequest authRequest)
+		public AuthResponse Authenticate(AuthRequest authRequest)
 		{
-			var response = context.Server.AuthProvider.Authenticate(context, authRequest);
+			var context = RequestContext.Current;
+			var response = context.Server.AuthProvider.Authenticate(authRequest);
 			if (response.Completed)
 			{
 				context.Connection.CurrentUser = response.AuthenticatedIdentity;

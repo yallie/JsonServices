@@ -9,21 +9,22 @@ namespace JsonServices.Tests.Services
 		{
 			AuthenticationRequired = authenticationRequired;
 
-			RegisterHandler(typeof(GetVersion).FullName, (s, p) =>
+			RegisterHandler(typeof(GetVersion).FullName, p =>
 			{
 				var service = new GetVersionService();
 				return service.Execute((GetVersion)p);
 			});
 
-			RegisterHandler(typeof(Calculate).FullName, (s, p) =>
+			RegisterHandler(typeof(Calculate).FullName, p =>
 			{
 				var service = new CalculateService();
 				return service.Execute((Calculate)p);
 			});
 
-			RegisterHandler(typeof(EventBroadcaster).FullName, (s, p) =>
+			RegisterHandler(typeof(EventBroadcaster).FullName, p =>
 			{
-				var service = new EventBroadcasterService(s.Server);
+				var context = RequestContext.Current;
+				var service = new EventBroadcasterService(context.Server);
 				service.Execute((EventBroadcaster)p);
 				return null;
 			});
@@ -31,7 +32,7 @@ namespace JsonServices.Tests.Services
 
 		private bool AuthenticationRequired { get; }
 
-		protected override bool IsAuthenticationRequired(string name, RequestContext ctx, object param) =>
-			AuthenticationRequired ? base.IsAuthenticationRequired(name, ctx, param) : false;
+		protected override bool IsAuthenticationRequired(string name, object param) =>
+			AuthenticationRequired ? base.IsAuthenticationRequired(name, param) : false;
 	}
 }

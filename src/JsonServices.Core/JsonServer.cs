@@ -25,20 +25,6 @@ namespace JsonServices
 			AuthProvider = authProvider ?? new NullAuthProvider();
 		}
 
-		public static RequestContext RequestContext => RequestContextHolder.Value;
-
-		internal static AsyncLocal<RequestContext> RequestContextHolder { get; } =
-			new AsyncLocal<RequestContext>();
-
-		private static void ThreadContextChanged(AsyncLocalValueChangedArgs<RequestContext> args)
-		{
-			// reset current request context value for the new thread
-			if (args.ThreadContextChanged && args.CurrentValue != null)
-			{
-				RequestContextHolder.Value = null;
-			}
-		}
-
 		public bool IsDisposed { get; private set; }
 
 		public IServer Server { get; }
@@ -106,7 +92,7 @@ namespace JsonServices
 			try
 			{
 				// prepare request execution context
-				RequestContextHolder.Value = context = CreateRequestContext(args.ConnectionId);
+				RequestContext.CurrentContextHolder.Value = context = CreateRequestContext(args.ConnectionId);
 
 				// server doesn't ever handle response messages
 				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider, null);
@@ -114,7 +100,7 @@ namespace JsonServices
 
 				try
 				{
-					var result = Executor.Execute(request.Name, context, request.Parameters);
+					var result = Executor.Execute(request.Name, request.Parameters);
 
 					// await task results
 					if (result is Task task)

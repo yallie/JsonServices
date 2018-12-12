@@ -4,6 +4,6 @@ namespace JsonServices.Auth
 {
 	public interface IAuthProvider
 	{
-		AuthResponse Authenticate(RequestContext context, AuthRequest authRequest);
+		AuthResponse Authenticate(AuthRequest authRequest);
 	}
 }

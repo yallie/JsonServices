@@ -43,13 +43,13 @@ namespace JsonServices.Tests.Services
 		{
 			var ctx = new RequestContext();
 			ctx.Properties["Hello"] = "World";
-			JsonServer.RequestContextHolder.Value = ctx;
+			RequestContext.CurrentContextHolder.Value = ctx;
 
 			await Task.Yield();
-			Assert.AreSame(ctx, JsonServer.RequestContext);
+			Assert.AreSame(ctx, RequestContext.Current);
 
 			await Task.Delay(10).ConfigureAwait(false);
-			Assert.AreSame(ctx, JsonServer.RequestContext);
+			Assert.AreSame(ctx, RequestContext.Current);
 		}
 	}
 }
