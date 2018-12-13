@@ -49,6 +49,26 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 		}
 
 		[Test]
+		public void SrpAuthenticationFailsOnIncompatibleAuthProvider()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server without authentication vs SRP client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				var ex = Assert.ThrowsAsync<AuthFailedException>(async () =>
+					await CallGetVersionServiceCore(js, jc, Credentials));
+				Assert.AreEqual("Server doesn't support SRP authentication protocol", ex.Message);
+			}
+		}
+
+		[Test]
 		public async Task CallGetVersionServiceUsingSrpAuthentication()
 		{
 			// fake transport and serializer
@@ -63,6 +83,42 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await CallGetVersionServiceCore(js, jc, Credentials);
+			}
+		}
+
+		[Test]
+		public async Task CallCalculateServiceUsingSrpAuthentication()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor, AuthProvider))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallCalculateServiceCore(js, jc, Credentials);
+			}
+		}
+
+		[Test]
+		public async Task CallUnregisteredServiceUsingSrpAuthentication()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor, AuthProvider))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallUnregisteredServiceCore(js, jc, Credentials);
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
@@ -47,7 +48,7 @@ namespace JsonServices.Tests
 			await TestSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
 		}
 
-		protected async Task TestSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc)
+		protected async Task TestSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc, ICredentials credentials = null)
 		{
 			// unhandled exception handlers
 			var connected = 0;
@@ -60,8 +61,8 @@ namespace JsonServices.Tests
 
 			// start json server and connect both clients
 			js.Start();
-			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
-			await Assert_NotTimedOut(sc.ConnectAsync(), "sc.ConnectAsync()");
+			await Assert_NotTimedOut(jc.ConnectAsync(credentials), "jc.ConnectAsync()");
+			await Assert_NotTimedOut(sc.ConnectAsync(credentials), "sc.ConnectAsync()");
 
 			// subscribe to jc events
 			var jcounter = 0;
@@ -188,7 +189,7 @@ namespace JsonServices.Tests
 			await TestFilteredSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
 		}
 
-		protected async Task TestFilteredSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc)
+		protected async Task TestFilteredSubscriptionsAndUnsubscriptionsCore(JsonServer js, JsonClient jc, JsonClient sc, ICredentials credentials = null)
 		{
 			// unhandled exception handlers
 			var connected = 0;
@@ -201,8 +202,8 @@ namespace JsonServices.Tests
 
 			// start json server and connect both clients
 			js.Start();
-			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
-			await Assert_NotTimedOut(sc.ConnectAsync(), "sc.ConnectAsync()");
+			await Assert_NotTimedOut(jc.ConnectAsync(credentials), "jc.ConnectAsync()");
+			await Assert_NotTimedOut(sc.ConnectAsync(credentials), "sc.ConnectAsync()");
 
 			// subscribe to jc events
 			var jcounter = 0;

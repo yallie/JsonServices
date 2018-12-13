@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Exceptions;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests.Messages;
@@ -125,7 +126,7 @@ namespace JsonServices.Tests
 			MultipleClientsSimpleCalls(MaxClientsWithExceptions, allowExceptions: true);
 		}
 
-		protected virtual void MultipleClientsSimpleCalls(int maxClients, bool allowExceptions)
+		protected virtual void MultipleClientsSimpleCalls(int maxClients, bool allowExceptions, ICredentials credentials = null)
 		{
 			Assert.Multiple(async () =>
 			{
@@ -139,7 +140,7 @@ namespace JsonServices.Tests
 						var jc = CreateClient(js);
 						jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}.");
 
-						await jc.ConnectAsync();
+						await jc.ConnectAsync(credentials);
 						await ClientRoutine(jc, seed, allowExceptions);
 					});
 

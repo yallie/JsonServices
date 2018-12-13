@@ -83,7 +83,7 @@ namespace JsonServices.Tests
 			await CallCalculateServiceCore(js, jc);
 		}
 
-		protected async Task CallCalculateServiceCore(JsonServer js, JsonClient jc)
+		protected async Task CallCalculateServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
 		{
 			// unhandled exception handlers
 			var connected = 0;
@@ -95,7 +95,7 @@ namespace JsonServices.Tests
 
 			// start json server and connect the client
 			js.Start();
-			await jc.ConnectAsync();
+			await jc.ConnectAsync(credentials);
 
 			// normal call
 			var msg = new Calculate
@@ -174,7 +174,7 @@ namespace JsonServices.Tests
 		{
 		}
 
-		protected async Task CallUnregisteredServiceCore(JsonServer js, JsonClient jc)
+		protected async Task CallUnregisteredServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
 		{
 			// event handlers
 			var connected = 0;
@@ -186,7 +186,7 @@ namespace JsonServices.Tests
 
 			// start json server and connect the client
 			js.Start();
-			await jc.ConnectAsync();
+			await jc.ConnectAsync(credentials);
 
 			// call UnregisteredService
 			var msg = new UnregisteredService();

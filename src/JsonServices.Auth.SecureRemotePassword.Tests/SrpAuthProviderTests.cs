@@ -26,6 +26,10 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 			// login session not specified
 			authRequest.Parameters[SrpProtocolConstants.StepNumberKey] = "123";
 			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(authRequest));
+
+			// unsupported step number
+			authRequest.Parameters[SrpProtocolConstants.LoginSessionKey] = "321";
+			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(authRequest));
 		}
 
 		[Test]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JsonServices.Exceptions;
 using SecureRemotePassword;
 
 namespace JsonServices.Auth.SecureRemotePassword
@@ -32,6 +33,10 @@ namespace JsonServices.Auth.SecureRemotePassword
 			var response1 = await client.Call(request1);
 			var salt = response1.GetSalt();
 			var serverPublicEphemeral = response1.GetServerPublicEphemeral();
+			if (string.IsNullOrWhiteSpace(salt) || string.IsNullOrWhiteSpace(serverPublicEphemeral))
+			{
+				throw new AuthFailedException("Server doesn't support SRP authentication protocol");
+			}
 
 			// step2 request: User -> Host: M = H(H(N) xor H(g), H(I), s, A, B, K)
 			var privateKey = SrpClient.DerivePrivateKey(salt, UserName, Password);
