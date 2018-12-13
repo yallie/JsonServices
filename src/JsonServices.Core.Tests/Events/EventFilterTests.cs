@@ -31,6 +31,7 @@ namespace JsonServices.Tests.Events
 			Assert.IsTrue(EventFilter.Matches<EventArgs>(null, null));
 			Assert.IsTrue(EventFilter.Matches(null, EventArgs.Empty));
 			Assert.IsTrue(EventFilter.Matches(new Dictionary<string, string>(), EventArgs.Empty));
+			Assert.IsFalse(Matches(b => b.Add("Some", "Value"), null));
 		}
 
 		[Test]
@@ -79,6 +80,7 @@ namespace JsonServices.Tests.Events
 			Assert.IsTrue(Matches(b => b.Add(name, null), arg));
 			Assert.IsFalse(Matches(b => b.Add(name, "null"), arg));
 			Assert.IsFalse(Matches(b => b.Add(name, "Bozo"), arg));
+			Assert.IsFalse(Matches(b => b.Add("Foo", "Bar"), arg));
 
 			arg = new EventArgWithStringProperty { Name = "BGWJJILLIGKKK" };
 			Assert.IsTrue(Matches(b => b.Add(name, null), arg));
@@ -86,6 +88,7 @@ namespace JsonServices.Tests.Events
 			Assert.IsTrue(Matches(b => b.Add(name, "BGWJJILLIGKKK"), arg));
 			Assert.IsTrue(Matches(b => b.Add(name, "jill"), arg));
 			Assert.IsFalse(Matches(b => b.Add(name, "jilll"), arg));
+			Assert.IsFalse(Matches(b => b.Add("Bar", "Foo"), arg));
 		}
 
 		[Test]
@@ -103,11 +106,36 @@ namespace JsonServices.Tests.Events
 		public void EventArgWithLongPropertyTests()
 		{
 			var arg = new EventArgWithLongProperty { RecordID = 123 };
-			Assert.IsTrue(Matches(b => b.Add("RecordID", null), arg));
-			Assert.IsTrue(Matches(b => b.Add("RecordID", "  "), arg));
-			Assert.IsTrue(Matches(b => b.Add("RecordID", "123"), arg));
-			Assert.IsTrue(Matches(b => b.Add("RecordID", "1,2,123,432"), arg));
-			Assert.IsFalse(Matches(b => b.Add("RecordID", "1234,32"), arg));
+			var name = nameof(EventArgWithLongProperty.RecordID);
+			Assert.IsTrue(Matches(b => b.Add(name, null), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "  "), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "123"), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "1,2,123,432"), arg));
+			Assert.IsFalse(Matches(b => b.Add(name, "1234,32"), arg));
+		}
+
+		[Test]
+		public void EventArgWithDecimalPropertyTests()
+		{
+			var arg = new EventArgWithProperty<decimal> { Value = 123 };
+			var name = nameof(EventArgWithProperty<decimal>.Value);
+			Assert.IsTrue(Matches(b => b.Add(name, null), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "  "), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "123"), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "1,2,123,432"), arg));
+			Assert.IsFalse(Matches(b => b.Add(name, "1234,32"), arg));
+		}
+
+		[Test]
+		public void EventArgWithBoolPropertyTests()
+		{
+			var arg = new EventArgWithProperty<bool> { Value = true };
+			var name = nameof(EventArgWithProperty<bool>.Value);
+			Assert.IsTrue(Matches(b => b.Add(name, null), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "  "), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "True"), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "TRUE"), arg));
+			Assert.IsFalse(Matches(b => b.Add(name, "false"), arg));
 		}
 	}
 }

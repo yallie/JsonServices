@@ -23,6 +23,27 @@ namespace JsonServices.Tests
 		}
 
 		[Test]
+		public async Task CallServiceBeforeConnectingShouldFail()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			var js = new JsonServer(server, provider, serializer, executor);
+			var jc = new JsonClient(client, provider, serializer);
+			js.Start();
+
+			Assert.ThrowsAsync<AuthRequiredException>(async () =>
+				await Assert_NotTimedOut(jc.Call(new GetVersion()), "jc.Call(GetVersion) before Connect"));
+
+			await Assert_NotTimedOut(jc.ConnectAsync(), "jc.ConnectAsync()");
+			await Assert_NotTimedOut(jc.Call(new GetVersion()), "jc.Call(GetVersion) after connect");
+		}
+
+		[Test]
 		public async Task CallGetVersionService()
 		{
 			// fake transport and serializer

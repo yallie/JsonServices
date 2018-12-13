@@ -26,15 +26,6 @@ namespace JsonServices.Services
 		internal static AsyncLocal<RequestContext> CurrentContextHolder { get; } =
 			new AsyncLocal<RequestContext>();
 
-		private static void ThreadContextChanged(AsyncLocalValueChangedArgs<RequestContext> args)
-		{
-			// reset current request context value for the new thread
-			if (args.ThreadContextChanged && args.CurrentValue != null)
-			{
-				CurrentContextHolder.Value = null;
-			}
-		}
-
 		public virtual void Dispose()
 		{
 			var props = Properties;
