@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JsonServices.Auth;
 using JsonServices.Exceptions;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
@@ -36,7 +37,7 @@ namespace JsonServices.Tests
 			await CallGetVersionServiceCore(js, jc);
 		}
 
-		protected async Task CallGetVersionServiceCore(JsonServer js, JsonClient jc)
+		protected async Task CallGetVersionServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
 		{
 			// event handlers
 			var connected = 0;
@@ -48,7 +49,7 @@ namespace JsonServices.Tests
 
 			// start json server and connect the client
 			js.Start();
-			await jc.ConnectAsync();
+			await jc.ConnectAsync(credentials);
 
 			// call GetVersion
 			var msg = new GetVersion();

@@ -29,6 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Sample.Server"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.ServiceStack4", "JsonServices.Serialization.ServiceStack4\JsonServices.Serialization.ServiceStack4.csproj", "{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Auth.SecureRemotePassword", "JsonServices.Auth.SecureRemotePassword\JsonServices.Auth.SecureRemotePassword.csproj", "{9ABE209A-94E1-4D21-BC66-BB64CE65ACCE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Auth.SecureRemotePassword.Tests", "JsonServices.Auth.SecureRemotePassword.Tests\JsonServices.Auth.SecureRemotePassword.Tests.csproj", "{8D5E6594-6C79-452B-89E0-87DA720B6B84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3CFFEB1-B2A9-4B3B-B9C0-10F4A9A96007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9ABE209A-94E1-4D21-BC66-BB64CE65ACCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ABE209A-94E1-4D21-BC66-BB64CE65ACCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9ABE209A-94E1-4D21-BC66-BB64CE65ACCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABE209A-94E1-4D21-BC66-BB64CE65ACCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

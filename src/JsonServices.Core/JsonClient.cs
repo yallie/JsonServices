@@ -25,7 +25,7 @@ namespace JsonServices
 
 		public bool IsDisposed { get; private set; }
 
-		private IClient Client { get; }
+		public IClient Client { get; }
 
 		private IMessageTypeProvider MessageTypeProvider { get; }
 
