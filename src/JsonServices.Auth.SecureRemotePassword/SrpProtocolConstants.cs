@@ -1,11 +1,9 @@
-﻿using System;
+﻿using JsonServices.Services;
 
 namespace JsonServices.Auth.SecureRemotePassword
 {
 	public static class SrpProtocolConstants
 	{
-		public const string StepNumberKey = "stepNumberKey";
-
 		public const string UserNameKey = "userName";
 
 		public const string SaltKey = "salt";
@@ -17,8 +15,6 @@ namespace JsonServices.Auth.SecureRemotePassword
 		public const string ClientSessionProofKey = "clientSessionProof";
 
 		public const string ServerSessionProofKey = "serverSessionProof";
-
-		public const string LoginSessionKey = "loginSessionId";
 
 		public static string GetParameter(this AuthRequest request, string key)
 		{
@@ -40,9 +36,6 @@ namespace JsonServices.Auth.SecureRemotePassword
 			return null;
 		}
 
-		public static int? GetStepNumber(this AuthRequest r) =>
-			int.TryParse(r.GetParameter(StepNumberKey), out var result) ? result : default(int?);
-
 		public static string GetUserName(this AuthRequest r) => r.GetParameter(UserNameKey);
 
 		public static string GetClientPublicEphemeral(this AuthRequest r) => r.GetParameter(ClientPublicEphemeralKey);
@@ -55,6 +48,17 @@ namespace JsonServices.Auth.SecureRemotePassword
 
 		public static string GetServerSessionProof(this AuthResponse r) => r.GetParameter(ServerSessionProofKey);
 
-		public static string GetLoginSession(this AuthRequest r) => r.GetParameter(LoginSessionKey);
+		public static string GetLoginSession(this AuthRequest r) => RequestContext.Current?.ConnectionId;
+
+		internal static void SetLoginSession(this AuthRequest r, string connectionId)
+		{
+			// this method is only used by unit tests
+			if (RequestContext.Current == null)
+			{
+				RequestContext.CurrentContextHolder.Value = new RequestContext();
+			}
+
+			RequestContext.Current.ConnectionId = connectionId;
+		}
 	}
 }

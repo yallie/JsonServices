@@ -22,6 +22,7 @@
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
+    <BaseOutputPath>..\..\bin\Sample</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JsonServices.Services;
 using NUnit.Framework;
 
 namespace JsonServices.Auth.SecureRemotePassword.Tests
@@ -12,10 +13,14 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 		{
 			var authRequest = new AuthRequest();
 			Assert.IsNull(authRequest.GetParameter("viscosity"));
-			Assert.IsNull(authRequest.GetStepNumber());
 
-			authRequest.Parameters[SrpProtocolConstants.StepNumberKey] = "123";
-			Assert.AreEqual(123, authRequest.GetStepNumber());
+			// login session is now current client's ConnectionId
+			RequestContext.CurrentContextHolder.Value = null;
+			Assert.IsNull(authRequest.GetLoginSession());
+
+			// make sure it can be set
+			authRequest.SetLoginSession("SampleSessionId");
+			Assert.AreEqual("SampleSessionId", authRequest.GetLoginSession());
 		}
 
 		[Test]
@@ -25,7 +30,6 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 			var parameters = new Dictionary<string, Func<AuthRequest, object>>
 			{
 				{ SrpProtocolConstants.UserNameKey, SrpProtocolConstants.GetUserName },
-				{ SrpProtocolConstants.LoginSessionKey, SrpProtocolConstants.GetLoginSession },
 				{ SrpProtocolConstants.ClientPublicEphemeralKey, SrpProtocolConstants.GetClientPublicEphemeral },
 				{ SrpProtocolConstants.ClientSessionProofKey, SrpProtocolConstants.GetClientSessionProof },
 			};

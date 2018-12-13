@@ -1,4 +1,5 @@
 ﻿using JsonServices.Exceptions;
+using JsonServices.Services;
 using NUnit.Framework;
 
 namespace JsonServices.Auth.SecureRemotePassword.Tests
@@ -12,6 +13,9 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 		[Test]
 		public void SrpAuthProviderThrowsOnInvalidRequestMessages()
 		{
+			// reset RequestContext to make sure the current ConnectionId is not set
+			RequestContext.CurrentContextHolder.Value = null;
+
 			// null is not allowed
 			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(null));
 
@@ -19,16 +23,12 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 			var authRequest = new AuthRequest();
 			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(authRequest));
 
-			// step number not specified
+			// login session not specified
 			authRequest.Parameters[SrpProtocolConstants.UserNameKey] = "Bozo";
 			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(authRequest));
 
-			// login session not specified
-			authRequest.Parameters[SrpProtocolConstants.StepNumberKey] = "123";
-			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(authRequest));
-
-			// unsupported step number
-			authRequest.Parameters[SrpProtocolConstants.LoginSessionKey] = "321";
+			// protocol error: client public ephemeral or client session proof is expected
+			authRequest.SetLoginSession("321");
 			Assert.Throws<AuthFailedException>(() => AuthProvider.Authenticate(authRequest));
 		}
 
@@ -36,9 +36,9 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 		public void UnknownUserDoesntFailTheFirstAuthStep()
 		{
 			var authRequest = new AuthRequest();
+			authRequest.SetLoginSession("123");
 			authRequest.Parameters[SrpProtocolConstants.UserNameKey] = "root";
-			authRequest.Parameters[SrpProtocolConstants.LoginSessionKey] = "123";
-			authRequest.Parameters[SrpProtocolConstants.StepNumberKey] = "1";
+			authRequest.Parameters[SrpProtocolConstants.ClientPublicEphemeralKey] = "123";
 
 			// server generates fake salt and ephemeral values
 			var authResponse = AuthProvider.Authenticate(authRequest);
@@ -51,7 +51,7 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 			var firstEphemeral = authResponse.GetServerPublicEphemeral();
 
 			// retry the first step for the same user
-			authRequest.Parameters[SrpProtocolConstants.LoginSessionKey] = "321";
+			authRequest.SetLoginSession("321");
 			authResponse = AuthProvider.Authenticate(authRequest);
 			Assert.IsTrue(AuthProvider.PendingAuthentications.IsEmpty);
 			Assert.IsNotNull(authResponse);

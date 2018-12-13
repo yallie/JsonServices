@@ -43,31 +43,26 @@ namespace JsonServices.Auth.SecureRemotePassword
 				throw new AuthFailedException("No credentials specified");
 			}
 
-			var stepNumber = authRequest.GetStepNumber();
-			if (!stepNumber.HasValue)
-			{
-				throw new AuthFailedException("Authentication protocol not supported: step number not specified");
-			}
-
 			var loginSession = authRequest.GetLoginSession();
 			if (loginSession == null)
 			{
 				throw new AuthFailedException("Authentication protocol not supported: login session not specified");
 			}
 
-			// step number and session identity
-			switch (stepNumber)
+			// client public ephemeral is passed on step #1
+			if (authRequest.GetClientPublicEphemeral() != null)
 			{
-				case 1:
-					return AuthStep1(authRequest);
-
-				case 2:
-					return AuthStep2(authRequest);
-
-				// step number should be either 1 or 2
-				default:
-					throw new AuthFailedException("Authentication protocol not supported: unknown step number");
+				return AuthStep1(authRequest);
 			}
+
+			// client session proof is passed on step #2
+			if (authRequest.GetClientSessionProof() != null)
+			{
+				return AuthStep2(authRequest);
+			}
+
+			// required parameters are missing
+			throw new AuthFailedException("Authentication protocol not supported: public ephemeral or session proof not specified");
 		}
 
 		private AuthResponse AuthStep1(AuthRequest authRequest)
@@ -77,29 +72,26 @@ namespace JsonServices.Auth.SecureRemotePassword
 			var clientEphemeralPublic = authRequest.GetClientPublicEphemeral();
 			var account = AuthRepository.FindByName(userName);
 
-			lock (SrpServer)
+			if (account != null)
 			{
-				if (account != null)
+				// save the data for the second authentication step
+				var salt = account.Salt;
+				var verifier = account.Verifier;
+				var serverEphemeral = SrpServer.GenerateEphemeral(verifier);
+				PendingAuthentications[authRequest.GetLoginSession()] = new Step1Data
 				{
-					// save the data for the second authentication step
-					var salt = account.Salt;
-					var verifier = account.Verifier;
-					var serverEphemeral = SrpServer.GenerateEphemeral(verifier);
-					PendingAuthentications[authRequest.GetLoginSession()] = new Step1Data
-					{
-						Account = account,
-						ClientEphemeralPublic = clientEphemeralPublic,
-						ServerEphemeral = serverEphemeral,
-					};
+					Account = account,
+					ClientEphemeralPublic = clientEphemeralPublic,
+					ServerEphemeral = serverEphemeral,
+				};
 
-					// Host -> User: s, B = kv + g^b (sends salt, b = random number)
-					return ResponseStep1(salt, serverEphemeral.Public, authRequest.GetLoginSession());
-				}
-
-				var fakeSalt = SrpParameters.Hash(userName + UnknownUserSalt).ToHex();
-				var fakeEphemeral = SrpServer.GenerateEphemeral(fakeSalt);
-				return ResponseStep1(fakeSalt, fakeEphemeral.Public, authRequest.GetLoginSession());
+				// Host -> User: s, B = kv + g^b (sends salt, b = random number)
+				return ResponseStep1(salt, serverEphemeral.Public, authRequest.GetLoginSession());
 			}
+
+			var fakeSalt = SrpParameters.Hash(userName + UnknownUserSalt).ToHex();
+			var fakeEphemeral = SrpServer.GenerateEphemeral(fakeSalt);
+			return ResponseStep1(fakeSalt, fakeEphemeral.Public, authRequest.GetLoginSession());
 		}
 
 		private AuthResponse AuthStep2(AuthRequest authRequest)
@@ -114,17 +106,14 @@ namespace JsonServices.Auth.SecureRemotePassword
 
 			try
 			{
-				// lock (SrpServer)
-				{
-					// second step may fail: User -> Host: M = H(H(N) xor H(g), H(I), s, A, B, K)
-					var clientSessionProof = authRequest.GetClientSessionProof();
-					var serverSession = SrpServer.DeriveSession(vars.ServerEphemeral.Secret,
-						vars.ClientEphemeralPublic, vars.Account.Salt,
-						vars.Account.UserName, vars.Account.Verifier, clientSessionProof);
+				// second step may fail: User -> Host: M = H(H(N) xor H(g), H(I), s, A, B, K)
+				var clientSessionProof = authRequest.GetClientSessionProof();
+				var serverSession = SrpServer.DeriveSession(vars.ServerEphemeral.Secret,
+					vars.ClientEphemeralPublic, vars.Account.Salt,
+					vars.Account.UserName, vars.Account.Verifier, clientSessionProof);
 
-					// Host -> User: H(A, M, K)
-					return ResponseStep2(serverSession.Proof, vars.Account, authRequest.GetLoginSession());
-				}
+				// Host -> User: H(A, M, K)
+				return ResponseStep2(serverSession.Proof, vars.Account, authRequest.GetLoginSession());
 			}
 			catch (SecurityException)
 			{
@@ -138,7 +127,6 @@ namespace JsonServices.Auth.SecureRemotePassword
 			var result = new AuthResponse();
 			result.Parameters[SrpProtocolConstants.SaltKey] = salt;
 			result.Parameters[SrpProtocolConstants.ServerPublicEphemeralKey] = serverPublicEphemeral;
-			result.Parameters[SrpProtocolConstants.LoginSessionKey] = loginSession;
 			return result;
 		}
 
@@ -147,7 +135,6 @@ namespace JsonServices.Auth.SecureRemotePassword
 			var result = new AuthResponse();
 			result.Parameters[SrpProtocolConstants.ServerSessionProofKey] = serverSessionProof;
 			result.AuthenticatedIdentity = AuthRepository.GetIdentity(account);
-			result.Parameters[SrpProtocolConstants.LoginSessionKey] = loginSession;
 			return result;
 		}
 	}
