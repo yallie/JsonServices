@@ -11,6 +11,7 @@ before_build:
 
 build:
   project: src\JsonServices.sln
+  parallel: true
   verbosity: minimal
 
 before_test:
