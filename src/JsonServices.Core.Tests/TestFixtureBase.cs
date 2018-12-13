@@ -8,7 +8,7 @@ namespace JsonServices.Tests
 	[TestFixture]
 	public class TestFixtureBase : IDisposable
 	{
-		protected virtual Task Timeout => Task.Delay(1500);
+		protected virtual Task Timeout => Task.Delay(TimeSpan.FromSeconds(10)); // for slow CI server
 
 		[Serializable]
 		public class CustomAssertionException : Exception

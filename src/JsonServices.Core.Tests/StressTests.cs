@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Auth;
 using JsonServices.Exceptions;
@@ -12,10 +11,10 @@ using NUnit.Framework;
 
 namespace JsonServices.Tests
 {
-	[TestFixture, Explicit]
+	[TestFixture]
 	public class StressTests : TestFixtureBase
 	{
-		protected override Task Timeout => Task.Delay(5000); // adjust for large number of clients
+		protected override Task Timeout => Task.Delay(TimeSpan.FromMinutes(1)); // adjusted so it doesn't timeout on CI server
 
 		protected virtual int MaxClientsWithoutExceptions => 1000;
 

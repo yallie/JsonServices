@@ -11,9 +11,9 @@ namespace JsonServices.Transport.NetMQ.Tests
 	{
 		const string Url = "tcp://127.0.0.1:8796";
 
-		protected override int MaxClientsWithExceptions => 50;
+		protected override int MaxClientsWithExceptions => 30;
 
-		protected override int MaxClientsWithoutExceptions => 50;
+		protected override int MaxClientsWithoutExceptions => 30;
 
 		protected override JsonServer CreateServer()
 		{

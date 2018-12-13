@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Exceptions;
 using SecureRemotePassword;
@@ -14,12 +15,14 @@ namespace JsonServices.Auth.SecureRemotePassword
 			SrpClient = new SrpClient(parameters);
 		}
 
-		private SrpClient SrpClient { get; set; }
+		internal SrpClient SrpClient { get; set; }
+
+		private static int counter;
 
 		public override async Task Authenticate(JsonClient client)
 		{
 			// login session is used to match step1 and step2
-			var loginSession = Guid.NewGuid().ToString();
+			var loginSession = Guid.NewGuid().ToString() + ":" + Interlocked.Increment(ref counter);
 
 			// step1 request: User -> Host: I, A = g^a (identifies self, a = random number)
 			var clientEphemeral = SrpClient.GenerateEphemeral();
@@ -38,6 +41,13 @@ namespace JsonServices.Auth.SecureRemotePassword
 				throw new AuthFailedException("Server doesn't support SRP authentication protocol");
 			}
 
+			// double-check the login session
+			if (response1.Parameters[SrpProtocolConstants.LoginSessionKey] != loginSession)
+			{
+				throw new InvalidOperationException("Session mismatch! " +
+					response1.Parameters[SrpProtocolConstants.LoginSessionKey] + " != " + loginSession);
+			}
+
 			// step2 request: User -> Host: M = H(H(N) xor H(g), H(I), s, A, B, K)
 			var privateKey = SrpClient.DerivePrivateKey(salt, UserName, Password);
 			var clientSession = SrpClient.DeriveSession(clientEphemeral.Secret, serverPublicEphemeral, salt, UserName, privateKey);
@@ -48,6 +58,12 @@ namespace JsonServices.Auth.SecureRemotePassword
 
 			// step2 response: Host -> User: H(A, M, K)
 			var response2 = await client.Call(request2);
+			if (response2.Parameters[SrpProtocolConstants.LoginSessionKey] != loginSession)
+			{
+				throw new InvalidOperationException("Session mismatch! " +
+					response2.Parameters[SrpProtocolConstants.LoginSessionKey] + " != " + loginSession);
+			}
+
 			var serverSessionProof = response2.GetServerSessionProof();
 			SrpClient.VerifySession(clientEphemeral.Public, clientSession, serverSessionProof);
 		}

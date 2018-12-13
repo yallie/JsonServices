@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace JsonServices.Auth.SecureRemotePassword.Tests
 {
-	[TestFixture, Explicit("Doesn't work yet")]
+	[TestFixture, Explicit]
 	public class SrpStressTests : StressTests
 	{
 		private SrpAuthProvider AuthProvider { get; } =
@@ -15,9 +15,9 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 		private SrpCredentials Credentials =>
 			new SrpCredentials("demo", "12345");
 
-		protected override int MaxClientsWithExceptions => 10;
+		protected override int MaxClientsWithExceptions => 200;
 
-		protected override int MaxClientsWithoutExceptions => 10;
+		protected override int MaxClientsWithoutExceptions => 200;
 
 		protected override JsonServer CreateServer()
 		{

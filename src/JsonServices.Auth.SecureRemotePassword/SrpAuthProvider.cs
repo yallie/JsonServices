@@ -16,11 +16,11 @@ namespace JsonServices.Auth.SecureRemotePassword
 			UnknownUserSalt = new SrpClient(parameters).GenerateSalt();
 		}
 
+		internal SrpServer SrpServer { get; set; }
+
 		private ISrpAccountRepository AuthRepository { get; set; }
 
 		private SrpParameters SrpParameters { get; set; }
-
-		private SrpServer SrpServer { get; set; }
 
 		private string UnknownUserSalt { get; set; }
 
@@ -76,26 +76,30 @@ namespace JsonServices.Auth.SecureRemotePassword
 			var userName = authRequest.GetUserName();
 			var clientEphemeralPublic = authRequest.GetClientPublicEphemeral();
 			var account = AuthRepository.FindByName(userName);
-			if (account != null)
+
+			lock (SrpServer)
 			{
-				// save the data for the second authentication step
-				var salt = account.Salt;
-				var verifier = account.Verifier;
-				var serverEphemeral = SrpServer.GenerateEphemeral(verifier);
-				PendingAuthentications[authRequest.GetLoginSession()] = new Step1Data
+				if (account != null)
 				{
-					Account = account,
-					ClientEphemeralPublic = clientEphemeralPublic,
-					ServerEphemeral = serverEphemeral,
-				};
+					// save the data for the second authentication step
+					var salt = account.Salt;
+					var verifier = account.Verifier;
+					var serverEphemeral = SrpServer.GenerateEphemeral(verifier);
+					PendingAuthentications[authRequest.GetLoginSession()] = new Step1Data
+					{
+						Account = account,
+						ClientEphemeralPublic = clientEphemeralPublic,
+						ServerEphemeral = serverEphemeral,
+					};
 
-				// Host -> User: s, B = kv + g^b (sends salt, b = random number)
-				return ResponseStep1(salt, serverEphemeral.Public);
+					// Host -> User: s, B = kv + g^b (sends salt, b = random number)
+					return ResponseStep1(salt, serverEphemeral.Public, authRequest.GetLoginSession());
+				}
+
+				var fakeSalt = SrpParameters.Hash(userName + UnknownUserSalt).ToHex();
+				var fakeEphemeral = SrpServer.GenerateEphemeral(fakeSalt);
+				return ResponseStep1(fakeSalt, fakeEphemeral.Public, authRequest.GetLoginSession());
 			}
-
-			var fakeSalt = SrpParameters.Hash(userName + UnknownUserSalt).ToHex();
-			var fakeEphemeral = SrpServer.GenerateEphemeral(fakeSalt);
-			return ResponseStep1(fakeSalt, fakeEphemeral.Public);
 		}
 
 		private AuthResponse AuthStep2(AuthRequest authRequest)
@@ -110,14 +114,17 @@ namespace JsonServices.Auth.SecureRemotePassword
 
 			try
 			{
-				// second step may fail: User -> Host: M = H(H(N) xor H(g), H(I), s, A, B, K)
-				var clientSessionProof = authRequest.GetClientSessionProof();
-				var serverSession = SrpServer.DeriveSession(vars.ServerEphemeral.Secret,
-					vars.ClientEphemeralPublic, vars.Account.Salt,
-					vars.Account.UserName, vars.Account.Verifier, clientSessionProof);
+				// lock (SrpServer)
+				{
+					// second step may fail: User -> Host: M = H(H(N) xor H(g), H(I), s, A, B, K)
+					var clientSessionProof = authRequest.GetClientSessionProof();
+					var serverSession = SrpServer.DeriveSession(vars.ServerEphemeral.Secret,
+						vars.ClientEphemeralPublic, vars.Account.Salt,
+						vars.Account.UserName, vars.Account.Verifier, clientSessionProof);
 
-				// Host -> User: H(A, M, K)
-				return ResponseStep2(serverSession.Proof, vars.Account);
+					// Host -> User: H(A, M, K)
+					return ResponseStep2(serverSession.Proof, vars.Account, authRequest.GetLoginSession());
+				}
 			}
 			catch (SecurityException)
 			{
@@ -126,19 +133,21 @@ namespace JsonServices.Auth.SecureRemotePassword
 			}
 		}
 
-		private AuthResponse ResponseStep1(string salt, string serverPublicEphemeral)
+		private AuthResponse ResponseStep1(string salt, string serverPublicEphemeral, string loginSession)
 		{
 			var result = new AuthResponse();
 			result.Parameters[SrpProtocolConstants.SaltKey] = salt;
 			result.Parameters[SrpProtocolConstants.ServerPublicEphemeralKey] = serverPublicEphemeral;
+			result.Parameters[SrpProtocolConstants.LoginSessionKey] = loginSession;
 			return result;
 		}
 
-		private AuthResponse ResponseStep2(string serverSessionProof, ISrpAccount account)
+		private AuthResponse ResponseStep2(string serverSessionProof, ISrpAccount account, string loginSession)
 		{
 			var result = new AuthResponse();
 			result.Parameters[SrpProtocolConstants.ServerSessionProofKey] = serverSessionProof;
 			result.AuthenticatedIdentity = AuthRepository.GetIdentity(account);
+			result.Parameters[SrpProtocolConstants.LoginSessionKey] = loginSession;
 			return result;
 		}
 	}
