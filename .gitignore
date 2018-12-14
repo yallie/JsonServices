@@ -1,6 +1,7 @@
 /src/.vs
 *.user
 *.bak
+*.log
 obj
 bin
 /src/JsonServices.TypeScript.Sample/client/*.js

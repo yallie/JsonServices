@@ -5,9 +5,9 @@ environment:
 
 before_build:
 - nuget restore src\JsonServices.sln -verbosity quiet
-- choco install opencover.portable
-- choco install codecov
-- yarn install --cwd sample/sample-client
+- choco install opencover.portable -y -r >>choco-install.log
+- choco install codecov -y -r >>choco-install.log
+- yarn install --cwd sample/sample-client --silent
 
 build:
   project: src\JsonServices.sln
