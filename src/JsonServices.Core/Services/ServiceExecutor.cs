@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
+using JsonServices.Sessions;
 
 namespace JsonServices.Services
 {
@@ -14,6 +15,12 @@ namespace JsonServices.Services
 			RegisterHandler(AuthRequest.MessageName, param =>
 			{
 				return new AuthService().Authenticate((AuthRequest)param);
+			});
+
+			RegisterHandler(LogoutMessage.MessageName, param =>
+			{
+				new LogoutService().Execute((LogoutMessage)param);
+				return null;
 			});
 
 			// subscription/unsubscription

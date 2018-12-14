@@ -70,7 +70,11 @@ namespace JsonServices.Tests
 
 			// start json server and connect the client
 			js.Start();
-			await jc.ConnectAsync(credentials);
+
+			Assert.IsNull(jc.SessionId);
+			var sessionId = await jc.ConnectAsync(credentials);
+			Assert.IsNotNull(jc.SessionId);
+			Assert.AreEqual(sessionId, jc.SessionId);
 
 			// call GetVersion
 			var msg = new GetVersion();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using JsonServices.Auth;
 using JsonServices.Events;
+using JsonServices.Sessions;
 
 namespace JsonServices.Services
 {
@@ -13,6 +14,7 @@ namespace JsonServices.Services
 		{
 			// built-in messages
 			Register(AuthRequest.MessageName, typeof(AuthRequest));
+			Register(LogoutMessage.MessageName, typeof(LogoutMessage));
 			Register(SubscriptionMessage.MessageName, typeof(SubscriptionMessage));
 		}
 

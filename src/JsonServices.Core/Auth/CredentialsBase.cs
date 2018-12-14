@@ -29,14 +29,14 @@ namespace JsonServices.Auth
 
 		public Dictionary<string, string> Parameters { get; } = new Dictionary<string, string>();
 
-		public virtual async Task Authenticate(JsonClient client)
+		public virtual async Task<string> Authenticate(JsonClient client)
 		{
-			var authRequest = new AuthRequest
+			var response = await client.Call(new AuthRequest
 			{
 				Parameters = Parameters,
-			};
+			});
 
-			await client.Call(authRequest);
+			return response.SessionId;
 		}
 	}
 }

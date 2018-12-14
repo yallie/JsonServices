@@ -9,6 +9,7 @@ using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Services;
+using JsonServices.Sessions;
 using JsonServices.Transport;
 
 namespace JsonServices
@@ -25,6 +26,8 @@ namespace JsonServices
 
 		public bool IsDisposed { get; private set; }
 
+		public string SessionId { get; private set; }
+
 		public IClient Client { get; }
 
 		private IMessageTypeProvider MessageTypeProvider { get; }
@@ -33,20 +36,25 @@ namespace JsonServices
 
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
-		public async Task ConnectAsync(ICredentials credentials = null)
+		public async Task<string> ConnectAsync(ICredentials credentials = null)
 		{
 			// establish connection
 			await Client.ConnectAsync();
 
 			// authenticate
 			credentials = credentials ?? new CredentialsBase();
-			await credentials.Authenticate(this);
+			SessionId = await credentials.Authenticate(this);
+			return SessionId;
 		}
 
 		public void Dispose()
 		{
 			if (!IsDisposed)
 			{
+				// logout
+				Notify(new LogoutMessage());
+
+				// disconnect
 				Client.MessageReceived -= HandleClientMessage;
 				Client.Dispose();
 				IsDisposed = true;

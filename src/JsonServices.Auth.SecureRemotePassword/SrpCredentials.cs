@@ -15,7 +15,7 @@ namespace JsonServices.Auth.SecureRemotePassword
 
 		internal SrpClient SrpClient { get; set; }
 
-		public override async Task Authenticate(JsonClient client)
+		public override async Task<string> Authenticate(JsonClient client)
 		{
 			// step1 request: User -> Host: I, A = g^a (identifies self, a = random number)
 			var clientEphemeral = SrpClient.GenerateEphemeral();
@@ -42,6 +42,7 @@ namespace JsonServices.Auth.SecureRemotePassword
 			var response2 = await client.Call(request2);
 			var serverSessionProof = response2.GetServerSessionProof();
 			SrpClient.VerifySession(clientEphemeral.Public, clientSession, serverSessionProof);
+			return response2.SessionId;
 		}
 	}
 }
