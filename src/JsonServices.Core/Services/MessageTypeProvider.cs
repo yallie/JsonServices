@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using JsonServices.Auth;
 using JsonServices.Events;
-using JsonServices.Exceptions;
 
 namespace JsonServices.Services
 {

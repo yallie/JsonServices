@@ -10,13 +10,13 @@ namespace JsonServices.Services
 {
 	public class RequestContext : IDisposable
 	{
-		public JsonServer Server { get; set; }
+		public JsonServer Server { get; internal set; }
 
-		public string ConnectionId { get; set; }
+		public string ConnectionId { get; internal set; }
 
 		public IConnection Connection => Server.Server.TryGetConnection(ConnectionId);
 
-		public RequestMessage RequestMessage { get; set; }
+		public RequestMessage RequestMessage { get; internal set; }
 
 		public IDictionary<string, object> Properties { get; } =
 			new ConcurrentDictionary<string, object>();

@@ -88,11 +88,11 @@ namespace JsonServices.Tests
 					stcs.TrySetResult(true);
 				}), "sc.Subscribe<MyCoolEventArgs>(...)");
 
-			// call EventBroadcaster.AfterStartup
-			await Assert_NotTimedOut(jc.Call(new EventBroadcaster
+			// one-way call EventBroadcaster.AfterStartup
+			jc.Notify(new EventBroadcaster
 			{
 				EventName = EventBroadcaster.AfterStartupEventName,
-			}), "jc.Call(new EventBroadcaster...AfterStartup))");
+			});
 
 			// sc is subscribed to AfterStartup event, jc is not
 			await Assert_NotTimedOut(stcs.Task, "stcs.Task");
@@ -289,12 +289,12 @@ namespace JsonServices.Tests
 			// unsubscribe sc from the filtered event
 			await Assert_NotTimedOut(sunsubscribe(), "sunsubscribe()");
 
-			// call EventBroadcaster.FilteredEvent
-			await Assert_NotTimedOut(jc.Call(new EventBroadcaster
+			// one-way call EventBroadcaster.FilteredEvent
+			jc.Notify(new EventBroadcaster
 			{
 				EventName = EventBroadcaster.FilteredEventName,
 				StringArgument = "Mark Knopfler"
-			}), "jc.Call(new EventBroadcaster(...FilteredEvent...Mark Knopfler))");
+			});
 
 			// make sure that event is not handled anymore
 			await Assert_TimedOut(stcs.Task, "stcs.Task #2", Task.Delay(200));
