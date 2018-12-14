@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Sessions;
 using JsonServices.Transport;
 
 namespace JsonServices.Tests.Transport
@@ -27,7 +28,7 @@ namespace JsonServices.Tests.Transport
 
 		private StubServer Server { get; set; }
 
-		public IIdentity CurrentUser { get; set; }
+		public Session Session { get; set; }
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 

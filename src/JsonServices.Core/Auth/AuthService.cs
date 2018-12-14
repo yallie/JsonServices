@@ -10,7 +10,10 @@ namespace JsonServices.Auth
 			var response = context.Server.AuthProvider.Authenticate(authRequest);
 			if (response.Completed)
 			{
-				context.Connection.CurrentUser = response.AuthenticatedIdentity;
+				var sessionManager = context.Server.SessionManager;
+				var session = sessionManager.TryGetSession(response.SessionId) ??
+					sessionManager.CreateSession(response.SessionId, response.AuthenticatedIdentity);
+				context.Connection.Session = session;
 			}
 
 			return response;

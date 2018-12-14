@@ -17,6 +17,8 @@ namespace JsonServices.Auth
 		public Dictionary<string, string> Parameters { get; set; } =
 			new Dictionary<string, string>();
 
+		public string SessionId { get; set; } // optional
+
 		public IIdentity AuthenticatedIdentity { get; set; }
 
 		public bool Completed => AuthenticatedIdentity != null;

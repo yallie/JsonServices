@@ -1,4 +1,4 @@
-﻿using JsonServices.Services;
+﻿using System.Security.Principal;
 
 namespace JsonServices.Auth
 {
@@ -8,8 +8,7 @@ namespace JsonServices.Auth
 		{
 			return new AuthResponse
 			{
-				// can't use WindowsIdentity.GetAnonymous() because it isn't portable
-				AuthenticatedIdentity = new AnonymousIdentity(),
+				AuthenticatedIdentity = new GenericIdentity(string.Empty, "None"),
 			};
 		}
 	}

@@ -1,5 +1,5 @@
-﻿using System.Security.Principal;
-using Fleck;
+﻿using Fleck;
+using JsonServices.Sessions;
 
 namespace JsonServices.Transport.Fleck
 {
@@ -15,6 +15,6 @@ namespace JsonServices.Transport.Fleck
 
 		public string ConnectionId { get; }
 
-		public IIdentity CurrentUser { get; set; }
+		public Session Session { get; set; }
 	}
 }

@@ -17,13 +17,13 @@ namespace JsonServices.Auth
 
 		public string UserName
 		{
-			get { return Parameters[AuthRequest.UserNameKey] as string; }
+			get { return Parameters[AuthRequest.UserNameKey]; }
 			set { Parameters[AuthRequest.UserNameKey] = value; }
 		}
 
 		public string Password
 		{
-			get { return Parameters[AuthRequest.PasswordKey] as string; }
+			get { return Parameters[AuthRequest.PasswordKey]; }
 			set { Parameters[AuthRequest.PasswordKey] = value; }
 		}
 

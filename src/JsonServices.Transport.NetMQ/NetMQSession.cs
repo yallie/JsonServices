@@ -1,4 +1,4 @@
-﻿using System.Security.Principal;
+﻿using JsonServices.Sessions;
 
 namespace JsonServices.Transport.NetMQ
 {
@@ -6,6 +6,6 @@ namespace JsonServices.Transport.NetMQ
 	{
 		public string ConnectionId { get; internal set; }
 
-		public IIdentity CurrentUser { get; set; }
+		public Session Session { get; set; }
 	}
 }

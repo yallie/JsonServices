@@ -35,7 +35,7 @@ namespace JsonServices.Services
 		protected virtual void CheckAuthentication(string name, object parameters)
 		{
 			var context = RequestContext.Current;
-			if (context.Connection.CurrentUser == null)
+			if (context.Connection.Session?.CurrentUser == null)
 			{
 				throw new AuthRequiredException(name);
 			}

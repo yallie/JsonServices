@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Security.Principal;
+using JsonServices.Sessions;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using WsMessageEventArgs = WebSocketSharp.MessageEventArgs;
@@ -12,7 +12,7 @@ namespace JsonServices.Transport.WebSocketSharp
 
 		public string ConnectionId => ID.ToString();
 
-		public IIdentity CurrentUser { get; set; }
+		public Session Session { get; set; }
 
 		public Action<WsMessageEventArgs> OnMessageHandler { get; set; }
 

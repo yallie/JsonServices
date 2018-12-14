@@ -8,13 +8,14 @@ using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Services;
+using JsonServices.Sessions;
 using JsonServices.Transport;
 
 namespace JsonServices
 {
 	public class JsonServer : IDisposable
 	{
-		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor, IAuthProvider authProvider = null)
+		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor, IAuthProvider authProvider = null, ISessionManager sessionManager = null)
 		{
 			Server = server ?? throw new ArgumentNullException(nameof(server));
 			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
@@ -23,6 +24,7 @@ namespace JsonServices
 			Server.MessageReceived += HandleServerMessage;
 			SubscriptionManager = new ServerSubscriptionManager(Server);
 			AuthProvider = authProvider ?? new NullAuthProvider();
+			SessionManager = sessionManager ?? new SessionManagerBase();
 		}
 
 		public bool IsDisposed { get; private set; }
@@ -36,6 +38,8 @@ namespace JsonServices
 		private IServiceExecutor Executor { get; }
 
 		public IAuthProvider AuthProvider { get; }
+
+		public ISessionManager SessionManager { get; }
 
 		public event EventHandler<RequestContextEventArgs> InitRequestContext;
 

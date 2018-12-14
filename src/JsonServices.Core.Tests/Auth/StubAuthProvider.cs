@@ -1,4 +1,5 @@
-﻿using JsonServices.Auth;
+﻿using System.Security.Principal;
+using JsonServices.Auth;
 using JsonServices.Services;
 using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace JsonServices.Tests.Auth
 			Assert.AreEqual(Password, authRequest.Parameters[AuthRequest.PasswordKey]);
 
 			IsCalled = true;
-			return new AuthResponse(new AnonymousIdentity());
+			return new AuthResponse(new GenericIdentity(UserName, "None"));
 		}
 	}
 }

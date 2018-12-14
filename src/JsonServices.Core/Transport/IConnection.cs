@@ -1,4 +1,4 @@
-using System.Security.Principal;
+using JsonServices.Sessions;
 
 namespace JsonServices.Transport
 {
@@ -6,6 +6,6 @@ namespace JsonServices.Transport
 	{
 		string ConnectionId { get; }
 
-		IIdentity CurrentUser { get; set; }
+		Session Session { get; set; }
 	}
 }
