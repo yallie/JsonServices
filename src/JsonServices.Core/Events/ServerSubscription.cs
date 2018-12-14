@@ -2,7 +2,7 @@
 
 namespace JsonServices.Events
 {
-	public class ServerSubscription
+	internal class ServerSubscription
 	{
 		public string ConnectionId { get; set; }
 

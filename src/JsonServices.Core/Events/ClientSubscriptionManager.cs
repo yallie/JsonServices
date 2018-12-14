@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace JsonServices.Events
 {
-	public class ClientSubscriptionManager
+	internal class ClientSubscriptionManager
 	{
 		private ConcurrentDictionary<string, ConcurrentDictionary<string, IClientSubscription>> Subscriptions { get; } =
 			new ConcurrentDictionary<string, ConcurrentDictionary<string, IClientSubscription>>();

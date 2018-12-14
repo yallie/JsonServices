@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace JsonServices.Events
 {
-	public class ClientSubscription<TEventArgs> : IClientSubscription
+	internal class ClientSubscription<TEventArgs> : IClientSubscription
 		where TEventArgs : EventArgs
 	{
 		public string SubscriptionId { get; set; }

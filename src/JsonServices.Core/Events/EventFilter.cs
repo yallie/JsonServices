@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace JsonServices.Events
 {
-	public static class EventFilter
+	internal static class EventFilter
 	{
 		public static bool Matches<TEventArgs>(this IDictionary<string, string> eventFilter, TEventArgs eventArgs)
 			where TEventArgs : EventArgs

@@ -48,6 +48,15 @@ namespace JsonServices.Services
 				CheckAuthentication(name, parameters);
 			}
 
+			// renew current session timestamp on every call
+			if (RequestContext.Current != null)
+			{
+				var sessionId = RequestContext.Current.Connection?.Session?.SessionId;
+				var sessionManager = RequestContext.Current.Server.SessionManager;
+				sessionManager.RenewSession(sessionId);
+			}
+
+			// execute the requested service
 			if (RegisteredHandlers.TryGetValue(name, out var handler))
 			{
 				return handler(parameters);

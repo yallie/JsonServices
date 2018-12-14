@@ -2,7 +2,7 @@
 
 namespace JsonServices.Auth
 {
-	public class AuthService
+	internal class AuthService
 	{
 		public AuthResponse Authenticate(AuthRequest authRequest)
 		{
@@ -14,6 +14,7 @@ namespace JsonServices.Auth
 				var session = sessionManager.TryGetSession(response.SessionId) ??
 					sessionManager.CreateSession(response.SessionId, response.AuthenticatedIdentity);
 				context.Connection.Session = session;
+				response.SessionId = session.SessionId;
 			}
 
 			return response;

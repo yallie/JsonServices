@@ -214,7 +214,7 @@ namespace JsonServices
 			}
 		}
 
-		public ServerSubscriptionManager SubscriptionManager { get; }
+		internal ServerSubscriptionManager SubscriptionManager { get; }
 
 		public void Broadcast(string eventName, EventArgs args)
 		{

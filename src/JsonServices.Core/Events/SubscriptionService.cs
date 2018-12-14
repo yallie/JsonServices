@@ -2,7 +2,7 @@
 
 namespace JsonServices.Events
 {
-	public class SubscriptionService
+	internal class SubscriptionService
 	{
 		public void Execute(SubscriptionMessage message)
 		{

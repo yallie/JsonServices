@@ -2,7 +2,7 @@
 
 namespace JsonServices.Auth
 {
-	public class NullAuthProvider : IAuthProvider
+	internal class NullAuthProvider : IAuthProvider
 	{
 		public AuthResponse Authenticate(AuthRequest authRequest)
 		{

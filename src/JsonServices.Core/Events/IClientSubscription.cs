@@ -2,7 +2,7 @@
 
 namespace JsonServices.Events
 {
-	public interface IClientSubscription
+	internal interface IClientSubscription
 	{
 		string SubscriptionId { get; set; }
 

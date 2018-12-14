@@ -6,7 +6,7 @@ using JsonServices.Transport;
 
 namespace JsonServices.Events
 {
-	public class ServerSubscriptionManager
+	internal class ServerSubscriptionManager
 	{
 		public ServerSubscriptionManager(IServer server)
 		{
