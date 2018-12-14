@@ -71,6 +71,10 @@ namespace JsonServices.Events
 			{
 				return Matches(filterValue, boolValue);
 			}
+			else if (propertyValue is Guid guidValue)
+			{
+				return Matches(filterValue, guidValue);
+			}
 
 			return false;
 		}
@@ -108,6 +112,18 @@ namespace JsonServices.Events
 			}
 
 			return StringComparer.InvariantCultureIgnoreCase.Compare(filterValue, boolValue.ToString()) == 0;
+		}
+
+		internal static bool Matches(string filterValue, Guid guidValue)
+		{
+			// empty filter matches anything
+			if (string.IsNullOrWhiteSpace(filterValue))
+			{
+				return true;
+			}
+
+			// or we need an exact match
+			return Guid.TryParse(filterValue, out var result) && result == guidValue;
 		}
 	}
 }

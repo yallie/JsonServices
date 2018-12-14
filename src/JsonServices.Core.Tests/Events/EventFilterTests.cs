@@ -73,6 +73,22 @@ namespace JsonServices.Tests.Events
 		}
 
 		[Test]
+		public void TestGuidMatches()
+		{
+			Assert.IsTrue(EventFilter.Matches(string.Empty, default(Guid)));
+			Assert.IsTrue(EventFilter.Matches(default(string), Guid.NewGuid()));
+			Assert.IsFalse(EventFilter.Matches("invalid", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsFalse(EventFilter.Matches("aea069ce44ef486884ec0817f589c69", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsFalse(EventFilter.Matches("aea069ce44ef486884ec0817f589c697", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsTrue(EventFilter.Matches("{AEA069CE-44EF-4868-84EC-0817F589C695}", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsTrue(EventFilter.Matches("AEA069CE-44EF-4868-84EC-0817F589C695", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsTrue(EventFilter.Matches("aea069ce-44ef-4868-84ec-0817f589c695", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsTrue(EventFilter.Matches("aea069ce44ef486884ec0817f589c695", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsTrue(EventFilter.Matches("AEA069CE44EF486884EC0817F589C695", new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+			Assert.IsTrue(EventFilter.Matches(new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}").ToString(), new Guid("{AEA069CE-44EF-4868-84EC-0817F589C695}")));
+		}
+
+		[Test]
 		public void EventArgWithStringPropertyTests()
 		{
 			var arg = new EventArgWithStringProperty();
@@ -136,6 +152,21 @@ namespace JsonServices.Tests.Events
 			Assert.IsTrue(Matches(b => b.Add(name, "True"), arg));
 			Assert.IsTrue(Matches(b => b.Add(name, "TRUE"), arg));
 			Assert.IsFalse(Matches(b => b.Add(name, "false"), arg));
+		}
+
+		[Test]
+		public void EventArgWithGuidPropertyTests()
+		{
+			var arg = new EventArgWithProperty<Guid> { Value = Guid.NewGuid() };
+			var name = nameof(EventArgWithProperty<bool>.Value);
+			Assert.IsTrue(Matches(b => b.Add(name, null), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, "  "), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, arg.Value.ToString("N")), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, arg.Value.ToString("D")), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, arg.Value.ToString("B")), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, arg.Value.ToString("P")), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, arg.Value.ToString("X")), arg));
+			Assert.IsTrue(Matches(b => b.Add(name, arg.Value.ToString()), arg));
 		}
 	}
 }
