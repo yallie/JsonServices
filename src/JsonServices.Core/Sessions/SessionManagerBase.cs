@@ -11,12 +11,8 @@ namespace JsonServices.Sessions
 
 		public Session CreateSession(IIdentity currentUser)
 		{
-			var session = new Session
-			{
-				SessionId = Guid.NewGuid().ToString(),
-				CurrentUser = currentUser,
-			};
-
+			var sessionId = Guid.NewGuid().ToString();
+			var session = new Session(sessionId, currentUser);
 			Sessions[session.SessionId] = session;
 			return session;
 		}
