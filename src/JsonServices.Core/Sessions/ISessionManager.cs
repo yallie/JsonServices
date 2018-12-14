@@ -4,7 +4,7 @@ namespace JsonServices.Sessions
 {
 	public interface ISessionManager
 	{
-		Session CreateSession(string sessionId, IIdentity currentUser);
+		Session CreateSession(IIdentity currentUser);
 
 		Session TryGetSession(string sessionId);
 

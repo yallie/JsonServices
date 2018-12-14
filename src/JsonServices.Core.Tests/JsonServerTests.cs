@@ -5,6 +5,7 @@ using JsonServices.Exceptions;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
+using JsonServices.Transport;
 using NUnit.Framework;
 using Serializer = JsonServices.Serialization.ServiceStack.Serializer;
 
@@ -20,6 +21,32 @@ namespace JsonServices.Tests
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), null, null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), new Serializer(), null));
+		}
+
+		[Test]
+		public void JsonServerHasEvents()
+		{
+			var server = new StubServer();
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			var js = new JsonServer(server, provider, serializer, executor);
+			var counter = 0;
+			void messageEventHandler(object sender, MessageEventArgs e) => counter++;
+
+			js.ClientConnected += messageEventHandler;
+			js.ClientDisconnected += messageEventHandler;
+
+			var client = new StubClient(server);
+			var jc = new JsonClient(client, provider, serializer);
+			Assert.AreEqual(1, counter);
+
+			js.Dispose();
+			Assert.AreEqual(2, counter);
+
+			js.ClientConnected -= messageEventHandler;
+			js.ClientDisconnected -= messageEventHandler;
 		}
 
 		[Test]

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Security.Principal;
-using JsonServices.Auth;
 
 namespace JsonServices.Sessions
 {
@@ -10,11 +9,11 @@ namespace JsonServices.Sessions
 		private ConcurrentDictionary<string, Session> Sessions { get; } =
 			new ConcurrentDictionary<string, Session>();
 
-		public Session CreateSession(string sessionId, IIdentity currentUser)
+		public Session CreateSession(IIdentity currentUser)
 		{
 			var session = new Session
 			{
-				SessionId = sessionId ?? Guid.NewGuid().ToString(),
+				SessionId = Guid.NewGuid().ToString(),
 				CurrentUser = currentUser,
 			};
 

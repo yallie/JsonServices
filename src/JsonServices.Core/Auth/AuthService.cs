@@ -12,7 +12,8 @@ namespace JsonServices.Auth
 			{
 				var sessionManager = context.Server.SessionManager;
 				var session = sessionManager.TryGetSession(response.SessionId) ??
-					sessionManager.CreateSession(response.SessionId, response.AuthenticatedIdentity);
+					sessionManager.CreateSession(response.AuthenticatedIdentity);
+
 				context.Connection.Session = session;
 				response.SessionId = session.SessionId;
 			}
