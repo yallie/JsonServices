@@ -9,13 +9,21 @@ namespace JsonServices.Serialization.ServiceStack
 {
 	public class Serializer : ISerializer
 	{
+		private IDisposable ConfigureSerializer()
+		{
+			var config = JsConfig.BeginScope();
+			config.IncludeNullValues = true;
+			config.IncludeTypeInfo = false;
+			config.ExcludeTypeInfo = true;
+			config.DateHandler = DateHandler.ISO8601;
+			config.AppendUtcOffset = true;
+			return config;
+		}
+
 		public string Serialize(IMessage message)
 		{
-			using (var config = JsConfig.BeginScope())
+			using (ConfigureSerializer())
 			{
-				config.IncludeNullValues = true;
-				config.IncludeTypeInfo = false;
-				config.ExcludeTypeInfo = true;
 				return JsonSerializer.SerializeToString(message);
 			}
 		}
@@ -60,12 +68,15 @@ namespace JsonServices.Serialization.ServiceStack
 			try
 			{
 				// deserialize request or response message
-				if (isRequest)
+				using (ConfigureSerializer())
 				{
-					return DeserializeRequest(data, name, preview.Id, typeProvider);
-				}
+					if (isRequest)
+					{
+						return DeserializeRequest(data, name, preview.Id, typeProvider);
+					}
 
-				return DeserializeResponse(data, name, preview.Id, preview.Error, typeProvider);
+					return DeserializeResponse(data, name, preview.Id, preview.Error, typeProvider);
+				}
 			}
 			catch (JsonServicesException ex)
 			{

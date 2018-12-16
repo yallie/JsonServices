@@ -12,10 +12,6 @@ namespace JsonServices.Serialization.Newtonsoft
 	{
 		private JsonSerializer JsonSerializer { get; set; } = JsonSerializer.Create();
 
-		public IMessageTypeProvider MessageTypeProvider { get; }
-
-		public IMessageNameProvider MessageNameProvider { get; set; }
-
 		public string Serialize(IMessage message)
 		{
 			using (var sw = new StringWriter())

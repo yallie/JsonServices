@@ -1,4 +1,5 @@
-﻿using JsonServices.Exceptions;
+﻿using System;
+using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Services;
@@ -249,6 +250,92 @@ namespace JsonServices.Tests.Serialization
 
 			Assert.NotNull(ex);
 			Assert.AreEqual("23432423", ex.MessageId);
+		}
+
+		[Test]
+		public void SerializerUsesJavascriptCompatibleDateFormats()
+		{
+			var msg = new RequestMessage
+			{
+				Name = "Date",
+				Parameters = new
+				{
+					Date = new DateTime(2018, 12, 16, 8, 37, 30),
+				},
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.NotNull(serialized);
+
+			// ServiceStack adds fractional parts of a second, so we can't use Assert.AreEqual
+			// Newtonsoft:   Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"Date\",\"params\":{\"Date\":\"2018-12-16T08:37:30\"}}", serialized);
+			// ServiceStack: Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"Date\",\"params\":{\"Date\":\"2018-12-16T08:37:30.0000000\"}}", serialized);
+			Assert.IsTrue(serialized.StartsWith("{\"jsonrpc\":\"2.0\",\"method\":\"Date\",\"params\":{\"Date\":\"2018-12-16T08:37:30"));
+			Assert.IsTrue(serialized.EndsWith("0\"}}"));
+			Assert.IsTrue(serialized.Length <= 81);
+		}
+
+		[Test]
+		public void SerializerCanSerializeRequestMessagesWithSimpleTuples()
+		{
+			var msg = new RequestMessage
+			{
+				Name = "SimpleTuple",
+				Parameters = Tuple.Create("a", 1, true, 2.34m, 'c'),
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.NotNull(serialized);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"SimpleTuple\",\"params\":{\"Item1\":\"a\",\"Item2\":1,\"Item3\":true,\"Item4\":2.34,\"Item5\":\"c\"}}", serialized);
+		}
+
+		[Test]
+		public void SerializerCanDeserializeRequestMessagesWithSimpleTuples()
+		{
+			var provider = new MessageTypeProvider();
+			provider.Register("SimpleTuple", typeof(Tuple<string, int, bool, decimal, char>));
+			var serialized = "{\"jsonrpc\":\"2.0\",\"method\":\"SimpleTuple\",\"params\":{\"Item1\":\"a\",\"Item2\":1,\"Item3\":true,\"Item4\":2.34,\"Item5\":\"c\"}}";
+
+			var msg = Serializer.Deserialize(serialized, provider, null) as RequestMessage;
+			Assert.NotNull(msg);
+			Assert.AreEqual("SimpleTuple", msg.Name);
+			Assert.AreEqual(Tuple.Create("a", 1, true, 2.34m, 'c'), msg.Parameters);
+		}
+
+		[Test]
+		public void SerializerCanSerializeRequestMessagesWithArraysOfSimpleValues()
+		{
+			var msg = new RequestMessage
+			{
+				Name = "SimpleArray",
+				Parameters = new object[] { "a", 1, true, 2.34m, 'c' },
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.NotNull(serialized);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"SimpleArray\",\"params\":[\"a\",1,true,2.34,\"c\"]}", serialized);
+		}
+
+		[Test]
+		public void SerializerCanDeserializeRequestMessagesWithArraysOfSimpleValues()
+		{
+			var provider = new MessageTypeProvider();
+			provider.Register("SimpleArray", typeof(object[]));
+			var serialized = "{\"jsonrpc\":\"2.0\",\"method\":\"SimpleArray\",\"params\":[\"a\",1,true,2.34,\"c\"]}";
+
+			var msg = Serializer.Deserialize(serialized, provider, null) as RequestMessage;
+			Assert.NotNull(msg);
+			Assert.AreEqual("SimpleArray", msg.Name);
+
+			// Newtonsoft parses primitive types
+			// ServiceStack parses all values as strings
+			// either way, we can't have chars and decimals, too bad
+			var array = msg.Parameters as object[];
+			Assert.AreEqual("a", array[0]);
+			Assert.AreEqual("1", array[1].ToString());
+			Assert.AreEqual("true", array[2].ToString().ToLower());
+			Assert.AreEqual("2.34", array[3].ToString().Replace(",", "."));
+			Assert.AreEqual("c", array[4].ToString());
 		}
 	}
 }
