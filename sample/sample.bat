@@ -1,7 +1,7 @@
 @echo off
 
 :: start server
-start dotnet run --project sample-server --framework net45 -c Debug
+start dotnet run --project sample-server --framework net46 -c Debug
 if not "%1" == "" goto :skip_client
 
 :: start client

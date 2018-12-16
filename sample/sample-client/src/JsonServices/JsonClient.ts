@@ -9,6 +9,12 @@ import { ISubscription } from './ISubscription';
 import { IPendingMessageQueue, PendingMessage } from './PendingMessage';
 import { RequestMessage } from './RequestMessage';
 
+export interface IJsonRpcError {
+    code: number,
+    message: string,
+    data: object,
+}
+
 export class JsonClient implements IJsonClient {
     constructor(public url: string, private options = {
         reconnect: true,
@@ -26,6 +32,10 @@ export class JsonClient implements IJsonClient {
     private pendingMessages: IPendingMessageQueue = {};
 
     public traceMessage = (e: { isOutcoming: boolean, data: string }) => {
+        // do nothing by default
+    }
+
+    public errorFilter = (e: Error | IJsonRpcError) => {
         // do nothing by default
     }
 
@@ -53,7 +63,9 @@ export class JsonClient implements IJsonClient {
             this.webSocket.onerror = error => {
                 this.connected = false;
                 this.webSocket = undefined;
-                reject(new Error("Couldn't connect to " + this.url + ": " + JSON.stringify(error)));
+                const e = new Error("Couldn't connect to " + this.url + ": " + JSON.stringify(error));
+                this.errorFilter(e);
+                reject(e);
             }
 
             this.webSocket.onopen = async () => {
@@ -68,6 +80,7 @@ export class JsonClient implements IJsonClient {
                 } catch (e) {
                     // report failure
                     this.connected = false;
+                    this.errorFilter(e);
                     reject(e);
                 }
             }
@@ -108,13 +121,14 @@ export class JsonClient implements IJsonClient {
                     method?: string,
                     params?: object,
                     result?: object,
-                    error?: object,
+                    error?: IJsonRpcError,
                 };
 
                 try {
                     parsedMessage = JSON.parse(json);
-                } catch {
+                } catch(e) {
                     // TODO: decide how to handle parse errors
+                    this.errorFilter(e);
                     return;
                 }
 
@@ -127,6 +141,7 @@ export class JsonClient implements IJsonClient {
 
                         // resolve or reject the promise depending on the parsed message data
                         if (parsedMessage.error) {
+                            this.errorFilter(parsedMessage.error);
                             pending.reject(parsedMessage.error);
                             return;
                         } else {
@@ -165,7 +180,9 @@ export class JsonClient implements IJsonClient {
             // fail early if not connected
             if (this.webSocket === undefined || !this.connected) {
                 delete this.pendingMessages[messageId];
-                reject(new Error("WebSocket not connected"));
+                const e = new Error("WebSocket not connected");
+                this.errorFilter(e);
+                reject(e);
                 return;
             }
 
@@ -188,7 +205,9 @@ export class JsonClient implements IJsonClient {
 
         // fail if not connected
         if (this.webSocket === undefined || !this.connected) {
-            throw new Error("WebSocket not connected");
+            const e = new Error("WebSocket not connected");
+            this.errorFilter(e);
+            throw e;
         }
 
         // trace outcoming message
@@ -219,7 +238,9 @@ export class JsonClient implements IJsonClient {
 
         const ctor = o && o.constructor;
         if (ctor === null) {
-            throw new Error(`${o} doesn't have constructor`);
+            const e = new Error(`${o} doesn't have constructor`);
+            this.errorFilter(e);
+            throw e;
         }
 
         if (ctor.name) {

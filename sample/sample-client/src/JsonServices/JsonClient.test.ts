@@ -1,7 +1,7 @@
 import { Calculate } from '../Messages/Calculate';
 import { EventBroadcaster } from '../Messages/EventBroadcaster';
 import { GetVersion } from '../Messages/GetVersion';
-import JsonClient from "./JsonClient";
+import { IJsonRpcError, JsonClient } from "./JsonClient";
 
 describe("JsonClient", () => {
     it("should contain at least one test", () => {
@@ -124,5 +124,56 @@ conditional("JsonClient", () => {
         expect(fired).toBeFalsy();
 
         client.disconnect();
+    });
+
+    it("should fire eventFilter when connection is refused", async () => {
+        const badUrl = sampleServerUrl.replace("0", "d");
+        const client = new JsonClient(badUrl);
+
+        let fired = false;
+        let error: Error | IJsonRpcError | null = null;
+        client.errorFilter = e => {
+            fired = true;
+            error = e;
+        }
+
+        try {
+            await client.connect();
+            fail("Connect didn't throw any exceptions.");
+        } catch {
+            // ignore
+        }
+
+        expect(fired).toBeTruthy();
+        expect(error).not.toBeNull();
+    });
+
+    it("should fire eventFilter when a call resulted in error", async () => {
+        const client = new JsonClient(sampleServerUrl);
+        await client.connect();
+
+        let fired = false;
+        let error: Error | IJsonRpcError | null = null;
+        client.errorFilter = e => {
+            fired = true;
+            error = e;
+        }
+
+        // 353 & 181
+        const msg = new Calculate();
+        msg.FirstOperand = 353;
+        msg.Operation = "&";
+        msg.SecondOperand = 181;
+
+        try  {
+            await client.call(msg);
+            fail("call(353 & 181) should have failed");
+        } catch {
+            // ignore
+        }
+
+        expect(fired).toBeTruthy();
+        expect(error).not.toBeNull();
+        expect((error as any).code).toEqual(-32603);
     });
 });
