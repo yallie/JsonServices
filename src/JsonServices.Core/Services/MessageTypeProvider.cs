@@ -16,6 +16,7 @@ namespace JsonServices.Services
 			Register(AuthRequest.MessageName, typeof(AuthRequest));
 			Register(LogoutMessage.MessageName, typeof(LogoutMessage));
 			Register(SubscriptionMessage.MessageName, typeof(SubscriptionMessage));
+			Register(VersionRequest.MessageName, typeof(VersionRequest));
 		}
 
 		private ConcurrentDictionary<string, Type> RequestTypes { get; } =

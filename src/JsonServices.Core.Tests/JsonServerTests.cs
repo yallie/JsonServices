@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JsonServices.Auth;
 using JsonServices.Exceptions;
+using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
@@ -71,6 +72,53 @@ namespace JsonServices.Tests
 		}
 
 		[Test]
+		public async Task CallBuiltinVersionService()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallBuiltinVersionServiceCore(js, jc);
+			}
+		}
+
+		private async Task CallBuiltinVersionServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
+		{
+			// event handlers
+			var connected = 0;
+			var disconnected = 0;
+			js.ClientConnected += (s, e) => connected++;
+			js.ClientDisconnected += (s, e) => disconnected++;
+			js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+			jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}. Connected: {connected}, disconnected: {disconnected}.");
+
+			// start json server and connect the client
+			js.Start();
+
+			Assert.IsNull(jc.SessionId);
+			var sessionId = await jc.ConnectAsync(credentials);
+			Assert.IsNotNull(jc.SessionId);
+			Assert.AreEqual(sessionId, jc.SessionId);
+
+			// call Version
+			var msg = new VersionRequest();
+			var result = await Assert_NotTimedOut(jc.Call(msg), "jc.Call(VersionRequest)");
+			Assert.NotNull(result);
+			Assert.AreEqual(nameof(JsonServices), result.ProductName);
+			Assert.NotNull(result.ProductVersion);
+			Assert.NotNull(result.EngineVersion);
+
+			// make sure all incoming messages are processed
+			Assert.AreEqual(0, jc.PendingMessages.Count);
+		}
+
+		[Test]
 		public async Task CallGetVersionService()
 		{
 			// fake transport and serializer
@@ -80,9 +128,11 @@ namespace JsonServices.Tests
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
 
-			var js = new JsonServer(server, provider, serializer, executor);
-			var jc = new JsonClient(client, provider, serializer);
-			await CallGetVersionServiceCore(js, jc);
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallGetVersionServiceCore(js, jc);
+			}
 		}
 
 		protected async Task CallGetVersionServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)

@@ -29,6 +29,11 @@ namespace JsonServices.Services
 				new SubscriptionService().Execute((SubscriptionMessage)param);
 				return null;
 			});
+
+			RegisterHandler(VersionRequest.MessageName, param =>
+			{
+				return new VersionService().Execute((VersionRequest)param);
+			});
 		}
 
 		private ConcurrentDictionary<string, Func<object, object>> RegisteredHandlers { get; } =

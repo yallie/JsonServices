@@ -29,18 +29,23 @@ namespace JsonServices.Sample.Server
 						var serializer = new Serializer();
 						var executor = new StubExecutor();
 						var provider = new StubMessageTypeProvider();
-						return new JsonServer(server, provider, serializer, executor);
+						var jsonServer = new JsonServer(server, provider, serializer, executor);
+
+						// optional: set product name and version information
+						jsonServer.ProductName = ServiceName;
+						jsonServer.ProductVersion = "0.0.1-beta";
+						return jsonServer;
 					});
 
 					sc.WhenStarted(js =>
 					{
-						logger.Info($"{ServiceName} starts listening: {Url}");
+						logger.Info($"{js.ProductName} starts listening: {Url}");
 						js.Start();
 					});
 
 					sc.WhenStopped(js =>
 					{
-						logger.Info($"{ServiceName} is stopping...");
+						logger.Info($"{js.ProductName} is stopping...");
 						js.Dispose();
 					});
 				});

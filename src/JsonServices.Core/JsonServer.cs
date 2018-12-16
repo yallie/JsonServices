@@ -27,6 +27,10 @@ namespace JsonServices
 			SessionManager = sessionManager ?? new SessionManagerBase();
 		}
 
+		public string ProductName { get; set; } = nameof(JsonServices);
+
+		public string ProductVersion { get; set; } = typeof(JsonServer).Assembly.GetName().Version.ToString();
+
 		public bool IsDisposed { get; private set; }
 
 		public IServer Server { get; }

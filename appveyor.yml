@@ -37,7 +37,7 @@ test_script:
 - OpenCover.Console.exe -returntargetcode -register:user -target:"nunit3-console.exe" -targetargs:"C:\projects\jsonservices\bin\UnitTests\Debug\net46\JsonServices.Auth.SecureRemotePassword.Tests.dll" -output:".\JsonServices.Auth.SecureRemotePassword.Tests.xml"
 
 # TypeScript unit tests with coverage
-- yarn --cwd sample/sample-client test --coverage --ci
+- yarn --cwd sample/sample-client test --coverage --ci --forceExit
 
 after_test:
 # Stop sample JsonServices server 
