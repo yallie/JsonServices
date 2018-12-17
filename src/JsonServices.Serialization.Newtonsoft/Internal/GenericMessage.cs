@@ -20,7 +20,5 @@ namespace JsonServices.Serialization.Newtonsoft.Internal
 
 		public bool IsValid => Version == "2.0" &&
 			(!string.IsNullOrWhiteSpace(Name) || !string.IsNullOrWhiteSpace(Id));
-
-		public bool IsRequest => Name != null;
 	}
 }

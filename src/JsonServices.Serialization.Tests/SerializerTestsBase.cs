@@ -337,5 +337,21 @@ namespace JsonServices.Tests.Serialization
 			Assert.AreEqual("2.34", array[3].ToString().Replace(",", "."));
 			Assert.AreEqual("c", array[4].ToString());
 		}
+
+		[Test]
+		public void SerializerOnTheServersSideCannotHandleResponseMessage()
+		{
+			// missing MessageNameProvider, cannot determine what's that message was sent for
+			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"1\"}";
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data, TypeProvider, null));
+		}
+
+		[Test]
+		public void SerializerThrowsInvalidRequestWhenPendingRequestIsNotFound()
+		{
+			// MessageNameProvider returns null, cannot determine what's that message was sent for
+			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"1\"}";
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data, TypeProvider, new StubMessageNameProvider(null)));
+		}
 	}
 }

@@ -179,16 +179,6 @@ namespace JsonServices
 			SubscriptionManager.BroadcastAsync(msg.Name, (EventArgs)msg.Parameters);
 		}
 
-		private Task<object> GetResultTask(string messageId)
-		{
-			if (PendingMessages.TryGetValue(messageId, out var msg))
-			{
-				return msg.CompletionSource.Task;
-			}
-
-			throw new InvalidOperationException($"Message {messageId} already handled");
-		}
-
 		internal object GetSyncResult(PendingMessage pm)
 		{
 			// task.Result wraps the exception in AggregateException

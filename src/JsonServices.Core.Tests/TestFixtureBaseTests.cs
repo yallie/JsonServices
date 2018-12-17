@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using JsonServices.Serialization.ServiceStack;
+using JsonServices.Tests.Services;
+using JsonServices.Tests.Transport;
 using NUnit.Framework;
 
 namespace JsonServices.Tests
@@ -125,6 +128,20 @@ namespace JsonServices.Tests
 			// so the problem is not NUnit, but either my code or WebSocketSharp
 			Assert.ThrowsAsync<InvalidOperationException>(
 				async () => await AsyncOperation(throwException: true));
+		}
+
+		[Test]
+		public void ToStringTests()
+		{
+			var ss = new StubServer();
+			var jc = new JsonClient(new StubClient(ss), new StubMessageTypeProvider(), new Serializer()) { DebugName = "MyClient" };
+			Assert.AreEqual("MyClient", jc.ToString());
+
+			var id = jc.GenerateMessageId();
+			Assert.AreEqual("MyClient1", id);
+
+			var pm = new JsonClient.PendingMessage { Name = "Test" };
+			Assert.AreEqual("Test", pm.ToString());
 		}
 	}
 }
