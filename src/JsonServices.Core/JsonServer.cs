@@ -15,7 +15,7 @@ namespace JsonServices
 {
 	public class JsonServer : IDisposable
 	{
-		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor, IAuthProvider authProvider = null, ISessionManager sessionManager = null)
+		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor, IAuthProvider authProvider = null, ISessionManager sessionManager = null, IExceptionTranslator exceptionTranslator = null)
 		{
 			Server = server ?? throw new ArgumentNullException(nameof(server));
 			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
@@ -25,6 +25,7 @@ namespace JsonServices
 			SubscriptionManager = new ServerSubscriptionManager(Server);
 			AuthProvider = authProvider ?? new NullAuthProvider();
 			SessionManager = sessionManager ?? new SessionManagerBase();
+			ExceptionTranslator = exceptionTranslator ?? new ExceptionTranslator();
 		}
 
 		public string ProductName { get; set; } = nameof(JsonServices);
@@ -44,6 +45,8 @@ namespace JsonServices
 		public IAuthProvider AuthProvider { get; }
 
 		public ISessionManager SessionManager { get; }
+
+		public IExceptionTranslator ExceptionTranslator { get; }
 
 		public event EventHandler<RequestContextEventArgs> InitRequestContext;
 
@@ -142,7 +145,7 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
-						Error = new Error(ex),
+						Error = ExceptionTranslator.Translate(ex),
 					};
 				}
 				catch (Exception ex)
@@ -151,11 +154,9 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
-						Error = new Error(ex)
-						{
-							Code = InternalErrorException.ErrorCode,
-							Message = "Internal server error: " + ex.Message,
-						},
+						Error = ExceptionTranslator.Translate(ex,
+							InternalErrorException.ErrorCode,
+							"Internal server error: " + ex.Message),
 					};
 				}
 			}
@@ -165,7 +166,7 @@ namespace JsonServices
 				response = new ResponseErrorMessage
 				{
 					Id = ex.MessageId,
-					Error = new Error(ex),
+					Error = ExceptionTranslator.Translate(ex),
 				};
 			}
 			catch (Exception ex)
@@ -173,11 +174,9 @@ namespace JsonServices
 				// deserialization error
 				response = new ResponseErrorMessage
 				{
-					Error = new Error(ex)
-					{
-						Code = ParseErrorException.ErrorCode,
-						Message = "Parse error: " + ex.Message,
-					},
+					Error = ExceptionTranslator.Translate(ex,
+						ParseErrorException.ErrorCode,
+						"Parse error: " + ex.Message),
 				};
 			}
 			finally
