@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization;
@@ -352,6 +353,20 @@ namespace JsonServices.Tests.Serialization
 			// MessageNameProvider returns null, cannot determine what's that message was sent for
 			var data = "{\"jsonrpc\":\"2.0\",\"result\":{\"Version\":\"1.2.3.4\"},\"id\":\"1\"}";
 			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data, TypeProvider, new StubMessageNameProvider(null)));
+		}
+
+		[Test]
+		public void SerializedCultureInfoDoesntHaveAllItsParentsIncluded()
+		{
+			var msg = new ResponseResultMessage
+			{
+				Id = "1",
+				Result = CultureInfo.GetCultureInfo("en-US"),
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.NotNull(serialized);
+			Assert.IsFalse(serialized.Contains("{\"Parent\":{\"Parent\":{\"Parent\""));
 		}
 	}
 }

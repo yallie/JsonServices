@@ -9,6 +9,8 @@ namespace JsonServices.Serialization.ServiceStack
 {
 	public class Serializer : ISerializer
 	{
+		private string[] ExcludePropertyReferences { get; } = new[] { "CultureInfo.Parent" };
+
 		private IDisposable ConfigureSerializer()
 		{
 			var config = JsConfig.BeginScope();
@@ -17,6 +19,7 @@ namespace JsonServices.Serialization.ServiceStack
 			config.ExcludeTypeInfo = true;
 			config.DateHandler = DateHandler.ISO8601;
 			config.AppendUtcOffset = true;
+			config.ExcludePropertyReferences = ExcludePropertyReferences;
 			return config;
 		}
 
