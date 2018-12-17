@@ -28,6 +28,6 @@ namespace JsonServices.Messages
 		public string Message { get; set; }
 
 		[DataMember(Name = "data", EmitDefaultValue = false)]
-		public string Data { get; set; }
+		public object Data { get; set; }
 	}
 }

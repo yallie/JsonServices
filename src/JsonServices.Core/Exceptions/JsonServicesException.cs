@@ -71,9 +71,9 @@ namespace JsonServices.Exceptions
 
 		private const string DetailsKey = nameof(JsonServicesException) + "." + nameof(Details);
 
-		public string Details
+		public object Details
 		{
-			get { return Data[DetailsKey] as string; }
+			get { return Data[DetailsKey] as object; }
 			set { Data[DetailsKey] = value; }
 		}
 	}
