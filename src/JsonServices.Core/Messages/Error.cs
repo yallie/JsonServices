@@ -1,15 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using JsonServices.Exceptions;
 
 namespace JsonServices.Messages
 {
 	[DataContract]
 	public class Error
 	{
+		public Error(Exception ex = null)
+		{
+			if (ex is JsonServicesException jx)
+			{
+				Code = jx.Code;
+			}
+
+			if (ex != null)
+			{
+				Message = ex.Message;
+				Data = ex.ToString();
+			}
+		}
+
 		[DataMember(Name = "code")]
 		public int Code { get; set; }
 

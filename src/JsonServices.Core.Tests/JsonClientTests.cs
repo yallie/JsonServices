@@ -23,6 +23,20 @@ namespace JsonServices.Tests
 		}
 
 		[Test]
+		public void JsonClientCallAndNotifyThrowOnNullArguments()
+		{
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var clientProvider = new StubMessageTypeProvider();
+			var clientSerializer = new Serializer();
+			var jc = new JsonClient(client, clientProvider, clientSerializer);
+
+			Assert.Throws<ArgumentNullException>(() => jc.Notify(null));
+			Assert.ThrowsAsync<ArgumentNullException>(() => jc.Call(null));
+			Assert.ThrowsAsync<ArgumentNullException>(() => jc.Call<string>(null));
+		}
+
+		[Test]
 		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptions()
 		{
 			// fake transport and serializer

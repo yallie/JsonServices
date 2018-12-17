@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using JsonServices.Auth;
 using JsonServices.Exceptions;
+using JsonServices.Messages;
+using JsonServices.Serialization;
 using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
@@ -22,6 +24,40 @@ namespace JsonServices.Tests
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), null, null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), new Serializer(), null));
+		}
+
+		private class BrokenSerializer : ISerializer
+		{
+			public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider) =>
+				throw new NotImplementedException();
+
+			public string Serialize(IMessage message) =>
+				throw new NotImplementedException();
+		}
+
+		[Test]
+		public async Task JsonServerHandlesDeserializationErrors()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var provider = new StubMessageTypeProvider();
+			var serverSerializer = new BrokenSerializer();
+			var clientSerializer = new Serializer();
+			var executor = new StubExecutor();
+
+			var js = new JsonServer(server, provider, serverSerializer, executor);
+			var jc = new JsonClient(client, provider, clientSerializer);
+			js.Start();
+
+			var tcs = new TaskCompletionSource<bool>();
+			js.UnhandledException += (s, e) => tcs.SetException(e.Exception);
+
+			// TODO: can we have something better than a timeout here?
+			await Assert_TimedOut(jc.Call(new GetVersion()), timeout: Task.Delay(200));
+
+			// the server should have got an unhandled exception
+			Assert.ThrowsAsync<NotImplementedException>(async () => await Assert_NotTimedOut(tcs.Task));
 		}
 
 		[Test]
@@ -228,7 +264,7 @@ namespace JsonServices.Tests
 
 			// internal server error
 			Assert.AreEqual(-32603, ex.Code);
-			Assert.AreEqual("Internal server error", ex.Message);
+			Assert.AreEqual("Internal server error: Bad operation: #", ex.Message);
 
 			// call with another error
 			msg.Operation = "%";
@@ -238,7 +274,7 @@ namespace JsonServices.Tests
 
 			// internal server error
 			Assert.AreEqual(-32603, ex.Code);
-			Assert.AreEqual("Internal server error", ex.Message);
+			Assert.AreEqual("Internal server error: Attempted to divide by zero.", ex.Message);
 
 			// normal call again
 			msg.Operation = "*";

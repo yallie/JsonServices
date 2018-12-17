@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -9,6 +11,12 @@ namespace JsonServices.Tests
 	public class TestFixtureBase : IDisposable
 	{
 		protected virtual Task Timeout => Task.Delay(TimeSpan.FromSeconds(10)); // for slow CI server
+
+		[SetUp]
+		public void SetUp()
+		{
+			Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+		}
 
 		[Serializable]
 		public class CustomAssertionException : Exception

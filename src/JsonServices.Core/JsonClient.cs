@@ -121,12 +121,7 @@ namespace JsonServices
 				msg = new ResponseErrorMessage
 				{
 					Id = ex.MessageId,
-					Error = new Error
-					{
-						Code = ex.Code,
-						Message = ex.Message,
-						Data = ex.ToString(),
-					},
+					Error = new Error(ex),
 				};
 			}
 			catch (Exception ex)

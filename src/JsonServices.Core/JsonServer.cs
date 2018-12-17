@@ -142,12 +142,7 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
-						Error = new Error
-						{
-							Code = ex.Code,
-							Message = ex.Message,
-							Data = ex.ToString(),
-						},
+						Error = new Error(ex),
 					};
 				}
 				catch (Exception ex)
@@ -156,11 +151,10 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
-						Error = new Error
+						Error = new Error(ex)
 						{
-							Code = -32603, // internal error
-							Message = "Internal server error",
-							Data = ex.ToString(),
+							Code = InternalErrorException.ErrorCode,
+							Message = "Internal server error: " + ex.Message,
 						},
 					};
 				}
@@ -171,12 +165,7 @@ namespace JsonServices
 				response = new ResponseErrorMessage
 				{
 					Id = ex.MessageId,
-					Error = new Error
-					{
-						Code = ex.Code,
-						Message = ex.Message,
-						Data = ex.ToString(),
-					},
+					Error = new Error(ex),
 				};
 			}
 			catch (Exception ex)
@@ -184,11 +173,10 @@ namespace JsonServices
 				// deserialization error
 				response = new ResponseErrorMessage
 				{
-					Error = new Error
+					Error = new Error(ex)
 					{
-						Code = -32700,
-						Message = "Parse error",
-						Data = ex.ToString(),
+						Code = ParseErrorException.ErrorCode,
+						Message = "Parse error: " + ex.Message,
 					},
 				};
 			}

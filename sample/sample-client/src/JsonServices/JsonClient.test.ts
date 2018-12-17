@@ -63,7 +63,7 @@ conditional("JsonClient", () => {
             fail("Service call 353 # 181 should yield an internal server error");
         } catch (e) {
             expect(e.code).toEqual(-32603);
-            expect(e.message).toEqual("Internal server error");
+            expect(e.message).toEqual("Internal server error: Bad operation: #");
             expect(e.data.indexOf("Invalid")).toBeGreaterThan(0);
         }
 
@@ -75,7 +75,7 @@ conditional("JsonClient", () => {
             fail("Service call 353 % 0 should yield a division by zero");
         } catch (e) {
             expect(e.code).toEqual(-32603);
-            expect(e.message).toEqual("Internal server error");
+            expect(e.message.startsWith("Internal server error")).toBeTruthy(); // error message is locale-specific
             expect(e.data.indexOf("DivideByZero")).toBeGreaterThan(0);
         }
 
