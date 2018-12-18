@@ -115,7 +115,8 @@ namespace JsonServices.Transport.NetMQ.Tests
 			}
 		}
 
-		public override void Dispose()
+		[TearDown]
+		public void Teardown()
 		{
 			try
 			{
