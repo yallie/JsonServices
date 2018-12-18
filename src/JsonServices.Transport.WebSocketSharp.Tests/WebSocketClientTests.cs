@@ -35,7 +35,7 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 		}
 
 		[Test]
-		public async Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingNetMQServer()
+		public async Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingWebSocketSharp()
 		{
 			// websocket-sharp transport
 			var server = new WebSocketServer("ws://localhost:8768");
@@ -56,6 +56,60 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 
 				// execute core test
 				await TestFilteredSubscriptionsAndUnsubscriptionsCore(js, jc, sc);
+			}
+		}
+
+		[Test]
+		public async Task JsonClientCanDisconnectAndReconnectUsingWebSocketSharp()
+		{
+			// websocket-sharp transport
+			var server = new WebSocketServer("ws://localhost:8768");
+			var client = new WebSocketClient("ws://localhost:8768");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDisconnectAndReconnectCore(js, jc);
+			}
+		}
+
+		[Test]
+		public async Task JsonClientRejectsPendingMessagesWhenDisconnectedUsingWebSocketSharp()
+		{
+			// websocket-sharp transport
+			var server = new WebSocketServer("ws://localhost:8768");
+			var client = new WebSocketClient("ws://localhost:8768");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDelayServiceAndDisconnectCore(js, jc);
+			}
+		}
+
+		[Test]
+		public async Task JsonClientRejectsPendingMessagesWhenConnectionIsAbortedUsingWebSocketSharp()
+		{
+			// websocket-sharp transport
+			var server = new WebSocketServer("ws://localhost:8768");
+			var client = new WebSocketClient("ws://localhost:8768");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDelayServiceAndAbortConnectionCore(js, jc);
 			}
 		}
 	}

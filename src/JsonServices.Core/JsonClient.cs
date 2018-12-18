@@ -22,6 +22,7 @@ namespace JsonServices
 			MessageTypeProvider = typeProvider ?? throw new ArgumentNullException(nameof(typeProvider));
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			Client.MessageReceived += HandleClientMessage;
+			Client.Disconnected += HandleDisconnection;
 		}
 
 		public bool IsDisposed { get; private set; }
@@ -47,18 +48,45 @@ namespace JsonServices
 			return SessionId;
 		}
 
+		public async Task DisconnectAsync()
+		{
+			// logout and disconnect
+			await Call(new LogoutMessage());
+			await Client.DisconnectAsync();
+			RejectPendingMessages();
+		}
+
 		public void Dispose()
 		{
 			if (!IsDisposed)
 			{
 				// logout
 				Notify(new LogoutMessage());
+				RejectPendingMessages();
 
 				// disconnect
 				Client.MessageReceived -= HandleClientMessage;
+				Client.Disconnected -= HandleDisconnection;
 				Client.Dispose();
 				IsDisposed = true;
 			}
+		}
+
+		private void HandleDisconnection(object sender, EventArgs e)
+		{
+			// client connection is aborted
+			RejectPendingMessages();
+		}
+
+		private void RejectPendingMessages(Exception ex = null)
+		{
+			ex = ex ?? new ClientDisconnectedException();
+			foreach (var pair in PendingMessages.ToArray())
+			{
+				pair.Value?.CompletionSource?.TrySetException(ex);
+			}
+
+			PendingMessages.Clear();
 		}
 
 		internal class PendingMessage

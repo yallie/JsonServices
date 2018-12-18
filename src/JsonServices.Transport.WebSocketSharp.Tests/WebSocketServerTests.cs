@@ -62,5 +62,23 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 				await CallUnregisteredServiceCore(js, jc);
 			}
 		}
+
+		[Test]
+		public async Task JsonServerAwaitsTasksUsingWebSocketSharp()
+		{
+			// websocket-sharp transport
+			var server = new WebSocketServer("ws://localhost:8767");
+			var client = new WebSocketClient("ws://localhost:8767");
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDelayServiceCore(js, jc);
+			}
+		}
 	}
 }

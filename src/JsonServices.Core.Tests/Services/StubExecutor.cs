@@ -21,6 +21,12 @@ namespace JsonServices.Tests.Services
 				return service.Execute((Calculate)p);
 			});
 
+			RegisterHandler(typeof(DelayRequest).FullName, p =>
+			{
+				var service = new DelayService();
+				return service.Execute((DelayRequest)p);
+			});
+
 			RegisterHandler(typeof(EventBroadcaster).FullName, p =>
 			{
 				var context = RequestContext.Current;

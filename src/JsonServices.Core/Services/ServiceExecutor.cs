@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using JsonServices.Auth;
 using JsonServices.Events;
 using JsonServices.Exceptions;
@@ -41,7 +42,9 @@ namespace JsonServices.Services
 
 		protected virtual bool IsAuthenticationRequired(string name, object parameters)
 		{
-			return name != AuthRequest.MessageName;
+			// login and logout messages doesn't need any authentication
+			var allowed = new[] { AuthRequest.MessageName, LogoutMessage.MessageName };
+			return !allowed.Contains(name);
 		}
 
 		protected virtual void CheckAuthentication(string name, object parameters)

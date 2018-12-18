@@ -1,7 +1,9 @@
 import { Calculate } from '../Messages/Calculate';
 import { EventBroadcaster } from '../Messages/EventBroadcaster';
 import { GetVersion } from '../Messages/GetVersion';
+import { DelayRequest } from './DelayRequest';
 import { IJsonRpcError, JsonClient } from "./JsonClient";
+import { VersionRequest } from './VersionRequest';
 
 describe("JsonClient", () => {
     it("should contain at least one test", () => {
@@ -175,5 +177,27 @@ conditional("JsonClient", () => {
         expect(fired).toBeTruthy();
         expect(error).not.toBeNull();
         expect((error as any).code).toEqual(-32603);
+    });
+
+    it("should cancel pending messages when client is disconnected", async () => {
+        const client = new JsonClient(sampleServerUrl);
+        await client.connect();
+
+        // normal calls
+        const version = await client.call(new VersionRequest());
+        expect(version.ProductName).toEqual("JsonServicesSampleServer");
+        expect(version.ProductVersion).toEqual("0.0.1-beta");
+        await client.call(new DelayRequest(10));
+
+        // long call
+        const promise = client.call(new DelayRequest(1000));
+        client.disconnect();
+
+        try {
+            await promise;
+            fail("The promise should have been rejected");
+        } catch (e) {
+            expect(e.code).toEqual(-32003);
+        }
     });
 });

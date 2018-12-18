@@ -6,6 +6,7 @@ import { ICredentials } from './ICredentials';
 import { IJsonClient } from './IJsonClient';
 import { IReturn, IReturnVoid } from './IReturn';
 import { ISubscription } from './ISubscription';
+import { LogoutMessage } from './LogoutMessage';
 import { IPendingMessageQueue, PendingMessage } from './PendingMessage';
 import { RequestMessage } from './RequestMessage';
 
@@ -41,11 +42,42 @@ export class JsonClient implements IJsonClient {
 
     public disconnect() {
         if (this.webSocket && this.connected) {
+            this.notify(new LogoutMessage());
             this.webSocket.close();
             this.connected = false;
             this.webSocket = undefined;
         }
     }
+
+    private rejectPendingMessages(closeEvent: {
+        wasClean: boolean;
+        code: number;
+        reason: string;
+        target: WebSocket;
+    }) {
+        let message = "Connection was closed.";
+        if (closeEvent.code !== 1000) {
+            message = "Connection was aborted. Error code: " + closeEvent.code
+        }
+
+        const error = new Error(message);
+        Object.defineProperty(error, 'code', { value: -32003 });
+
+        for (const messageId in this.pendingMessages) {
+            if (this.pendingMessages.hasOwnProperty(messageId)) {
+                const pending = this.pendingMessages[messageId];
+                if (pending) {
+                    // clear pending message
+                    delete this.pendingMessages[messageId];
+
+                    // reject the promise
+                    this.errorFilter(error);
+                    pending.reject(error);
+                }
+            }
+        }
+    };
+
 
     public connect(credentials?: ICredentials): Promise<boolean> {
         // make sure to have some credentials
@@ -63,7 +95,13 @@ export class JsonClient implements IJsonClient {
             this.webSocket.onerror = error => {
                 this.connected = false;
                 this.webSocket = undefined;
-                const e = new Error("Couldn't connect to " + this.url + ": " + JSON.stringify(error));
+
+                let message = "Couldn't connect to " + this.url;
+                if (error.message) {
+                    message = message + ": " + error.message;
+                }
+
+                const e = new Error(message);
                 this.errorFilter(e);
                 reject(e);
             }
@@ -80,6 +118,7 @@ export class JsonClient implements IJsonClient {
                 } catch (e) {
                     // report failure
                     this.connected = false;
+                    this.webSocket = undefined;
                     this.errorFilter(e);
                     reject(e);
                 }
@@ -88,6 +127,7 @@ export class JsonClient implements IJsonClient {
             this.webSocket.onclose = closeEvent => {
                 this.connected = false;
                 this.webSocket = undefined;
+                this.rejectPendingMessages(closeEvent);
 
                 if (closeEvent.code === 1000) {
                     resolve(false);
@@ -129,6 +169,7 @@ export class JsonClient implements IJsonClient {
                 } catch(e) {
                     // TODO: decide how to handle parse errors
                     this.errorFilter(e);
+                    this.errorFilter(new Error("Error parsing JSON: " + json));
                     return;
                 }
 
@@ -137,7 +178,7 @@ export class JsonClient implements IJsonClient {
                     const pending = this.pendingMessages[parsedMessage.id];
                     if (pending) {
                         // clear pending message
-                        this.pendingMessages[parsedMessage.id] = undefined;
+                        delete this.pendingMessages[parsedMessage.id];
 
                         // resolve or reject the promise depending on the parsed message data
                         if (parsedMessage.error) {

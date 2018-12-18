@@ -9,6 +9,12 @@ namespace JsonServices.Transport
 
 		Task SendAsync(string data);
 
+		Task DisconnectAsync();
+
 		event EventHandler<MessageEventArgs> MessageReceived;
+
+		event EventHandler Connected;
+
+		event EventHandler Disconnected;
 	}
 }

@@ -29,6 +29,7 @@ namespace JsonServices.Tests.Exceptions
 			Test<JsonServicesException>(0, nameof(JsonServicesException), "123");
 			Test<AuthFailedException>(AuthFailedException.ErrorCode, "Authentication failed", "3123123");
 			Test<AuthRequiredException>(AuthRequiredException.ErrorCode, "Authentication is required: test", "456456");
+			Test<ClientDisconnectedException>(ClientDisconnectedException.ErrorCode, "Client is disconnected", "315435");
 			Test<InternalErrorException>(InternalErrorException.ErrorCode, "Internal error: test", "56657");
 			Test<InvalidRequestException>(InvalidRequestException.ErrorCode, "Invalid request. Request data: test", "56657");
 			Test<MethodNotFoundException>(MethodNotFoundException.ErrorCode, "Method not found: test", "7897897");
@@ -52,6 +53,7 @@ namespace JsonServices.Tests.Exceptions
 			var types = JsonServicesException.GetExceptionTypes();
 			Assert.AreEqual(typeof(AuthFailedException), types[AuthFailedException.ErrorCode]);
 			Assert.AreEqual(typeof(AuthRequiredException), types[AuthRequiredException.ErrorCode]);
+			Assert.AreEqual(typeof(ClientDisconnectedException), types[ClientDisconnectedException.ErrorCode]);
 			Assert.AreEqual(typeof(InternalErrorException), types[InternalErrorException.ErrorCode]);
 			Assert.AreEqual(typeof(InvalidRequestException), types[InvalidRequestException.ErrorCode]);
 			Assert.AreEqual(typeof(MethodNotFoundException), types[MethodNotFoundException.ErrorCode]);
@@ -64,6 +66,7 @@ namespace JsonServices.Tests.Exceptions
 			Roundtrip<JsonServicesException>();
 			Roundtrip<AuthFailedException>();
 			Roundtrip<AuthRequiredException>();
+			Roundtrip<ClientDisconnectedException>();
 			Roundtrip<InternalErrorException>();
 			Roundtrip<InvalidRequestException>();
 			Roundtrip<MethodNotFoundException>();

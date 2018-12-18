@@ -26,7 +26,17 @@ namespace JsonServices.Transport.NetMQ
 			ClientPoller.RunAsync();
 		}
 
-		public Task ConnectAsync() => Task.FromResult(true);
+		public Task ConnectAsync()
+		{
+			Connected?.Invoke(this, EventArgs.Empty);
+			return Task.FromResult(true);
+		}
+
+		public Task DisconnectAsync()
+		{
+			Disconnected?.Invoke(this, EventArgs.Empty);
+			return Task.FromResult(true);
+		}
 
 		private string ConnectionId { get; }
 
@@ -41,6 +51,10 @@ namespace JsonServices.Transport.NetMQ
 		private NetMQPoller ClientPoller { get; }
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
+
+		public event EventHandler Connected;
+
+		public event EventHandler Disconnected;
 
 		public Task SendAsync(string data)
 		{

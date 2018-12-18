@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using JsonServices.Auth;
+using JsonServices.Exceptions;
 using JsonServices.Serialization.ServiceStack;
+using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
@@ -336,6 +338,112 @@ namespace JsonServices.Tests
 			// make sure all incoming messages are processed
 			Assert.AreEqual(0, jc.PendingMessages.Count);
 			Assert.AreEqual(0, sc.PendingMessages.Count);
+		}
+
+		[Test]
+		public async Task JsonClientCanDisconnectAndReconnect()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDisconnectAndReconnectCore(js, jc);
+			}
+		}
+
+		protected async Task CallDisconnectAndReconnectCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
+		{
+			js.ProductName = "My awesome server";
+			js.ProductVersion = "1.2.3.4";
+			js.Start();
+
+			// connect, call, disconnect
+			await Assert_NotTimedOut(jc.ConnectAsync(credentials), "connect");
+
+			var result = await Assert_NotTimedOut(jc.Call(new VersionRequest()), "jc.Call(VersionRequest)");
+			Assert.NotNull(result);
+			Assert.AreEqual(js.ProductName, result.ProductName);
+			Assert.AreEqual(js.ProductVersion, result.ProductVersion);
+			await Assert_NotTimedOut(jc.DisconnectAsync(), "disconnect");
+
+			// reconnect, call, disconnect
+			await Assert_NotTimedOut(jc.ConnectAsync(credentials), "reconnect");
+
+			result = await Assert_NotTimedOut(jc.Call(new VersionRequest()), "jc.Call(VersionRequest) after reconnect");
+			Assert.NotNull(result);
+			Assert.AreEqual(js.ProductName, result.ProductName);
+			Assert.AreEqual(js.ProductVersion, result.ProductVersion);
+			await Assert_NotTimedOut(jc.DisconnectAsync(), "disconnect completely");
+			Assert.AreEqual(0, jc.PendingMessages.Count);
+		}
+
+		[Test]
+		public async Task JsonClientRejectsPendingMessagesWhenDisconnected()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDelayServiceAndDisconnectCore(js, jc);
+			}
+		}
+
+		protected async Task CallDelayServiceAndDisconnectCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
+		{
+			js.Start();
+			await jc.ConnectAsync(credentials);
+
+			var call = jc.Call(new DelayRequest { Milliseconds = 1000 });
+			await Task.Delay(100); // make sure that the call was actually sent
+			await jc.DisconnectAsync();
+
+			Assert.ThrowsAsync<ClientDisconnectedException>(async () =>
+				await Assert_NotTimedOut(call, "jc.Call(Delay 1000)", Task.Delay(2000)));
+		}
+
+		[Test]
+		public async Task JsonClientRejectsPendingMessagesWhenConnectionIsAborted()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDelayServiceAndAbortConnectionCore(js, jc);
+			}
+		}
+
+		protected async Task CallDelayServiceAndAbortConnectionCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
+		{
+			js.Start();
+			await jc.ConnectAsync(credentials);
+
+			var call = jc.Call(new DelayRequest { Milliseconds = 1000 });
+			await Task.Delay(100); // make sure that the call was actually sent
+			await jc.Client.DisconnectAsync(); // should fire Disconnected event
+
+			Assert.ThrowsAsync<ClientDisconnectedException>(async () =>
+				await Assert_NotTimedOut(call, "jc.Call(Delay 1000)", Task.Delay(2000)));
 		}
 	}
 }

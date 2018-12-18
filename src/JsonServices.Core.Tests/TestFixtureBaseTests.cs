@@ -106,11 +106,11 @@ namespace JsonServices.Tests
 			{
 				if (throwException)
 				{
-					tcs.SetException(new InvalidOperationException());
+					tcs.TrySetException(new InvalidOperationException());
 				}
 				else
 				{
-					tcs.SetResult(true);
+					tcs.TrySetResult(true);
 				}
 			});
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Principal;
-using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Sessions;
 using JsonServices.Transport;
@@ -20,7 +19,17 @@ namespace JsonServices.Tests.Transport
 			Server.Connect(this);
 		}
 
-		public Task ConnectAsync() => Task.FromResult(true); // Task.CompletedTask
+		public Task ConnectAsync()
+		{
+			Connected?.Invoke(this, EventArgs.Empty);
+			return Task.FromResult(true); // Task.CompletedTask
+		}
+
+		public Task DisconnectAsync()
+		{
+			Disconnected?.Invoke(this, EventArgs.Empty);
+			return Task.FromResult(true); // Task.CompletedTask
+		}
 
 		public void Dispose() => Server = null;
 
@@ -31,6 +40,10 @@ namespace JsonServices.Tests.Transport
 		public Session Session { get; set; }
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
+
+		public event EventHandler Connected;
+
+		public event EventHandler Disconnected;
 
 		public Task SendAsync(string data)
 		{

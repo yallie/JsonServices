@@ -46,18 +46,20 @@ namespace JsonServices.Tests
 			var clientSerializer = new Serializer();
 			var executor = new StubExecutor();
 
-			var js = new JsonServer(server, provider, serverSerializer, executor);
-			var jc = new JsonClient(client, provider, clientSerializer);
-			js.Start();
+			using (var js = new JsonServer(server, provider, serverSerializer, executor))
+			using (var jc = new JsonClient(client, provider, clientSerializer))
+			{
+				js.Start();
 
-			var tcs = new TaskCompletionSource<bool>();
-			js.UnhandledException += (s, e) => tcs.SetException(e.Exception);
+				var tcs = new TaskCompletionSource<bool>();
+				js.UnhandledException += (s, e) => tcs.TrySetException(e.Exception);
 
-			// TODO: can we have something better than a timeout here?
-			await Assert_TimedOut(jc.Call(new GetVersion()), timeout: Task.Delay(200));
+				// TODO: can we have something better than a timeout here?
+				await Assert_TimedOut(jc.Call(new GetVersion()), timeout: Task.Delay(200));
 
-			// the server should have got an unhandled exception
-			Assert.ThrowsAsync<NotImplementedException>(async () => await Assert_NotTimedOut(tcs.Task));
+				// the server should have got an unhandled exception
+				Assert.ThrowsAsync<NotImplementedException>(async () => await Assert_NotTimedOut(tcs.Task));
+			}
 		}
 
 		[Test]
@@ -216,9 +218,11 @@ namespace JsonServices.Tests
 			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			var js = new JsonServer(server, provider, serializer, executor);
-			var jc = new JsonClient(client, provider, serializer);
-			await CallCalculateServiceCore(js, jc);
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallCalculateServiceCore(js, jc);
+			}
 		}
 
 		protected async Task CallCalculateServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
@@ -303,9 +307,11 @@ namespace JsonServices.Tests
 			var provider = new StubMessageTypeProvider();
 
 			// json server and client
-			var js = new JsonServer(server, provider, serializer, executor);
-			var jc = new JsonClient(client, provider, serializer);
-			await CallUnregisteredServiceCore(js, jc);
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallUnregisteredServiceCore(js, jc);
+			}
 		}
 
 		public class UnregisteredService : IReturnVoid
@@ -334,6 +340,32 @@ namespace JsonServices.Tests
 
 			// make sure all incoming messages are processed
 			Assert.AreEqual(0, jc.PendingMessages.Count);
+		}
+
+		[Test]
+		public async Task JsonServerAwaitsTasks()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new StubExecutor();
+			var provider = new StubMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallDelayServiceCore(js, jc);
+			}
+		}
+
+		protected virtual async Task CallDelayServiceCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
+		{
+			js.Start();
+			await jc.ConnectAsync(credentials);
+			await Assert_NotTimedOut(jc.Call(new DelayRequest { Milliseconds = 10 }), "jc.Call(Delay 10)");
+			await Assert_TimedOut(jc.Call(new DelayRequest { Milliseconds = 200 }), "jc.Call(Delay 200)", Task.Delay(10));
 		}
 	}
 }

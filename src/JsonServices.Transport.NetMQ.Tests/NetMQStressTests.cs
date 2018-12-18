@@ -1,4 +1,5 @@
-﻿using JsonServices.Serialization.ServiceStack;
+﻿using System;
+using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
 using JsonServices.Tests.Services;
 using NetMQ;
@@ -36,8 +37,14 @@ namespace JsonServices.Transport.NetMQ.Tests
 		[TearDown]
 		public void Teardown()
 		{
-			// fix unit test AppDomain unloading issue
-			NetMQConfig.Cleanup(false);
+			try
+			{
+				// fix unit test AppDomain unloading issue
+				NetMQConfig.Cleanup();
+			}
+			catch (ObjectDisposedException)
+			{
+			}
 		}
 	}
 }

@@ -13,13 +13,33 @@ namespace JsonServices.Transport.WebSocketSharp
 			// add service name to the root url
 			WebSocket = new WebSocket(url.TrimEnd('\\', '/').Trim() + WebSocketSession.ServiceName);
 			WebSocket.OnMessage += OnMessageReceived;
+			WebSocket.OnClose += OnClose;
 		}
 
-		public Task ConnectAsync() => Task.Run(() => WebSocket.Connect());
+		public async Task ConnectAsync()
+		{
+			await Task.Run(() => WebSocket.Connect());
+			Connected?.Invoke(this, EventArgs.Empty);
+		}
+
+		public async Task DisconnectAsync()
+		{
+			await Task.Run(() => WebSocket.Close());
+			Disconnected?.Invoke(this, EventArgs.Empty);
+		}
 
 		private WebSocket WebSocket { get; set; }
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
+
+		public event EventHandler Connected;
+
+		public event EventHandler Disconnected;
+
+		private void OnClose(object sender, CloseEventArgs e)
+		{
+			Disconnected.Invoke(this, e);
+		}
 
 		private void OnMessageReceived(object sender, WsMessageEventArgs e)
 		{
