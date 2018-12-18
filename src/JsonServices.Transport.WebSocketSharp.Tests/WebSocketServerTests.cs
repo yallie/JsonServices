@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using JsonServices.Tests;
+using JsonServices.Tests.Messages.Generic;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 using Serializer = JsonServices.Serialization.ServiceStack.Serializer;
@@ -78,6 +79,24 @@ namespace JsonServices.Transport.WebSocketSharp.Tests
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await CallDelayServiceCore(js, jc);
+			}
+		}
+
+		[Test]
+		public async Task JsonServerCanExecuteGenericMessagesUsingWebSocketShar()
+		{
+			// websocket-sharp transport
+			var server = new WebSocketServer("ws://localhost:8767");
+			var client = new WebSocketClient("ws://localhost:8767");
+			var serializer = new Serializer();
+			var executor = new GenericServiceExecutor();
+			var provider = new GenericMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallGenericMessagesCore(js, jc);
 			}
 		}
 	}

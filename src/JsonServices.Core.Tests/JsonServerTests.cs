@@ -6,6 +6,7 @@ using JsonServices.Messages;
 using JsonServices.Serialization;
 using JsonServices.Services;
 using JsonServices.Tests.Messages;
+using JsonServices.Tests.Messages.Generic;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
 using JsonServices.Transport;
@@ -366,6 +367,48 @@ namespace JsonServices.Tests
 			await jc.ConnectAsync(credentials);
 			await Assert_NotTimedOut(jc.Call(new DelayRequest { Milliseconds = 10 }), "jc.Call(Delay 10)");
 			await Assert_TimedOut(jc.Call(new DelayRequest { Milliseconds = 200 }), "jc.Call(Delay 200)", Task.Delay(10));
+		}
+
+		[Test]
+		public async Task JsonServerCanExecuteGenericMessages()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var serializer = new Serializer();
+			var executor = new GenericServiceExecutor();
+			var provider = new GenericMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallGenericMessagesCore(js, jc);
+			}
+		}
+
+		protected async Task CallGenericMessagesCore(JsonServer js, JsonClient jc, ICredentials credentials = null)
+		{
+			js.Start();
+			await jc.ConnectAsync();
+
+			var intMsg = new GenericRequest<int> { Value = 1 };
+			var intResult = await jc.Call(intMsg);
+			Assert.AreEqual(2, intResult.Result);
+
+			var dtMsg = new GenericRequest<DateTime> { Value = new DateTime(2018, 12, 18) };
+			var dtResult = await jc.Call(dtMsg);
+			Assert.AreEqual(new DateTime(2019, 12, 18), dtResult.Result);
+
+			var strMsg = new GenericRequest<string> { Value = "World" };
+			var strResult = await jc.Call(strMsg);
+			Assert.AreEqual("Hello World!", strResult.Result);
+
+			var boolMsg = new GenericRequest<bool> { Value = true };
+			Assert.ThrowsAsync<MethodNotFoundException>(async () => await jc.Call(boolMsg));
+
+			// make sure all incoming messages are processed
+			Assert.AreEqual(0, jc.PendingMessages.Count);
 		}
 	}
 }

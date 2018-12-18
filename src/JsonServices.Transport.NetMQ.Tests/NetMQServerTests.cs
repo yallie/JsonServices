@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JsonServices.Tests;
+using JsonServices.Tests.Messages.Generic;
 using JsonServices.Tests.Services;
 using NetMQ;
 using NUnit.Framework;
@@ -80,6 +81,24 @@ namespace JsonServices.Transport.NetMQ.Tests
 			using (var jc = new JsonClient(client, provider, serializer))
 			{
 				await CallDelayServiceCore(js, jc);
+			}
+		}
+
+		[Test]
+		public async Task JsonServerCanExecuteGenericMessagesUsingNetMQServer()
+		{
+			// NetMQ transport
+			var server = new NetMQServer("tcp://127.0.0.1:8792");
+			var client = new NetMQClient("tcp://127.0.0.1:8792");
+			var serializer = new Serializer();
+			var executor = new GenericServiceExecutor();
+			var provider = new GenericMessageTypeProvider();
+
+			// json server and client
+			using (var js = new JsonServer(server, provider, serializer, executor))
+			using (var jc = new JsonClient(client, provider, serializer))
+			{
+				await CallGenericMessagesCore(js, jc);
 			}
 		}
 
