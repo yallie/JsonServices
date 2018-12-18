@@ -40,7 +40,7 @@ namespace JsonServices.Transport.NetMQ.Tests
 			try
 			{
 				// fix unit test AppDomain unloading issue
-				NetMQConfig.Cleanup();
+				NetMQConfig.Cleanup(false);
 			}
 			catch (ObjectDisposedException)
 			{
