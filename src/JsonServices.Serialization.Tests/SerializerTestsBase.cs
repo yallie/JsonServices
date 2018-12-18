@@ -368,5 +368,18 @@ namespace JsonServices.Tests.Serialization
 			Assert.NotNull(serialized);
 			Assert.IsFalse(serialized.Contains("{\"Parent\":{\"Parent\":{\"Parent\""));
 		}
+
+		[Test]
+		public void SerializesOutputsGuidsWithDashes()
+		{
+			var msg = new RequestMessage
+			{
+				Parameters = Guid.Parse("db22d085-3c9c-4df3-a5ba-2276a47372e3"),
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.NotNull(serialized);
+			Assert.IsTrue(serialized.Contains("db22d085-3c9c-4df3-a5ba-2276a47372e3"));
+		}
 	}
 }

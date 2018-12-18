@@ -13,6 +13,11 @@ namespace JsonServices.Serialization.ServiceStack
 
 		private IDisposable ConfigureSerializer()
 		{
+			// make sure that Guids are formatted with dashes
+			// too bad, there seems to be no way to do this within a configuration scope
+			JsConfig<Guid>.SerializeFn = guid => guid.ToString();
+
+			// other custom serialization settings are scoped
 			var config = JsConfig.BeginScope();
 			config.IncludeNullValues = true;
 			config.IncludeTypeInfo = false;

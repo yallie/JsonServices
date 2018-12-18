@@ -61,7 +61,7 @@ namespace JsonServices.Transport.NetMQ.Tests
 			}
 		}
 
-		[Test, Explicit("Fails on CI server?")]
+		[Test]
 		public async Task JsonClientCanDisconnectAndReconnectUsingUsingNetMQServer()
 		{
 			// ZeroMQ tcp transport
