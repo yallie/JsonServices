@@ -22,9 +22,9 @@ namespace JsonServices.Events
 			}
 		}
 
-		public SubscriptionMessage CreateSubscriptionMessage()
+		private SubscriptionMessage.Subscription CreateSubscription()
 		{
-			return new SubscriptionMessage
+			return new SubscriptionMessage.Subscription
 			{
 				SubscriptionId = SubscriptionId,
 				EventName = EventName,
@@ -33,12 +33,24 @@ namespace JsonServices.Events
 			};
 		}
 
+		public SubscriptionMessage CreateSubscriptionMessage()
+		{
+			return new SubscriptionMessage
+			{
+				Subscriptions = new[] { CreateSubscription() },
+			};
+		}
+
 		public SubscriptionMessage CreateUnsubscriptionMessage()
 		{
-			var msg = CreateSubscriptionMessage();
-			msg.EventFilter = null; // no need to send the filter again
-			msg.Enabled = false;
-			return msg;
+			var sub = CreateSubscription();
+			sub.EventFilter = null; // no need to send the filter again
+			sub.Enabled = false;
+
+			return new SubscriptionMessage
+			{
+				Subscriptions = new[] { sub },
+			};
 		}
 	}
 }

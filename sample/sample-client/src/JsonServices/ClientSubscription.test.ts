@@ -42,23 +42,31 @@ describe("ClientSubscription", () => {
     });
 
     it("should create subscription and unsubscription messages", () => {
-        const sub = new ClientSubscription();
-        sub.subscriptionId = "3";
-        sub.eventName = "ThirdEvent";
-        sub.eventFilter = {
+        const csub = new ClientSubscription();
+        csub.subscriptionId = "3";
+        csub.eventName = "ThirdEvent";
+        csub.eventFilter = {
             Name: "wa"
         };
 
-        const subMsg = sub.createSubscriptionMessage();
-        expect(subMsg.EventName).toEqual(sub.eventName);
-        expect(subMsg.SubscriptionId).toEqual(sub.subscriptionId);
-        expect(subMsg.EventFilter).toEqual(sub.eventFilter);
-        expect(subMsg.Enabled).toEqual(true);
+        const subMsg = csub.createSubscriptionMessage();
+        expect(subMsg.Subscriptions).toBeDefined();
+        expect(subMsg.Subscriptions.length).toEqual(1);
 
-        const unsubMsg = sub.createUnsubscriptionMessage();
-        expect(unsubMsg.EventName).toEqual(sub.eventName);
-        expect(unsubMsg.SubscriptionId).toEqual(sub.subscriptionId);
-        expect(unsubMsg.EventFilter).toEqual(sub.eventFilter);
-        expect(unsubMsg.Enabled).toEqual(false);
+        const sub = subMsg.Subscriptions[0];
+        expect(sub.EventName).toEqual(csub.eventName);
+        expect(sub.SubscriptionId).toEqual(csub.subscriptionId);
+        expect(sub.EventFilter).toEqual(csub.eventFilter);
+        expect(sub.Enabled).toEqual(true);
+
+        const unsubMsg = csub.createUnsubscriptionMessage();
+        expect(unsubMsg.Subscriptions).toBeDefined();
+        expect(unsubMsg.Subscriptions.length).toEqual(1);
+
+        const unsub = unsubMsg.Subscriptions[0];
+        expect(unsub.EventName).toEqual(csub.eventName);
+        expect(unsub.SubscriptionId).toEqual(csub.subscriptionId);
+        expect(unsub.EventFilter).not.toBeDefined();
+        expect(unsub.Enabled).toEqual(false);
     });
 });

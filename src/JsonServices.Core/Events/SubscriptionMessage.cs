@@ -9,12 +9,17 @@ namespace JsonServices.Events
 
 		string ICustomName.MessageName => MessageName;
 
-		public string SubscriptionId { get; set; }
+		public class Subscription
+		{
+			public string SubscriptionId { get; set; }
 
-		public bool Enabled { get; set; }
+			public bool Enabled { get; set; }
 
-		public string EventName { get; set; }
+			public string EventName { get; set; }
 
-		public Dictionary<string, string> EventFilter { get; set; }
+			public Dictionary<string, string> EventFilter { get; set; }
+		}
+
+		public Subscription[] Subscriptions { get; set; }
 	}
 }

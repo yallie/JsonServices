@@ -19,16 +19,19 @@ export class ClientSubscription {
 
     public createSubscriptionMessage = () => {
         const msg = new SubscriptionMessage();
-        msg.Enabled = true;
-        msg.EventName = this.eventName;
-        msg.EventFilter = this.eventFilter;
-        msg.SubscriptionId = this.subscriptionId;
+        msg.Subscriptions = [{
+            Enabled: true,
+            EventName: this.eventName,
+            EventFilter: this.eventFilter,
+            SubscriptionId: this.subscriptionId,
+        }];
         return msg;
     }
 
     public createUnsubscriptionMessage = () => {
         const msg = this.createSubscriptionMessage();
-        msg.Enabled = false;
+        delete msg.Subscriptions[0].EventFilter;
+        msg.Subscriptions[0].Enabled = false;
         return msg;
     }
 }

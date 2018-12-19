@@ -6,17 +6,23 @@ namespace JsonServices.Events
 	{
 		public void Execute(SubscriptionMessage message)
 		{
-			if (message.Enabled)
+			if (message?.Subscriptions != null)
 			{
-				Subscribe(message);
-			}
-			else
-			{
-				Unsubscribe(message);
+				foreach (var sub in message.Subscriptions)
+				{
+					if (sub.Enabled)
+					{
+						Subscribe(sub);
+					}
+					else
+					{
+						Unsubscribe(sub);
+					}
+				}
 			}
 		}
 
-		private void Subscribe(SubscriptionMessage message)
+		private void Subscribe(SubscriptionMessage.Subscription message)
 		{
 			var context = RequestContext.Current;
 			context.Server.SubscriptionManager.Add(new ServerSubscription
@@ -28,7 +34,7 @@ namespace JsonServices.Events
 			});
 		}
 
-		private void Unsubscribe(SubscriptionMessage message)
+		private void Unsubscribe(SubscriptionMessage.Subscription message)
 		{
 			var context = RequestContext.Current;
 			context.Server.SubscriptionManager.Remove(message.EventName, context.ConnectionId, message.SubscriptionId);
