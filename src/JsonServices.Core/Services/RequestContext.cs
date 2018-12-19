@@ -18,6 +18,8 @@ namespace JsonServices.Services
 
 		public RequestMessage RequestMessage { get; internal set; }
 
+		public ResponseMessage ResponseMessage { get; internal set; }
+
 		public IDictionary<string, object> Properties { get; } =
 			new ConcurrentDictionary<string, object>();
 

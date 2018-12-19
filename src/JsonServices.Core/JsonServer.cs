@@ -48,7 +48,11 @@ namespace JsonServices
 
 		public IExceptionTranslator ExceptionTranslator { get; }
 
-		public event EventHandler<RequestContextEventArgs> InitRequestContext;
+		public event EventHandler InitializeRequestContext;
+
+		public event EventHandler BeforeExecuteService;
+
+		public event EventHandler AfterExecuteService;
 
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
@@ -80,30 +84,21 @@ namespace JsonServices
 			}
 		}
 
-		private RequestContext CreateRequestContext(string connectionId)
-		{
-			var ctx = new RequestContext
-			{
-				Server = this,
-				ConnectionId = connectionId,
-			};
-
-			var args = new RequestContextEventArgs();
-			args.RequestContext = ctx;
-			InitRequestContext?.Invoke(this, args);
-			return args.RequestContext ?? ctx;
-		}
-
 		private async void HandleServerMessage(object sender, MessageEventArgs args)
 		{
 			var request = default(RequestMessage);
 			var response = default(ResponseMessage);
-			var context = default(RequestContext);
+			var context = new RequestContext
+			{
+				Server = this,
+				ConnectionId = args.ConnectionId,
+			};
 
 			try
 			{
 				// prepare request execution context
-				RequestContext.CurrentContextHolder.Value = context = CreateRequestContext(args.ConnectionId);
+				RequestContext.CurrentContextHolder.Value = context;
+				InitializeRequestContext?.Invoke(this, EventArgs.Empty);
 
 				// server doesn't ever handle response messages
 				request = (RequestMessage)Serializer.Deserialize(args.Data, MessageTypeProvider, null);
@@ -111,24 +106,24 @@ namespace JsonServices
 
 				try
 				{
+					// execute service
+					BeforeExecuteService?.Invoke(this, EventArgs.Empty);
 					var result = Executor.Execute(request.Name, request.Parameters);
 
 					// await task results
 					if (result is Task task)
 					{
 						await task;
+						result = null;
 
-						// handle Task<TResult>
-						var taskType = task.GetType().GetTypeInfo();
+						// get result from Task<TResult>.Result
+						var taskType = task.GetType();
 						if (taskType.IsGenericType)
 						{
-							// TODO: cache resultProperty and convert it to a delegate
+							// caching resultProperty and converting it to a delegate
+							// probably wouldn't make much difference performance-wise
 							var resultProperty = taskType.GetProperty(nameof(Task<bool>.Result));
 							result = resultProperty.GetValue(task);
-						}
-						else
-						{
-							result = null;
 						}
 					}
 
@@ -181,7 +176,11 @@ namespace JsonServices
 			}
 			finally
 			{
-				// skip response if the request was a one-way notification
+				// set response message
+				context.ResponseMessage = response;
+				AfterExecuteService?.Invoke(this, EventArgs.Empty);
+
+				// skip sending response if the request was a one-way notification
 				if (request == null || !request.IsNotification)
 				{
 					try

@@ -64,29 +64,44 @@ namespace JsonServices.Tests
 		}
 
 		[Test]
-		public void JsonServerHasEvents()
+		public async Task JsonServerHasEvents()
 		{
 			var server = new StubServer();
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
-
 			var js = new JsonServer(server, provider, serializer, executor);
-			var counter = 0;
-			void messageEventHandler(object sender, MessageEventArgs e) => counter++;
 
-			js.ClientConnected += messageEventHandler;
-			js.ClientDisconnected += messageEventHandler;
+			var connectCounter = 0;
+			void connectEventHandler(object sender, MessageEventArgs e) => connectCounter++;
+			js.ClientConnected += connectEventHandler;
+			js.ClientDisconnected += connectEventHandler;
+
+			var serviceCounter = 0;
+			void serviceEventHandler(object sender, EventArgs e) => serviceCounter++;
+			js.InitializeRequestContext += serviceEventHandler;
+			js.BeforeExecuteService += serviceEventHandler;
+			js.AfterExecuteService += serviceEventHandler;
 
 			var client = new StubClient(server);
 			var jc = new JsonClient(client, provider, serializer);
-			Assert.AreEqual(1, counter);
+			Assert.AreEqual(1, connectCounter);
+			Assert.AreEqual(0, serviceCounter);
+
+			// connect makes one service call and fires three events:
+			// InitializeRequestContext, BeforeExecuteService, AfterExecuteService
+			await jc.ConnectAsync();
+			Assert.AreEqual(3, serviceCounter);
 
 			js.Dispose();
-			Assert.AreEqual(2, counter);
+			Assert.AreEqual(2, connectCounter);
 
-			js.ClientConnected -= messageEventHandler;
-			js.ClientDisconnected -= messageEventHandler;
+			// unsubscribe
+			js.ClientDisconnected -= connectEventHandler;
+			js.ClientConnected -= connectEventHandler;
+			js.AfterExecuteService -= serviceEventHandler;
+			js.BeforeExecuteService -= serviceEventHandler;
+			js.InitializeRequestContext -= serviceEventHandler;
 		}
 
 		[Test]

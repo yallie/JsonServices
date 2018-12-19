@@ -143,5 +143,29 @@ namespace JsonServices.Tests
 			var pm = new JsonClient.PendingMessage { Name = "Test" };
 			Assert.AreEqual("Test", pm.ToString());
 		}
+
+		[Test]
+		public void TaskResultCanBeAccessedUsingDynamicVariable()
+		{
+			var task1 = Task.FromResult("This is a result of Task<string>");
+			Task task2 = task1; // base Task type doesn't have the Result property
+			Assert.IsTrue(task2.GetType().IsGenericType);
+
+			// note: dynamics require Microsoft.CSharp and System.Dynamic.Runtime dependencies
+			object result = ((dynamic)task2).Result;
+			Assert.AreEqual(result, task1.Result);
+		}
+
+		[Test]
+		public void TaskResultCanBeAccessedThroughReflection()
+		{
+			// doesn't work for open generic type:
+			// var resultProperty = typeof(Task<>).GetProperty("Result");
+			var task1 = Task.FromResult("Hello there");
+			var resultProperty = task1.GetType().GetProperty("Result");
+			Task task2 = task1;
+			var result = resultProperty.GetValue(task2);
+			Assert.AreEqual(task1.Result, result);
+		}
 	}
 }
