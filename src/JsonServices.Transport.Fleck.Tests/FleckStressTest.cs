@@ -1,7 +1,6 @@
 ﻿using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
 using JsonServices.Tests.Services;
-using JsonServices.Transport.WebSocketSharp;
 using NUnit.Framework;
 
 namespace JsonServices.Transport.Fleck.Tests
@@ -11,9 +10,9 @@ namespace JsonServices.Transport.Fleck.Tests
 	{
 		const string Url = "ws://127.0.0.1:8794";
 
-		protected override int MaxClientsWithExceptions => 30;
+		protected override int MaxClientsWithExceptions => 100;
 
-		protected override int MaxClientsWithoutExceptions => 30;
+		protected override int MaxClientsWithoutExceptions => 500;
 
 		protected override JsonServer CreateServer()
 		{
@@ -27,7 +26,7 @@ namespace JsonServices.Transport.Fleck.Tests
 
 		protected override JsonClient CreateClient(JsonServer server)
 		{
-			var client = new WebSocketClient(Url);
+			var client = new FleckClient(Url);
 			var serializer = new Serializer();
 			var provider = new StubMessageTypeProvider();
 			return new JsonClient(client, provider, serializer);

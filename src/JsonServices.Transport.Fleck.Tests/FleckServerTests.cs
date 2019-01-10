@@ -41,7 +41,7 @@ namespace JsonServices.Transport.Fleck.Tests
 		public Task CallCalculateServiceUsingFleckServerAndWebSocketSharpClient() =>
 			CallCalculateServiceCore(url => new WebSocketClient(url));
 
-		[Test, Ignore("Doesn't work yet")]
+		[Test]
 		public Task CallCalculateServiceUsingFleckServerAndFleckClient() =>
 			CallCalculateServiceCore(url => new FleckClient(url));
 
@@ -63,11 +63,18 @@ namespace JsonServices.Transport.Fleck.Tests
 		}
 
 		[Test]
-		public async Task CallUnregisteredServiceUsingFleckServer()
+		public Task CallUnregisteredServiceUsingFleckServerAndWebSocketSharpClient() =>
+			CallUnregisteredServiceCore(url => new WebSocketClient(url));
+
+		[Test]
+		public Task CallUnregisteredServiceUsingFleckServerAndFleckClient() =>
+			CallUnregisteredServiceCore(url => new FleckClient(url));
+
+		private async Task CallUnregisteredServiceCore(Func<string, IClient> clientFactory)
 		{
 			// websocket transport
 			var server = new FleckServer("ws://127.0.0.1:8789");
-			var client = new WebSocketClient("ws://127.0.0.1:8789");
+			var client = clientFactory("ws://127.0.0.1:8789");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
@@ -81,11 +88,18 @@ namespace JsonServices.Transport.Fleck.Tests
 		}
 
 		[Test]
-		public async Task JsonServerCanExecuteGenericMessagesUsingFleckServer()
+		public Task JsonServerCanExecuteGenericMessagesUsingFleckServerAndWebSocketSharpClient() =>
+			CallGenericMessagesCore(url => new WebSocketClient(url));
+
+		[Test]
+		public Task JsonServerCanExecuteGenericMessagesUsingFleckServerAndFleckClient() =>
+			CallGenericMessagesCore(url => new FleckClient(url));
+
+		private async Task CallGenericMessagesCore(Func<string, IClient> clientFactory)
 		{
 			// websocket transport
 			var server = new FleckServer("ws://127.0.0.1:8789");
-			var client = new WebSocketClient("ws://127.0.0.1:8789");
+			var client = clientFactory("ws://127.0.0.1:8789");
 			var serializer = new Serializer();
 			var executor = new GenericServiceExecutor();
 			var provider = new GenericMessageTypeProvider();

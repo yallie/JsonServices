@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
 using JsonServices.Tests.Services;
@@ -11,12 +12,19 @@ namespace JsonServices.Transport.Fleck.Tests
 	public class FleckClientTests : JsonClientTests
 	{
 		[Test]
-		public async Task JsonClientSupportsSubscriptionsAndUnsubscriptionsUsingFleckServer()
+		public Task JsonClientSupportsSubscriptionsAndUnsubscriptionsUsingFleckServerAndWebSocketSharpClient() =>
+			TestSubscriptionsAndUnsubscriptionsCore(url => new WebSocketClient(url));
+
+		[Test]
+		public Task JsonClientSupportsSubscriptionsAndUnsubscriptionsUsingFleckServerAndFleckClient() =>
+			TestSubscriptionsAndUnsubscriptionsCore(url => new FleckClient(url));
+
+		private async Task TestSubscriptionsAndUnsubscriptionsCore(Func<string, IClient> clientFactory)
 		{
 			// websocket transport
 			var server = new FleckServer("ws://127.0.0.1:8787");
-			var client = new WebSocketClient("ws://127.0.0.1:8787");
-			var secondClient = new WebSocketClient("ws://127.0.0.1:8787");
+			var client = clientFactory("ws://127.0.0.1:8787");
+			var secondClient = clientFactory("ws://127.0.0.1:8787");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
@@ -36,12 +44,19 @@ namespace JsonServices.Transport.Fleck.Tests
 		}
 
 		[Test]
-		public async Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingFleckServer()
+		public Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingFleckServerAndWebSocketSharpClient() =>
+			TestFilteredSubscriptionsAndUnsubscriptionsCore(url => new WebSocketClient(url));
+
+		[Test]
+		public Task JsonClientSupportsFilteredSubscriptionsAndUnsubscriptionsUsingFleckServerAndFleckClient() =>
+			TestFilteredSubscriptionsAndUnsubscriptionsCore(url => new FleckClient(url));
+
+		private async Task TestFilteredSubscriptionsAndUnsubscriptionsCore(Func<string, IClient> clientFactory)
 		{
 			// websocket transport
 			var server = new FleckServer("ws://127.0.0.1:8787");
-			var client = new WebSocketClient("ws://127.0.0.1:8787");
-			var secondClient = new WebSocketClient("ws://127.0.0.1:8787");
+			var client = clientFactory("ws://127.0.0.1:8787");
+			var secondClient = clientFactory("ws://127.0.0.1:8787");
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();

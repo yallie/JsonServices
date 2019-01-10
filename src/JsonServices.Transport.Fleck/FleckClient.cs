@@ -66,10 +66,7 @@ namespace JsonServices.Transport.Fleck
 					}
 					while (!result.EndOfMessage);
 
-					MessageReceived?.Invoke(this, new MessageEventArgs
-					{
-						Data = sb.ToString(),
-					});
+					OnMessageReceived(sb.ToString());
 				}
 			}
 			catch (Exception)
@@ -80,6 +77,18 @@ namespace JsonServices.Transport.Fleck
 			{
 				WebSocket.Dispose();
 			}
+		}
+
+		private void OnMessageReceived(string data)
+		{
+			ThreadPool.QueueUserWorkItem(x =>
+			{
+				// TODO: catch and log exceptions?
+				MessageReceived?.Invoke(this, new MessageEventArgs
+				{
+					Data = data,
+				});
+			});
 		}
 
 		public async Task DisconnectAsync()
