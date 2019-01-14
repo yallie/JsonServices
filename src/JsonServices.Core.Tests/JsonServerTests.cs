@@ -382,6 +382,9 @@ namespace JsonServices.Tests
 			await jc.ConnectAsync(credentials);
 			await Assert_NotTimedOut(jc.Call(new DelayRequest { Milliseconds = 10 }), "jc.Call(Delay 10)");
 			await Assert_TimedOut(jc.Call(new DelayRequest { Milliseconds = 200 }), "jc.Call(Delay 200)", Task.Delay(10));
+
+			// make sure that await completes before the server is disposed (affects NetMQ server)
+			await Task.Delay(300);
 		}
 
 		[Test]
