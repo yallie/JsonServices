@@ -23,15 +23,24 @@ namespace JsonServices.Serialization.Newtonsoft
 
 		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
 		{
-			using (var sr = new StringReader(data))
+			using (var sr = new StringReader(data ?? string.Empty))
 			{
 				// validate message, detect message type and name
-				var preview = (GenericMessage)JsonSerializer.Deserialize(sr, typeof(GenericMessage));
-				if (!preview.IsValid)
+				var preview = default(GenericMessage);
+				try
+				{
+					preview = (GenericMessage)JsonSerializer.Deserialize(sr, typeof(GenericMessage));
+				}
+				catch (JsonReaderException)
+				{
+					// invalid message format
+				}
+
+				if (preview == null || !preview.IsValid)
 				{
 					throw new InvalidRequestException(data)
 					{
-						MessageId = preview.Id,
+						MessageId = preview?.Id,
 					};
 				}
 

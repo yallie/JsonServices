@@ -155,6 +155,30 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
+		public void SerializerThrowsInvalidRequestExceptionOnInvalidMessage()
+		{
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize("bozo", TypeProvider, NameProvider));
+		}
+
+		[Test]
+		public void SerializerThrowsInvalidRequestExceptionOnNullMessage()
+		{
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize("null", TypeProvider, NameProvider));
+		}
+
+		[Test]
+		public void SerializerThrowsInvalidRequestExceptionOnEmptyMessage()
+		{
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(string.Empty, TypeProvider, NameProvider));
+		}
+
+		[Test]
+		public void SerializerThrowsInvalidRequestExceptionOnNullString()
+		{
+			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(null, TypeProvider, NameProvider));
+		}
+
+		[Test]
 		public void SerializerCanDeserializeRequestMessage()
 		{
 			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true},\"id\":\"123\"}";

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization.ServiceStack.Internal;
@@ -39,12 +40,21 @@ namespace JsonServices.Serialization.ServiceStack
 		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
 		{
 			// validate message, detect message type and name
-			var preview = (GenericMessage)JsonSerializer.DeserializeFromString(data, typeof(GenericMessage));
-			if (!preview.IsValid)
+			var preview = default(GenericMessage);
+			try
+			{
+				preview = (GenericMessage)JsonSerializer.DeserializeFromString(data ?? string.Empty, typeof(GenericMessage));
+			}
+			catch (SerializationException)
+			{
+				// invalid message format
+			}
+
+			if (preview == null || !preview.IsValid)
 			{
 				throw new InvalidRequestException(data)
 				{
-					MessageId = preview.Id,
+					MessageId = preview?.Id,
 				};
 			}
 
