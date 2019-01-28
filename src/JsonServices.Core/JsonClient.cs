@@ -33,7 +33,7 @@ namespace JsonServices
 
 		private IMessageTypeProvider MessageTypeProvider { get; }
 
-		private ISerializer Serializer { get; }
+		internal ISerializer Serializer { get; set; }
 
 		public event EventHandler<ThreadExceptionEventArgs> UnhandledException;
 
@@ -130,7 +130,7 @@ namespace JsonServices
 			return result;
 		}
 
-		private void HandleClientMessage(object sender, MessageEventArgs args)
+		internal void HandleClientMessage(object sender, MessageEventArgs args)
 		{
 			var msg = default(IMessage);
 			try
@@ -141,8 +141,9 @@ namespace JsonServices
 			{
 				if (ex.MessageId == null)
 				{
-					// don't know how to handle when message id is unknown
-					throw;
+					// don't know how to route a message when its identity is unknown
+					UnhandledException?.Invoke(this, new ThreadExceptionEventArgs(ex));
+					return;
 				}
 
 				// handle it as an error response
@@ -154,8 +155,8 @@ namespace JsonServices
 			}
 			catch (Exception ex)
 			{
-				var eargs = new ThreadExceptionEventArgs(ex);
-				UnhandledException?.Invoke(this, eargs);
+				// message identity is unknown because it's a generic exception
+				UnhandledException?.Invoke(this, new ThreadExceptionEventArgs(ex));
 				return;
 			}
 

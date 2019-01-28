@@ -9,6 +9,7 @@ using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
+using JsonServices.Transport;
 using NUnit.Framework;
 
 namespace JsonServices.Tests
@@ -36,6 +37,32 @@ namespace JsonServices.Tests
 			Assert.Throws<ArgumentNullException>(() => jc.Notify(null));
 			Assert.ThrowsAsync<ArgumentNullException>(() => jc.Call(null));
 			Assert.ThrowsAsync<ArgumentNullException>(() => jc.Call<string>(null));
+		}
+
+		[Test]
+		public void JsonClientCallsUnhandledException()
+		{
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var clientProvider = new StubMessageTypeProvider();
+			var clientSerializer = new Serializer();
+			var jc = new JsonClient(client, clientProvider, clientSerializer);
+			var exception = default(Exception);
+			jc.UnhandledException += (s, e) => exception = e.Exception;
+
+			// simulate JsonServicesException
+			jc.HandleClientMessage(this, new MessageEventArgs());
+			Assert.IsInstanceOf<JsonServicesException>(exception);
+
+			exception = null;
+			jc.HandleClientMessage(this, new MessageEventArgs { Data = string.Empty });
+			Assert.IsInstanceOf<JsonServicesException>(exception);
+
+			// simulate NullReferenceException
+			exception = null;
+			jc.Serializer = null;
+			jc.HandleClientMessage(this, new MessageEventArgs { Data = "Goofy" });
+			Assert.IsInstanceOf<NullReferenceException>(exception);
 		}
 
 		[Test]
