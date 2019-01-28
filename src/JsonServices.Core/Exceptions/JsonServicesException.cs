@@ -8,8 +8,8 @@ namespace JsonServices.Exceptions
 	[Serializable]
 	public class JsonServicesException : Exception
 	{
-		public JsonServicesException(int code, string message)
-			: base(message)
+		public JsonServicesException(int code, string message, Exception innerException = null)
+			: base(message, innerException)
 		{
 			Code = code;
 		}

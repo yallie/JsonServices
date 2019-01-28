@@ -7,6 +7,7 @@ using JsonServices.Serialization;
 using JsonServices.Services;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Messages.Generic;
+using JsonServices.Tests.Serialization;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
 using JsonServices.Transport;
@@ -25,15 +26,6 @@ namespace JsonServices.Tests
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), null, null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), null, null));
 			Assert.Throws<ArgumentNullException>(() => new JsonServer(new StubServer(), new StubMessageTypeProvider(), new Serializer(), null));
-		}
-
-		private class BrokenSerializer : ISerializer
-		{
-			public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider) =>
-				throw new NotImplementedException();
-
-			public string Serialize(IMessage message) =>
-				throw new NotImplementedException();
 		}
 
 		[Test]
@@ -56,10 +48,34 @@ namespace JsonServices.Tests
 				js.UnhandledException += (s, e) => tcs.TrySetException(e.Exception);
 
 				// TODO: can we have something better than a timeout here?
-				await Assert_TimedOut(jc.Call(new GetVersion()), timeout: Task.Delay(200));
+				await Assert_TimedOut(jc.ConnectAsync(), timeout: Task.Delay(200));
 
 				// the server should have got an unhandled exception
 				Assert.ThrowsAsync<NotImplementedException>(async () => await Assert_NotTimedOut(tcs.Task));
+			}
+		}
+
+		[Test]
+		public void JsonServerHandlesMessageTypeProvidersErrors()
+		{
+			// fake transport and serializer
+			var server = new StubServer();
+			var client = new StubClient(server);
+			var provider = new BrokenMessageTypeProvider();
+			var serverSerializer = new Serializer();
+			var clientSerializer = new Serializer();
+			var executor = new StubExecutor();
+
+			using (var js = new JsonServer(server, provider, serverSerializer, executor))
+			using (var jc = new JsonClient(client, provider, clientSerializer))
+			{
+				js.Start();
+
+				var ex = Assert.ThrowsAsync<InvalidRequestException>(() => Assert_NotTimedOut(jc.ConnectAsync(), timeout: Task.Delay(200)));
+
+				// note: JsonServicesException.MessageId is lost
+				// when an exception is translated to Error and back again
+				Assert.IsNull(ex.MessageId);
 			}
 		}
 

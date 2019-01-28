@@ -89,6 +89,13 @@ namespace JsonServices.Serialization.Newtonsoft
 
 					throw;
 				}
+				catch (Exception ex)
+				{
+					throw new InvalidRequestException(data, ex)
+					{
+						MessageId = preview.Id,
+					};
+				}
 			}
 		}
 

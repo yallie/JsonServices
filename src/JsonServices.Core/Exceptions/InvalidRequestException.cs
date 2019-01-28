@@ -13,6 +13,11 @@ namespace JsonServices.Exceptions
 		{
 		}
 
+		public InvalidRequestException(string data, Exception innerException)
+			: base(ErrorCode, $"Invalid request. Request data: {data}")
+		{
+		}
+
 		public InvalidRequestException(Error error)
 			: base(ErrorCode, error.Message)
 		{

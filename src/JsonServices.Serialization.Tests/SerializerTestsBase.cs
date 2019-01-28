@@ -157,25 +157,37 @@ namespace JsonServices.Tests.Serialization
 		[Test]
 		public void SerializerThrowsInvalidRequestExceptionOnInvalidMessage()
 		{
-			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize("bozo", TypeProvider, NameProvider));
+			var ex = Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize("bozo", TypeProvider, NameProvider));
+			Assert.IsNull(ex.MessageId);
 		}
 
 		[Test]
 		public void SerializerThrowsInvalidRequestExceptionOnNullMessage()
 		{
-			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize("null", TypeProvider, NameProvider));
+			var ex = Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize("null", TypeProvider, NameProvider));
+			Assert.IsNull(ex.MessageId);
 		}
 
 		[Test]
 		public void SerializerThrowsInvalidRequestExceptionOnEmptyMessage()
 		{
-			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(string.Empty, TypeProvider, NameProvider));
+			var ex = Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(string.Empty, TypeProvider, NameProvider));
+			Assert.IsNull(ex.MessageId);
 		}
 
 		[Test]
 		public void SerializerThrowsInvalidRequestExceptionOnNullString()
 		{
-			Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(null, TypeProvider, NameProvider));
+			var ex = Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(null, TypeProvider, NameProvider));
+			Assert.IsNull(ex.MessageId);
+		}
+
+		[Test]
+		public void SerializerThrowsInvalidRequestExceptionWhenMessageTypeProviderThrowsAnUnhandledException()
+		{
+			var data = "{\"jsonrpc\":\"2.0\",\"method\":\"JsonServices.Tests.Messages.GetVersion\",\"params\":{\"IsInternal\":true},\"id\":\"123\"}";
+			var ex = Assert.Throws<InvalidRequestException>(() => Serializer.Deserialize(data, new BrokenMessageTypeProvider(), NameProvider));
+			Assert.AreEqual("123", ex.MessageId);
 		}
 
 		[Test]

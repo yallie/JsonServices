@@ -105,6 +105,13 @@ namespace JsonServices.Serialization.ServiceStack
 
 				throw;
 			}
+			catch (Exception ex)
+			{
+				throw new InvalidRequestException(data, ex)
+				{
+					MessageId = preview.Id,
+				};
+			}
 		}
 
 		private RequestMessage DeserializeRequest(string data, string name, string id, IMessageTypeProvider typeProvider)
