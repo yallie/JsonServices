@@ -9,7 +9,7 @@ namespace JsonServices.Auth
 		{
 		}
 
-		public AuthResponse(IIdentity identity)
+		public AuthResponse(JsonIdentity identity)
 		{
 			AuthenticatedIdentity = identity;
 		}
@@ -19,7 +19,7 @@ namespace JsonServices.Auth
 
 		public string SessionId { get; set; } // optional
 
-		public IIdentity AuthenticatedIdentity { get; set; }
+		public JsonIdentity AuthenticatedIdentity { get; set; }
 
 		public bool Completed => AuthenticatedIdentity != null;
 	}

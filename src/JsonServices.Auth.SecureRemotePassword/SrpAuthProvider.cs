@@ -134,7 +134,10 @@ namespace JsonServices.Auth.SecureRemotePassword
 		{
 			var result = new AuthResponse();
 			result.Parameters[SrpProtocolConstants.ServerSessionProofKey] = serverSessionProof;
-			result.AuthenticatedIdentity = AuthRepository.GetIdentity(account);
+
+			var identity = AuthRepository.GetIdentity(account);
+			var jsonIdentity = identity as JsonIdentity ?? new JsonIdentity(identity);
+			result.AuthenticatedIdentity = jsonIdentity;
 			return result;
 		}
 	}

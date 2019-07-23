@@ -27,7 +27,7 @@ namespace JsonServices.Tests.Auth
 			Assert.AreEqual(Password, authRequest.Parameters[AuthRequest.PasswordKey]);
 
 			IsCalled = true;
-			return new AuthResponse(new GenericIdentity(UserName, "None"));
+			return new AuthResponse(new JsonIdentity(UserName, "None"));
 		}
 	}
 }

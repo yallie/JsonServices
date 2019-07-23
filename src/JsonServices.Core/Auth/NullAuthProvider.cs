@@ -8,7 +8,7 @@ namespace JsonServices.Auth
 		{
 			return new AuthResponse
 			{
-				AuthenticatedIdentity = new GenericIdentity(string.Empty, "None"),
+				AuthenticatedIdentity = new JsonIdentity(string.Empty, "None"),
 			};
 		}
 	}
