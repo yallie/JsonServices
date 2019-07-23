@@ -12,7 +12,13 @@ before_build:
 build:
   project: src\JsonServices.sln
   parallel: true
+  publish_nuget: true
+  publish_nuget_symbols: true
+  use_snupkg_format: true
   verbosity: minimal
+
+artifacts:
+- path: '**\*.nupkg' # find all NuGet packages recursively
 
 before_test:
 # Start sample JsonServices server 
