@@ -3,23 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/dom": ">=5",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/ws": "^7.2.1",
-    "@yarnpkg/pnpify": "^2.0.0-rc.17",
     "eventemitter3": "^4.0.0",
     "isomorphic-ws": "^4.0.1",
     "json-services-client": "https://github.com/yallie/JsonServicesClient.git#npm",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
-    "typescript": "~3.7.2",
     "ws": "^7.2.1"
   },
   "scripts": {
@@ -44,6 +33,17 @@
     ]
   },
   "devDependencies": {
-    "jest-junit": "^10.0.0"
+    "@testing-library/dom": ">=5",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/ws": "^7.2.1",
+    "@yarnpkg/pnpify": "^2.0.0-rc.17",
+    "jest-junit": "^10.0.0",
+    "typescript": "~3.7.2"
   }
 }
