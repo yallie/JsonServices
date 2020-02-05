@@ -8,7 +8,9 @@ before_build:
 - choco install opencover.portable -y -r >>choco-install.log
 - choco install codecov -y -r >>choco-install.log
 - npm install -g yarn@berry
-- yarn install --cwd sample/sample-client --silent
+- cd sample/sample-client
+- yarn install
+- cd ../..
 
 build:
   project: src\JsonServices.sln
