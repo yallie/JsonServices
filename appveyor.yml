@@ -7,6 +7,7 @@ before_build:
 - nuget restore src\JsonServices.sln -verbosity quiet
 - choco install opencover.portable -y -r >>choco-install.log
 - choco install codecov -y -r >>choco-install.log
+- ps: Install-Product node
 - npm install -g yarn@berry
 - cd sample/sample-client
 - yarn install
