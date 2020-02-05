@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JsonServices.Messages;
 
 namespace JsonServices.Events
@@ -21,5 +22,15 @@ namespace JsonServices.Events
 		}
 
 		public Subscription[] Subscriptions { get; set; }
+
+		public override string ToString()
+		{
+			if (Subscriptions == null)
+			{
+				return base.ToString();
+			}
+
+			return string.Join(", ", Subscriptions.Select(s => s.EventName));
+		}
 	}
 }
