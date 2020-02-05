@@ -1,3 +1,3 @@
 export class CalculateResponse {
-    public Result: string;
+    public Result!: string;
 }

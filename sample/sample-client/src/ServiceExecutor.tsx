@@ -1,5 +1,5 @@
 import * as React from 'react';
-import JsonClient from './JsonServices/JsonClient';
+import JsonClient from 'json-services-client';
 import { Calculate } from './Messages/Calculate';
 import { EventBroadcaster } from './Messages/EventBroadcaster';
 import { GetVersion } from './Messages/GetVersion';
@@ -154,7 +154,7 @@ export class ServiceExecutor extends React.Component<{}, IState> {
             const unsubscribeAsync = await this.client.subscribe({
                 eventName,
                 eventFilter,
-                eventHandler: (args) => {
+                eventHandler: (args: any) => {
                     this.setState(oldState => ({
                         eventLog: oldState.eventLog +
                             eventName + ":" + JSON.stringify(args) + "\n"

@@ -1,3 +1,3 @@
 export class GetVersionResponse {
-    public Version: string;
+    public Version!: string;
 }
