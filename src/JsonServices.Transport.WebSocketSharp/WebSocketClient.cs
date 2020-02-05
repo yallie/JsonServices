@@ -38,7 +38,7 @@ namespace JsonServices.Transport.WebSocketSharp
 
 		private void OnClose(object sender, CloseEventArgs e)
 		{
-			Disconnected.Invoke(this, e);
+			Disconnected?.Invoke(this, e);
 		}
 
 		private void OnMessageReceived(object sender, WsMessageEventArgs e)

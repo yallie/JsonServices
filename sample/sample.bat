@@ -6,6 +6,7 @@ if not "%1" == "" goto :skip_client
 
 :: start client
 pushd sample-client
+yarn
 yarn start
 popd
 
