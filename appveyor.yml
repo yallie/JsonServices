@@ -67,4 +67,4 @@ after_test:
 - codecov -f "JsonServices.Auth.SecureRemotePassword.Tests.xml"
 
 # Upload jest coverage reports to codecov.io
-- codecov -f "sample/sample-client/coverage/clover.xml"
+# - codecov -f "sample/sample-client/coverage/clover.xml"
