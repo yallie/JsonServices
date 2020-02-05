@@ -3,6 +3,10 @@ image: Visual Studio 2017
 environment:
   JsonServicesSampleServer: true
 
+cache:
+- sample/sample-client/.yarn
+- sample/sample-client/.pnp.js
+
 before_build:
 - nuget restore src\JsonServices.sln -verbosity quiet
 - choco install opencover.portable -y -r >>choco-install.log
@@ -10,7 +14,7 @@ before_build:
 - ps: Install-Product node
 - npm install -g yarn@berry
 - cd sample/sample-client
-- yarn install
+- yarn install >>yarn-install.log
 - cd ../..
 
 build:
