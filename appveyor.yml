@@ -12,7 +12,7 @@ before_build:
 - choco install opencover.portable -y -r >>choco-install.log
 - choco install codecov -y -r >>choco-install.log
 - ps: Install-Product node
-- npm install -g yarn@berry
+- npm install -g yarn@berry >>yarn-install.log
 - cd sample/sample-client
 - yarn install >>yarn-install.log
 - cd ../..
@@ -27,6 +27,7 @@ build:
 
 artifacts:
 - path: '**\*.nupkg' # find all NuGet packages recursively
+- path: '**\*.log' # find all log files recursively
 
 before_test:
 # Start sample JsonServices server 
