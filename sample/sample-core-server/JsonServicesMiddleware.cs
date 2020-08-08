@@ -13,10 +13,17 @@ namespace JsonServices.Sample.CoreServer
 
 		private JsonServicesConnectionManager ConnectionManager { get; }
 
-		public JsonServicesMiddleware(RequestDelegate next, IServer connectionManager)
+		private JsonServer JsonServer { get; }
+
+		public JsonServicesMiddleware(IServer connectionManager, JsonServer jsonServer, RequestDelegate next)
 		{
-			Next = next;
+			// JsonServices middleware always works with ASP.NET Core web sockets
 			ConnectionManager = (JsonServicesConnectionManager)connectionManager;
+			JsonServer = jsonServer;
+			Next = next;
+
+			// enable JsonServer
+			JsonServer.Start();
 		}
 
 		public async Task InvokeAsync(HttpContext context)
@@ -24,7 +31,8 @@ namespace JsonServices.Sample.CoreServer
 			if (context.WebSockets.IsWebSocketRequest)
 			{
 				var ws = await context.WebSockets.AcceptWebSocketAsync();
-				Console.WriteLine("Web socket connection accepted. What's next?");
+				await ConnectionManager.HandleIncomingMessages(ws);
+				Console.WriteLine("Web socket connection is finished.");
 			}
 			else
 			{
