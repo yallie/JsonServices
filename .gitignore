@@ -4,5 +4,6 @@
 *.log
 obj
 bin
+.temp
 /src/JsonServices.TypeScript.Sample/client/*.js
 /src/TestResult.xml

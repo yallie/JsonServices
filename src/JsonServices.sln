@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Core", "JsonServices.Core\JsonServices.Core.csproj", "{1EFB6DC4-48AF-4BE7-84FF-98938793ECA2}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Auth.SecureRemotePassword", "JsonServices.Auth.SecureRemotePassword\JsonServices.Auth.SecureRemotePassword.csproj", "{9ABE209A-94E1-4D21-BC66-BB64CE65ACCE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Auth.SecureRemotePassword.Tests", "JsonServices.Auth.SecureRemotePassword.Tests\JsonServices.Auth.SecureRemotePassword.Tests.csproj", "{8D5E6594-6C79-452B-89E0-87DA720B6B84}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Sample.CoreServer", "..\sample\sample-core-server\JsonServices.Sample.CoreServer.csproj", "{CA33030D-A387-49CD-9329-042F7B464067}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +101,10 @@ Global
 		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D5E6594-6C79-452B-89E0-87DA720B6B84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA33030D-A387-49CD-9329-042F7B464067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA33030D-A387-49CD-9329-042F7B464067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA33030D-A387-49CD-9329-042F7B464067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA33030D-A387-49CD-9329-042F7B464067}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
