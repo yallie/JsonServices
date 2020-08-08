@@ -10,17 +10,17 @@ using Microsoft.Extensions.Logging;
 
 namespace JsonServices.Sample.CoreServer
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = CreateWebHostBuilder(args);
-            var webHost = builder.Build();
-            webHost.Run();
-        }
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			var builder = CreateWebHostBuilder(args);
+			var webHost = builder.Build();
+			webHost.Run();
+		}
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
+		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+			WebHost.CreateDefaultBuilder(args)
+				.UseStartup<Startup>();
+	}
 }

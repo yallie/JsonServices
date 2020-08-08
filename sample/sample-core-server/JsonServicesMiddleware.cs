@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonServices.Transport;
 using Microsoft.AspNetCore.Http;
 
 namespace JsonServices.Sample.CoreServer
@@ -10,9 +11,12 @@ namespace JsonServices.Sample.CoreServer
 	{
 		private RequestDelegate Next { get; }
 
-		public JsonServicesMiddleware(RequestDelegate next)
+		private JsonServicesConnectionManager ConnectionManager { get; }
+
+		public JsonServicesMiddleware(RequestDelegate next, IServer connectionManager)
 		{
 			Next = next;
+			ConnectionManager = (JsonServicesConnectionManager)connectionManager;
 		}
 
 		public async Task InvokeAsync(HttpContext context)
