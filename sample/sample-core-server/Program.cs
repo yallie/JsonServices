@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace JsonServices.Sample.Server
+namespace JsonServices.Sample.CoreServer
 {
     public class Program
     {

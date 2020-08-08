@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JsonServices.Sample.Server
+namespace JsonServices.Sample.CoreServer
 {
     public class Startup
     {
@@ -26,20 +26,7 @@ namespace JsonServices.Sample.Server
             }
 
             app.UseWebSockets();
-
-            // our middleware
-            app.Use(async (context, next) =>
-            {
-                if (context.WebSockets.IsWebSocketRequest)
-                {
-                    var ws = await context.WebSockets.AcceptWebSocketAsync();
-                    Console.WriteLine("Web socket connection accepted. What's next?");
-                }
-                else
-                {
-                    await next();
-                }
-            });
+            app.UseJsonServices();
 
             app.Run(async (context) =>
             {
