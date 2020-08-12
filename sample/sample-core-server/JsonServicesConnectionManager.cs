@@ -42,7 +42,7 @@ namespace JsonServices.Sample.CoreServer
 				ConnectionId = connection.ConnectionId,
 			});
 
-			// 2. TODO: handle incoming messages in a loop until the socket is closed
+			// 2. handle incoming messages in a loop until the socket is closed
 			await ReceiveMessages(connection);
 
 			// 3. disconnect the client
