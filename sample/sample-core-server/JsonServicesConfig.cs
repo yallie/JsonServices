@@ -18,43 +18,30 @@ namespace JsonServices.Sample.CoreServer
 		public JsonServicesConfig(IServiceCollection services)
 		{
 			Services = services;
-		}
-
-		private IServiceCollection Services { get; }
-
-		private bool NeedsSerializer { get; set; } = true;
-
-		private bool NeedsServiceExecutor { get; set; } = true;
-
-		private bool NeedsMessageTypeProvider { get; set; } = true;
-
-		public IServiceCollection GetServices()
-		{
 			Services.AddSingleton<IServer, JsonServicesConnectionManager>();
 			Services.AddSingleton<JsonServer>();
 
-			if (NeedsSerializer)
-			{
-				AddSerializer<Serializer>();
-			}
+			// default service implementations
+			AddSerializer<Serializer>();
+			AddServiceExecutor<ServiceExecutor>();
+			AddTypeProvider<MessageTypeProvider>();
+		}
 
-			if (NeedsServiceExecutor)
-			{
-				AddServiceExecutor<ServiceExecutor>();
-			}
+		public IServiceCollection Services { get; }
 
-			if (NeedsMessageTypeProvider)
+		private void RemoveRegistration<IService>()
+		{
+			var descriptor = Services.FirstOrDefault(d => d.ServiceType == typeof(IService));
+			if (descriptor != null)
 			{
-				AddTypeProvider<MessageTypeProvider>();
+				Services.Remove(descriptor);
 			}
-
-			return Services;
 		}
 
 		public JsonServicesConfig AddSerializer<TSerializer>()
 			where TSerializer : class, ISerializer
 		{
-			NeedsSerializer = false;
+			RemoveRegistration<ISerializer>();
 			Services.AddSingleton<ISerializer, TSerializer>();
 			return this;
 		}
@@ -62,7 +49,7 @@ namespace JsonServices.Sample.CoreServer
 		public JsonServicesConfig AddServiceExecutor<TServiceExecutor>()
 			where TServiceExecutor : class, IServiceExecutor
 		{
-			NeedsServiceExecutor = false;
+			RemoveRegistration<ISerializer>();
 			Services.AddSingleton<IServiceExecutor, ServiceExecutor>();
 			return this;
 		}
@@ -70,7 +57,7 @@ namespace JsonServices.Sample.CoreServer
 		public JsonServicesConfig AddTypeProvider<TMessageTypeProvider>()
 			where TMessageTypeProvider : class, IMessageTypeProvider
 		{
-			NeedsMessageTypeProvider = false;
+			RemoveRegistration<ISerializer>();
 			Services.AddSingleton<IMessageTypeProvider, TMessageTypeProvider>();
 			return this;
 		}
