@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Auth.SecureRem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Sample.CoreServer", "..\sample\sample-core-server\JsonServices.Sample.CoreServer.csproj", "{CA33030D-A387-49CD-9329-042F7B464067}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonServices.Serialization.SystemTextJson", "JsonServices.Serialization.SystemTextJson\JsonServices.Serialization.SystemTextJson.csproj", "{EE4F39FE-8EFB-4A98-9EFE-953007F4CB74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{CA33030D-A387-49CD-9329-042F7B464067}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA33030D-A387-49CD-9329-042F7B464067}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA33030D-A387-49CD-9329-042F7B464067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE4F39FE-8EFB-4A98-9EFE-953007F4CB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE4F39FE-8EFB-4A98-9EFE-953007F4CB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE4F39FE-8EFB-4A98-9EFE-953007F4CB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE4F39FE-8EFB-4A98-9EFE-953007F4CB74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>JsonServices.Serialization.SystemTextJson</Title>
+    <Version>0.0.0.1</Version>
+    <Authors>yallie</Authors>
+    <Copyright>Copyright Alexey Yakovlev 2020. All Rights Reserved.</Copyright>
+    <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
+    <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
+    <PackageTags>websockets json rpc events</PackageTags>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\JsonServices.ruleset</CodeAnalysisRuleSet>
+    <RootNamespace>JsonServices.Serialization.SystemTextJson</RootNamespace>
+    <AssemblyName>JsonServices.Serialization.SystemTextJson</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <BaseOutputPath>..\..\bin</BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JsonServices.Core\JsonServices.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-beta.61">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
