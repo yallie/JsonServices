@@ -331,6 +331,30 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
+		public void SerializerCanSerializeTuplesUpTo7TypeParameters()
+		{
+			void equals(string json, object tuple)
+			{
+				var msg = new RequestMessage
+				{
+					Name = "A",
+					Parameters = tuple,
+				};
+
+				var serialized = Serializer.Serialize(msg);
+				Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"A\",\"params\":{" + json + "}}", serialized);
+			}
+
+			equals("\"Item1\":123", Tuple.Create(123));
+			equals("\"Item1\":true,\"Item2\":false", Tuple.Create(true, false));
+			equals("\"Item1\":\"a\",\"Item2\":null,\"Item3\":2", Tuple.Create("a", (object)null, 2));
+			equals("\"Item1\":-1,\"Item2\":null,\"Item3\":3.141,\"Item4\":{}", Tuple.Create(-1, (object)null, 3.141, new object()));
+			equals("\"Item1\":-1,\"Item2\":null,\"Item3\":3.141,\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\"", Tuple.Create(-1, (object)null, 3.141, new object(), "2020-08-16T00:00:00"));
+			equals("\"Item1\":\"\",\"Item2\":null,\"Item3\":{\"a\":\"b\"},\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\",\"Item6\":null", Tuple.Create("", (object)null, new { a = "b" }, new object(), "2020-08-16T00:00:00", default(object)));
+			equals("\"Item1\":1,\"Item2\":2,\"Item3\":3,\"Item4\":4,\"Item5\":5,\"Item6\":6,\"Item7\":7", Tuple.Create(1, 2, 3, 4, 5, 6, 7));
+		}
+
+		[Test]
 		public virtual void SerializerCanSerializeRequestMessagesWithValueTuples()
 		{
 			var msg = new RequestMessage
@@ -342,6 +366,30 @@ namespace JsonServices.Tests.Serialization
 			var serialized = Serializer.Serialize(msg);
 			Assert.NotNull(serialized);
 			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"ValueTuple\",\"params\":{\"Item1\":\"a\",\"Item2\":1,\"Item3\":true,\"Item4\":2.34,\"Item5\":\"c\"}}", serialized);
+		}
+
+		[Test]
+		public virtual void SerializerCanSerializeValueTuplesUpTo7TypeParameters()
+		{
+			void equals(string json, object tuple)
+			{
+				var msg = new RequestMessage
+				{
+					Name = "A",
+					Parameters = tuple,
+				};
+
+				var serialized = Serializer.Serialize(msg);
+				Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"A\",\"params\":{" + json + "}}", serialized);
+			}
+
+			equals("\"Item1\":123", ValueTuple.Create(123));
+			equals("\"Item1\":true,\"Item2\":false", ValueTuple.Create(true, false));
+			equals("\"Item1\":\"a\",\"Item2\":null,\"Item3\":2", ValueTuple.Create("a", (object)null, 2));
+			equals("\"Item1\":-1,\"Item2\":null,\"Item3\":3.141,\"Item4\":{}", ValueTuple.Create(-1, (object)null, 3.141, new object()));
+			equals("\"Item1\":-1,\"Item2\":null,\"Item3\":3.141,\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\"", ValueTuple.Create(-1, (object)null, 3.141, new object(), "2020-08-16T00:00:00"));
+			equals("\"Item1\":\"\",\"Item2\":null,\"Item3\":{\"a\":\"b\"},\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\",\"Item6\":null", ValueTuple.Create("", (object)null, new { a = "b" }, new object(), "2020-08-16T00:00:00", default(object)));
+			equals("\"Item1\":1,\"Item2\":2,\"Item3\":3,\"Item4\":4,\"Item5\":5,\"Item6\":6,\"Item7\":7", ValueTuple.Create(1, 2, 3, 4, 5, 6, 7));
 		}
 
 		[Test]

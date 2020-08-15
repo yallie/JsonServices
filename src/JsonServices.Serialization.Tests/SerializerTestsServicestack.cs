@@ -9,10 +9,17 @@ namespace JsonServices.Tests.Serialization
 	{
 		protected override ISerializer Serializer { get; } = new Serializer();
 
-		[Test, Ignore("Doesn't work on ServiceStack")]
+		[Test, Ignore("ServiceStack doesn't support ValueTuple")]
 		public override void SerializerCanSerializeRequestMessagesWithValueTuples()
 		{
 			base.SerializerCanSerializeRequestMessagesWithValueTuples();
+		}
+
+		[Test, Ignore("ServiceStack doesn't support ValueTuple")]
+
+		public override void SerializerCanSerializeValueTuplesUpTo7TypeParameters()
+		{
+			base.SerializerCanSerializeValueTuplesUpTo7TypeParameters();
 		}
 	}
 }
