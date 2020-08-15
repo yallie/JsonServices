@@ -422,5 +422,17 @@ namespace JsonServices.Tests.Serialization
 			Assert.NotNull(serialized);
 			Assert.IsTrue(serialized.Contains("db22d085-3c9c-4df3-a5ba-2276a47372e3"));
 		}
+
+		[Test]
+		public void SerializerDoesntBreakOnObject()
+		{
+			var msg = new RequestMessage
+			{
+				Parameters = new object(),
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":null,\"params\":{}}", serialized);
+		}
 	}
 }
