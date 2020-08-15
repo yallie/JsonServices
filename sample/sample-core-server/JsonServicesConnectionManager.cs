@@ -68,7 +68,7 @@ namespace JsonServices.Sample.CoreServer
 
 				// if the message is too big to fit in the buffer, assemble it
 				// TODO: message parts can be invalid UTF8 chars (broken into parts)
-				var part = Encoding.UTF8.GetString(buffer);
+				var part = Encoding.UTF8.GetString(buffer, 0, result.Count);
 				stringBuilder.Append(part);
 				if (result.EndOfMessage)
 				{
