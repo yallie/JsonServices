@@ -9,6 +9,16 @@ namespace JsonServices.Serialization.SystemTextJson
 {
 	public class Serializer : ISerializer
 	{
+		private JsonSerializerOptions DefaultOptions { get; } = CreateOptions();
+
+		private static JsonSerializerOptions CreateOptions()
+		{
+			var options = new JsonSerializerOptions();
+			options.Converters.Add(new ObjectConverter());
+			options.Converters.Add(new TupleConverterFactory());
+			return options;
+		}
+
 		public string Serialize(IMessage message) => JsonSerializer.Serialize(message);
 
 		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
@@ -16,7 +26,7 @@ namespace JsonServices.Serialization.SystemTextJson
 			var preview = default(GenericMessage);
 			try
 			{
-				preview = JsonSerializer.Deserialize<GenericMessage>(data);
+				preview = JsonSerializer.Deserialize<GenericMessage>(data, DefaultOptions);
 			}
 			catch
 			{
@@ -92,7 +102,7 @@ namespace JsonServices.Serialization.SystemTextJson
 			var msgType = typeof(RequestMsg<>).MakeGenericType(new[] { type });
 
 			// deserialize the strong-typed message
-			var reqMsg = (IRequestMessage)JsonSerializer.Deserialize(data, msgType);
+			var reqMsg = (IRequestMessage)JsonSerializer.Deserialize(data, msgType, DefaultOptions);
 			return new RequestMessage
 			{
 				Name = name,
@@ -114,7 +124,7 @@ namespace JsonServices.Serialization.SystemTextJson
 
 			// deserialize the strong-typed message
 			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
-			var respMsg = (IResponseMessage)JsonSerializer.Deserialize(data, msgType);
+			var respMsg = (IResponseMessage)JsonSerializer.Deserialize(data, msgType, DefaultOptions);
 			return ResponseMessage.Create(respMsg.Result, error, id);
 		}
 	}

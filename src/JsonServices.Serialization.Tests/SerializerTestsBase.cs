@@ -366,6 +366,7 @@ namespace JsonServices.Tests.Serialization
 
 			// Newtonsoft parses primitive types
 			// ServiceStack parses all values as strings
+			// System.Text.Json returns all values as JsonElement instances
 			// either way, we can't have chars and decimals, too bad
 			var array = msg.Parameters as object[];
 			Assert.AreEqual("a", array[0]);
