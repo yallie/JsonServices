@@ -14,15 +14,89 @@ namespace JsonServices.Serialization.SystemTextJson
 		private static JsonSerializerOptions CreateOptions()
 		{
 			var options = new JsonSerializerOptions();
-			////options.IgnoreNullValues = true;
+			options.IgnoreNullValues = false;
+			options.Converters.Add(new CultureInfoConverter());
 			options.Converters.Add(new ObjectConverter());
 			options.Converters.Add(new TupleConverterFactory());
 			return options;
 		}
 
-		public string Serialize(IMessage message) => message != null ?
-			JsonSerializer.Serialize(message, message.GetType(), DefaultOptions) :
-			JsonSerializer.Serialize(message as RequestMessage, DefaultOptions);
+		public string Serialize(IMessage message)
+		{
+			// System.Text.Json doesn't support DataMember attributes,
+			// so we have to transform the objects to rename their properties
+			switch (message)
+			{
+				case RequestMessage m:
+					return Serialize(m);
+
+				case ResponseErrorMessage m:
+					return Serialize(m);
+
+				case ResponseResultMessage m:
+					return Serialize(m);
+
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		private string Serialize(RequestMessage rm)
+		{
+			return rm.Id == null ? JsonSerializer.Serialize(new
+			{
+				jsonrpc = rm.Version,
+				method = rm.Name,
+				@params = rm.Parameters,
+			})
+			: JsonSerializer.Serialize(new
+			{
+				jsonrpc = rm.Version,
+				method = rm.Name,
+				@params = rm.Parameters,
+				id = rm.Id,
+			});
+		}
+
+		private string Serialize(ResponseErrorMessage rm)
+		{
+			return rm.Id == null ? JsonSerializer.Serialize(new
+			{
+				jsonrpc = rm.Version,
+				error = rm.Error == null ? null : new
+				{
+					code = rm.Error.Code,
+					message = rm.Error.Message,
+					data = rm.Error.Data,
+				},
+			})
+			: JsonSerializer.Serialize(new
+			{
+				jsonrpc = rm.Version,
+				error = rm.Error == null ? null : new
+				{
+					code = rm.Error.Code,
+					message = rm.Error.Message,
+					data = rm.Error.Data,
+				},
+				id = rm.Id,
+			});
+		}
+
+		private string Serialize(ResponseResultMessage rm)
+		{
+			return rm.Id == null ? JsonSerializer.Serialize(new
+			{
+				jsonrpc = rm.Version,
+				result = rm.Result,
+			})
+			: JsonSerializer.Serialize(new
+			{
+				jsonrpc = rm.Version,
+				result = rm.Result,
+				id = rm.Id,
+			});
+		}
 
 		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
 		{
@@ -114,21 +188,27 @@ namespace JsonServices.Serialization.SystemTextJson
 			};
 		}
 
-		public ResponseMessage DeserializeResponse(string data, string name, string id, Error error, IMessageTypeProvider typeProvider)
+		public ResponseMessage DeserializeResponse(string data, string name, string id, GenericError error, IMessageTypeProvider typeProvider)
 		{
 			// pre-deserialize to get the bulk of the message
 			var type = typeProvider.GetResponseType(name);
+			var err = error == null ? null : new Error
+			{
+				Code = error.Code,
+				Data = error.Data,
+				Message = error.Message,
+			};
 
 			// handle void messages
 			if (type == typeof(void))
 			{
-				return ResponseMessage.Create(null, error, id);
+				return ResponseMessage.Create(null, err, id);
 			}
 
 			// deserialize the strong-typed message
 			var msgType = typeof(ResponseMsg<>).MakeGenericType(new[] { type });
 			var respMsg = (IResponseMessage)JsonSerializer.Deserialize(data, msgType, DefaultOptions);
-			return ResponseMessage.Create(respMsg.Result, error, id);
+			return ResponseMessage.Create(respMsg.Result, err, id);
 		}
 	}
 }

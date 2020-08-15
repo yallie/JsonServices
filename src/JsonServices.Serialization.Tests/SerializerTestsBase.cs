@@ -119,7 +119,9 @@ namespace JsonServices.Tests.Serialization
 
 			var payload = Serializer.Serialize(msg);
 			Assert.NotNull(payload);
-			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"}}", payload);
+			Assert.That(payload, Is.AnyOf(
+				"{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"}}",
+				"{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\",\"data\":null}}"));
 		}
 
 		[Test]
@@ -137,7 +139,9 @@ namespace JsonServices.Tests.Serialization
 
 			var payload = Serializer.Serialize(msg);
 			Assert.NotNull(payload);
-			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"112\"}", payload);
+			Assert.That(payload, Is.AnyOf(
+				"{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\"},\"id\":\"112\"}",
+				"{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-3123,\"message\":\"Something is rotten\",\"data\":null},\"id\":\"112\"}"));
 		}
 
 		[Test]

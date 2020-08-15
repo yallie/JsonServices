@@ -12,7 +12,7 @@ namespace JsonServices.Serialization.SystemTextJson.Internal
 		public string Name { get; set; }
 
 		[JsonPropertyName("error")]
-		public Error Error { get; set; }
+		public GenericError Error { get; set; }
 
 		[JsonPropertyName("id")]
 		public string Id { get; set; }
