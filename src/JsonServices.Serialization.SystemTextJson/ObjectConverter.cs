@@ -4,7 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace JsonServices.Serialization.SystemTextJson
 {
-	public class ObjectConverter : JsonConverter<object>
+	/// <summary>
+	/// Converts <see cref="JsonElement"/> to a primitive .NET type value, supports deserialization only.
+	/// Inspiration: https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-converters-how-to#deserialize-inferred-types-to-object-properties
+	/// </summary>
+	internal class ObjectConverter : JsonConverter<object>
 	{
 		public override object Read(ref Utf8JsonReader reader,
 			Type typeToConvert, JsonSerializerOptions options)

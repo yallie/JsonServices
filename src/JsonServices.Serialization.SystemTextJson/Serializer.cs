@@ -14,12 +14,15 @@ namespace JsonServices.Serialization.SystemTextJson
 		private static JsonSerializerOptions CreateOptions()
 		{
 			var options = new JsonSerializerOptions();
+			////options.IgnoreNullValues = true;
 			options.Converters.Add(new ObjectConverter());
 			options.Converters.Add(new TupleConverterFactory());
 			return options;
 		}
 
-		public string Serialize(IMessage message) => JsonSerializer.Serialize(message);
+		public string Serialize(IMessage message) => message != null ?
+			JsonSerializer.Serialize(message, message.GetType(), DefaultOptions) :
+			JsonSerializer.Serialize(message as RequestMessage, DefaultOptions);
 
 		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
 		{
