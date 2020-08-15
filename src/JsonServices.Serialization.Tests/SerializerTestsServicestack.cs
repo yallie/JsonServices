@@ -8,5 +8,11 @@ namespace JsonServices.Tests.Serialization
 	public class SerializerTestsServiceStack : SerializerTestsBase
 	{
 		protected override ISerializer Serializer { get; } = new Serializer();
+
+		[Test, Ignore("Doesn't work on ServiceStack")]
+		public override void SerializerCanSerializeRequestMessagesWithValueTuples()
+		{
+			base.SerializerCanSerializeRequestMessagesWithValueTuples();
+		}
 	}
 }

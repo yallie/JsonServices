@@ -331,6 +331,20 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
+		public virtual void SerializerCanSerializeRequestMessagesWithValueTuples()
+		{
+			var msg = new RequestMessage
+			{
+				Name = "ValueTuple",
+				Parameters = ("a", 1, true, 2.34m, 'c'),
+			};
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.NotNull(serialized);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"ValueTuple\",\"params\":{\"Item1\":\"a\",\"Item2\":1,\"Item3\":true,\"Item4\":2.34,\"Item5\":\"c\"}}", serialized);
+		}
+
+		[Test]
 		public void SerializerCanDeserializeRequestMessagesWithSimpleTuples()
 		{
 			var provider = new MessageTypeProvider();
