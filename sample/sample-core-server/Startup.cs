@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JsonServices.Sample.CoreServer
 {
-	using Serializer = Serialization.ServiceStack.Serializer;
+	using Serializer = Serialization.SystemTextJson.Serializer;
 
 	public class Startup
 	{
