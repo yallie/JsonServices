@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace JsonServices.Tests.Serialization
 {
-	[TestFixture, Ignore("Doesn't work yet")]
+	[TestFixture]
 	public class SerializerTestsSystemTextJson : SerializerTestsBase
 	{
 		protected override ISerializer Serializer { get; } = new Serializer();

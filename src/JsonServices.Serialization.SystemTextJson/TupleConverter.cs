@@ -158,7 +158,7 @@ namespace JsonServices.Serialization.SystemTextJson
 			}
 
 			public override void Write(Utf8JsonWriter writer, Tuple<T1, T2> value, JsonSerializerOptions options) =>
-				WriteTuple(1, writer, (value.Item1, value.Item2, 0, 0, 0, 0, 0), options);
+				WriteTuple(2, writer, (value.Item1, value.Item2, 0, 0, 0, 0, 0), options);
 		}
 
 		private class TupleConverter<T1, T2, T3> : JsonConverter<Tuple<T1, T2, T3>>
@@ -170,7 +170,7 @@ namespace JsonServices.Serialization.SystemTextJson
 			}
 
 			public override void Write(Utf8JsonWriter writer, Tuple<T1, T2, T3> value, JsonSerializerOptions options) =>
-				WriteTuple(1, writer, (value.Item1, value.Item2, value.Item3, 0, 0, 0, 0), options);
+				WriteTuple(3, writer, (value.Item1, value.Item2, value.Item3, 0, 0, 0, 0), options);
 		}
 
 		private class TupleConverter<T1, T2, T3, T4> : JsonConverter<Tuple<T1, T2, T3, T4>>
@@ -182,7 +182,7 @@ namespace JsonServices.Serialization.SystemTextJson
 			}
 
 			public override void Write(Utf8JsonWriter writer, Tuple<T1, T2, T3, T4> value, JsonSerializerOptions options) =>
-				WriteTuple(1, writer, (value.Item1, value.Item2, value.Item3, value.Item4, 0, 0, 0), options);
+				WriteTuple(4, writer, (value.Item1, value.Item2, value.Item3, value.Item4, 0, 0, 0), options);
 		}
 
 		private class TupleConverter<T1, T2, T3, T4, T5> : JsonConverter<Tuple<T1, T2, T3, T4, T5>>
@@ -194,7 +194,7 @@ namespace JsonServices.Serialization.SystemTextJson
 			}
 
 			public override void Write(Utf8JsonWriter writer, Tuple<T1, T2, T3, T4, T5> value, JsonSerializerOptions options) =>
-				WriteTuple(1, writer, (value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, 0, 0), options);
+				WriteTuple(5, writer, (value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, 0, 0), options);
 		}
 	}
 }

@@ -43,19 +43,21 @@ namespace JsonServices.Serialization.SystemTextJson
 
 		private string Serialize(RequestMessage rm)
 		{
+			// there is currently no way to skip the id property if it's null
 			return rm.Id == null ? JsonSerializer.Serialize(new
 			{
 				jsonrpc = rm.Version,
 				method = rm.Name,
 				@params = rm.Parameters,
-			})
-			: JsonSerializer.Serialize(new
+			},
+			DefaultOptions) : JsonSerializer.Serialize(new
 			{
 				jsonrpc = rm.Version,
 				method = rm.Name,
 				@params = rm.Parameters,
 				id = rm.Id,
-			});
+			},
+			DefaultOptions);
 		}
 
 		private string Serialize(ResponseErrorMessage rm)
@@ -69,8 +71,8 @@ namespace JsonServices.Serialization.SystemTextJson
 					message = rm.Error.Message,
 					data = rm.Error.Data,
 				},
-			})
-			: JsonSerializer.Serialize(new
+			},
+			DefaultOptions) : JsonSerializer.Serialize(new
 			{
 				jsonrpc = rm.Version,
 				error = rm.Error == null ? null : new
@@ -80,7 +82,8 @@ namespace JsonServices.Serialization.SystemTextJson
 					data = rm.Error.Data,
 				},
 				id = rm.Id,
-			});
+			},
+			DefaultOptions);
 		}
 
 		private string Serialize(ResponseResultMessage rm)
@@ -89,13 +92,14 @@ namespace JsonServices.Serialization.SystemTextJson
 			{
 				jsonrpc = rm.Version,
 				result = rm.Result,
-			})
-			: JsonSerializer.Serialize(new
+			},
+			DefaultOptions) : JsonSerializer.Serialize(new
 			{
 				jsonrpc = rm.Version,
 				result = rm.Result,
 				id = rm.Id,
-			});
+			},
+			DefaultOptions);
 		}
 
 		public IMessage Deserialize(string data, IMessageTypeProvider typeProvider, IMessageNameProvider nameProvider)
