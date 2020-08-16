@@ -17,9 +17,9 @@ namespace JsonServices.Tests.Serialization
 
 		[Test, Ignore("ServiceStack doesn't support ValueTuple")]
 
-		public override void SerializerCanSerializeValueTuplesUpTo7TypeParameters()
+		public override void SerializerCanSerializeAndDeserializeValueTuplesUpTo7TypeParameters()
 		{
-			base.SerializerCanSerializeValueTuplesUpTo7TypeParameters();
+			base.SerializerCanSerializeAndDeserializeValueTuplesUpTo7TypeParameters();
 		}
 
 		[Test, Ignore("ServiceStack can't deserialize anonymous types")]

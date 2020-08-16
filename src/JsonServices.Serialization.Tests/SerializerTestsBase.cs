@@ -331,7 +331,7 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
-		public void SerializerCanSerializeTuplesUpTo7TypeParameters()
+		public void SerializerCanSerializeAndDeserializeTuplesUpTo7TypeParameters()
 		{
 			void equals(string json, object tuple)
 			{
@@ -374,7 +374,7 @@ namespace JsonServices.Tests.Serialization
 		}
 
 		[Test]
-		public virtual void SerializerCanSerializeValueTuplesUpTo7TypeParameters()
+		public virtual void SerializerCanSerializeAndDeserializeValueTuplesUpTo7TypeParameters()
 		{
 			void equals(string json, object tuple)
 			{
