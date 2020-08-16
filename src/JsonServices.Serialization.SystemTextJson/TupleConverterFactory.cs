@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -13,60 +11,37 @@ namespace JsonServices.Serialization.SystemTextJson
 	/// </summary>
 	internal class TupleConverterFactory : JsonConverterFactory
 	{
-		private static Dictionary<int, Type> TupleTypes { get; } = new Dictionary<int, Type>
+		private static Dictionary<Type, Type> TypeConverters { get; } = new Dictionary<Type, Type>
 		{
-			{ 1, typeof(TupleConverter<>) },
-			{ 2, typeof(TupleConverter<,>) },
-			{ 3, typeof(TupleConverter<,,>) },
-			{ 4, typeof(TupleConverter<,,,>) },
-			{ 5, typeof(TupleConverter<,,,,>) },
-			{ 6, typeof(TupleConverter<,,,,,>) },
-			{ 7, typeof(TupleConverter<,,,,,,>) },
-		};
-
-		private static Dictionary<int, Type> ValueTupleTypes { get; } = new Dictionary<int, Type>
-		{
-			{ 1, typeof(ValueTupleConverter<>) },
-			{ 2, typeof(ValueTupleConverter<,>) },
-			{ 3, typeof(ValueTupleConverter<,,>) },
-			{ 4, typeof(ValueTupleConverter<,,,>) },
-			{ 5, typeof(ValueTupleConverter<,,,,>) },
-			{ 6, typeof(ValueTupleConverter<,,,,,>) },
-			{ 7, typeof(ValueTupleConverter<,,,,,,>) },
-		};
-
-		private static Type[] AllTupleTypes { get; } = new[]
-		{
-			typeof(Tuple<>),
-			typeof(Tuple<,>),
-			typeof(Tuple<,,>),
-			typeof(Tuple<,,,>),
-			typeof(Tuple<,,,,>),
-			typeof(Tuple<,,,,,>),
-			typeof(Tuple<,,,,,,>),
-			typeof(ValueTuple<>),
-			typeof(ValueTuple<,>),
-			typeof(ValueTuple<,,>),
-			typeof(ValueTuple<,,,>),
-			typeof(ValueTuple<,,,,>),
-			typeof(ValueTuple<,,,,,>),
-			typeof(ValueTuple<,,,,,,>),
+			{ typeof(Tuple<>), typeof(TupleConverter<>) },
+			{ typeof(Tuple<,>), typeof(TupleConverter<,>) },
+			{ typeof(Tuple<,,>), typeof(TupleConverter<,,>) },
+			{ typeof(Tuple<,,,>), typeof(TupleConverter<,,,>) },
+			{ typeof(Tuple<,,,,>), typeof(TupleConverter<,,,,>) },
+			{ typeof(Tuple<,,,,,>), typeof(TupleConverter<,,,,,>) },
+			{ typeof(Tuple<,,,,,,>), typeof(TupleConverter<,,,,,,>) },
+			{ typeof(ValueTuple<>), typeof(ValueTupleConverter<>) },
+			{ typeof(ValueTuple<,>), typeof(ValueTupleConverter<,>) },
+			{ typeof(ValueTuple<,,>), typeof(ValueTupleConverter<,,>) },
+			{ typeof(ValueTuple<,,,>), typeof(ValueTupleConverter<,,,>) },
+			{ typeof(ValueTuple<,,,,>), typeof(ValueTupleConverter<,,,,>) },
+			{ typeof(ValueTuple<,,,,,>), typeof(ValueTupleConverter<,,,,,>) },
+			{ typeof(ValueTuple<,,,,,,>), typeof(ValueTupleConverter<,,,,,,>) },
 		};
 
 		public override bool CanConvert(Type type) =>
-			type.IsGenericType && AllTupleTypes.Contains(type.GetGenericTypeDefinition());
+			type.IsGenericType && TypeConverters.ContainsKey(type.GetGenericTypeDefinition());
 
 		private Type GetConverterType(Type type)
 		{
-			var args = type.GetGenericArguments();
-			if (type.Name.StartsWith(nameof(ValueTuple)))
+			var tupleType = type.GetGenericTypeDefinition();
+			var tupleArguments = type.GetGenericArguments();
+			if (TypeConverters.TryGetValue(tupleType, out var converterType))
 			{
-				return ValueTupleTypes.TryGetValue(args.Length, out var converterType) ?
-					converterType.MakeGenericType(args) : throw new NotSupportedException();
+				return converterType.MakeGenericType(tupleArguments);
 			}
 
-			return TupleTypes.TryGetValue(args.Length, out var tupleConverterType) ?
-				tupleConverterType.MakeGenericType(args) : throw new NotSupportedException();
+			throw new NotSupportedException();
 		}
 
 		public override JsonConverter CreateConverter(Type type, JsonSerializerOptions options) =>
