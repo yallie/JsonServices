@@ -15,6 +15,7 @@ namespace JsonServices.Serialization.SystemTextJson
 		{
 			var options = new JsonSerializerOptions();
 			options.IgnoreNullValues = false;
+			options.Converters.Add(new AnonymousConverterFactory());
 			options.Converters.Add(new CultureInfoConverter());
 			options.Converters.Add(new ObjectConverter());
 			options.Converters.Add(new TupleConverterFactory());

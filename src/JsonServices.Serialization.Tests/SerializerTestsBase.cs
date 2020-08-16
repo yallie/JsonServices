@@ -343,6 +343,11 @@ namespace JsonServices.Tests.Serialization
 
 				var serialized = Serializer.Serialize(msg);
 				Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"A\",\"params\":{" + json + "}}", serialized);
+
+				var tp = new StubMessageTypeProvider();
+				tp.Register(msg.Name, tuple.GetType());
+				var deserialized = Serializer.Deserialize(serialized, tp, null);
+				Assert.NotNull(deserialized);
 			}
 
 			equals("\"Item1\":123", Tuple.Create(123));
@@ -350,7 +355,7 @@ namespace JsonServices.Tests.Serialization
 			equals("\"Item1\":\"a\",\"Item2\":null,\"Item3\":2", Tuple.Create("a", (object)null, 2));
 			equals("\"Item1\":-1,\"Item2\":null,\"Item3\":3.141,\"Item4\":{}", Tuple.Create(-1, (object)null, 3.141, new object()));
 			equals("\"Item1\":-1,\"Item2\":null,\"Item3\":3.141,\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\"", Tuple.Create(-1, (object)null, 3.141, new object(), "2020-08-16T00:00:00"));
-			equals("\"Item1\":\"\",\"Item2\":null,\"Item3\":{\"a\":\"b\"},\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\",\"Item6\":null", Tuple.Create("", (object)null, new { a = "b" }, new object(), "2020-08-16T00:00:00", default(object)));
+			equals("\"Item1\":\"\",\"Item2\":null,\"Item3\":{\"a\":0},\"Item4\":{},\"Item5\":\"2020-08-16T00:00:00\",\"Item6\":null", Tuple.Create("", (object)null, new { a = 0 }, new object(), "2020-08-16T00:00:00", default(object)));
 			equals("\"Item1\":1,\"Item2\":2,\"Item3\":3,\"Item4\":4,\"Item5\":5,\"Item6\":6,\"Item7\":7", Tuple.Create(1, 2, 3, 4, 5, 6, 7));
 		}
 
@@ -381,6 +386,11 @@ namespace JsonServices.Tests.Serialization
 
 				var serialized = Serializer.Serialize(msg);
 				Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"A\",\"params\":{" + json + "}}", serialized);
+
+				var tp = new StubMessageTypeProvider();
+				tp.Register(msg.Name, tuple.GetType());
+				var deserialized = Serializer.Deserialize(serialized, tp, null);
+				Assert.NotNull(deserialized);
 			}
 
 			equals("\"Item1\":123", ValueTuple.Create(123));
@@ -495,6 +505,30 @@ namespace JsonServices.Tests.Serialization
 
 			var serialized = Serializer.Serialize(msg);
 			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":null,\"params\":{}}", serialized);
+		}
+
+		[Test]
+		public virtual void SerializerCanHandleAnonymousTypes()
+		{
+			var msg = new RequestMessage
+			{
+				Name = "Anonymous",
+				Parameters = new
+				{
+					Hello = "World",
+					Answer = 42,
+				}
+			};
+
+			Assert.AreEqual(new { Hello = "World" }, new { Hello = "World" });
+
+			var serialized = Serializer.Serialize(msg);
+			Assert.AreEqual("{\"jsonrpc\":\"2.0\",\"method\":\"Anonymous\",\"params\":{\"Hello\":\"World\",\"Answer\":42}}", serialized);
+
+			var tp = new StubMessageTypeProvider();
+			tp.Register("Anonymous", msg.Parameters.GetType());
+			var deserialized = Serializer.Deserialize(serialized, tp, null);
+			Assert.AreEqual(msg, deserialized);
 		}
 	}
 }

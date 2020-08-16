@@ -21,5 +21,11 @@ namespace JsonServices.Tests.Serialization
 		{
 			base.SerializerCanSerializeValueTuplesUpTo7TypeParameters();
 		}
+
+		[Test, Ignore("ServiceStack can't deserialize anonymous types")]
+		public override void SerializerCanHandleAnonymousTypes()
+		{
+			base.SerializerCanHandleAnonymousTypes();
+		}
 	}
 }
