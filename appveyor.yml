@@ -30,7 +30,7 @@ artifacts:
 - path: '**\*.log' # find all log files recursively
 
 before_test:
-# Start sample JsonServices server 
+# Start sample JsonServices server
 - bin\Sample\Debug\net46\JsonServices.Sample.Server.exe install
 - bin\Sample\Debug\net46\JsonServices.Sample.Server.exe start
 
@@ -55,7 +55,7 @@ test_script:
 # - yarn --cwd sample/sample-client test --coverage --ci --forceExit
 
 after_test:
-# Stop sample JsonServices server 
+# Stop sample JsonServices server
 - bin\Sample\Debug\net46\JsonServices.Sample.Server.exe stop
 
 # Upload OpenCover reports to codecov.io

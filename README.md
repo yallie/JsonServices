@@ -3,6 +3,7 @@
 [![Appveyor build status](https://ci.appveyor.com/api/projects/status/l8sntux7xbx53rk6?svg=true)](https://ci.appveyor.com/project/yallie/jsonservices)
 [![Tests](https://img.shields.io/appveyor/tests/yallie/JsonServices.svg)](https://ci.appveyor.com/project/yallie/JsonServices/build/tests)
 [![Code coverage](https://codecov.io/gh/yallie/JsonServices/branch/master/graph/badge.svg)](https://codecov.io/gh/yallie/JsonServices)
+[![Code quality](https://img.shields.io/codefactor/grade/github/yallie/JsonServices)](https://www.codefactor.io/repository/github/yallie/jsonservices)
 [![Nuget](https://img.shields.io/nuget/vpre/JsonServices.svg)](https://www.nuget.org/packages/JsonServices/)
 
 This is a simple library for message-based services running on top of the  

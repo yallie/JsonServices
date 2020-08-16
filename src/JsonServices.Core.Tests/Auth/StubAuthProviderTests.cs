@@ -32,7 +32,6 @@ namespace JsonServices.Tests.Auth
 		}
 
 
-
 		[Test]
 		public async Task AuthenticationProviderIsCalledOnConnectAsync()
 		{
