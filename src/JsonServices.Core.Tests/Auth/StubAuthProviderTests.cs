@@ -31,7 +31,6 @@ namespace JsonServices.Tests.Auth
 			Assert.AreEqual("s3cr3t", c.Password);
 		}
 
-
 		[Test]
 		public async Task AuthenticationProviderIsCalledOnConnectAsync()
 		{

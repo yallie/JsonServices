@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,82 +13,60 @@ namespace JsonServices.Serialization.SystemTextJson
 	/// </summary>
 	internal class TupleConverterFactory : JsonConverterFactory
 	{
-		private Type[] TupleTypes { get; } = new[]
+		private static Dictionary<int, Type> TupleTypes { get; } = new Dictionary<int, Type>
+		{
+			{ 1, typeof(TupleConverter<>) },
+			{ 2, typeof(TupleConverter<,>) },
+			{ 3, typeof(TupleConverter<,,>) },
+			{ 4, typeof(TupleConverter<,,,>) },
+			{ 5, typeof(TupleConverter<,,,,>) },
+			{ 6, typeof(TupleConverter<,,,,,>) },
+			{ 7, typeof(TupleConverter<,,,,,,>) },
+		};
+
+		private static Dictionary<int, Type> ValueTupleTypes { get; } = new Dictionary<int, Type>
+		{
+			{ 1, typeof(ValueTupleConverter<>) },
+			{ 2, typeof(ValueTupleConverter<,>) },
+			{ 3, typeof(ValueTupleConverter<,,>) },
+			{ 4, typeof(ValueTupleConverter<,,,>) },
+			{ 5, typeof(ValueTupleConverter<,,,,>) },
+			{ 6, typeof(ValueTupleConverter<,,,,,>) },
+			{ 7, typeof(ValueTupleConverter<,,,,,,>) },
+		};
+
+		private static Type[] AllTupleTypes { get; } = new[]
 		{
 			typeof(Tuple<>),
-			typeof(Tuple<,>), typeof(Tuple<,,>),
-			typeof(Tuple<,,,>), typeof(Tuple<,,,,>),
-			typeof(Tuple<,,,,,>), typeof(Tuple<,,,,,,>),
+			typeof(Tuple<,>),
+			typeof(Tuple<,,>),
+			typeof(Tuple<,,,>),
+			typeof(Tuple<,,,,>),
+			typeof(Tuple<,,,,,>),
+			typeof(Tuple<,,,,,,>),
 			typeof(ValueTuple<>),
-			typeof(ValueTuple<,>), typeof(ValueTuple<,,>),
-			typeof(ValueTuple<,,,>), typeof(ValueTuple<,,,,>),
-			typeof(ValueTuple<,,,,,>), typeof(ValueTuple<,,,,,,>),
+			typeof(ValueTuple<,>),
+			typeof(ValueTuple<,,>),
+			typeof(ValueTuple<,,,>),
+			typeof(ValueTuple<,,,,>),
+			typeof(ValueTuple<,,,,,>),
+			typeof(ValueTuple<,,,,,,>),
 		};
 
 		public override bool CanConvert(Type type) =>
-			type.IsGenericType && TupleTypes.Contains(type.GetGenericTypeDefinition());
+			type.IsGenericType && AllTupleTypes.Contains(type.GetGenericTypeDefinition());
 
 		private Type GetConverterType(Type type)
 		{
 			var args = type.GetGenericArguments();
 			if (type.Name.StartsWith(nameof(ValueTuple)))
 			{
-				switch (args.Length)
-				{
-					case 1:
-						return typeof(ValueTupleConverter<>).MakeGenericType(args);
-
-					case 2:
-						return typeof(ValueTupleConverter<,>).MakeGenericType(args);
-
-					case 3:
-						return typeof(ValueTupleConverter<,,>).MakeGenericType(args);
-
-					case 4:
-						return typeof(ValueTupleConverter<,,,>).MakeGenericType(args);
-
-					case 5:
-						return typeof(ValueTupleConverter<,,,,>).MakeGenericType(args);
-
-					case 6:
-						return typeof(ValueTupleConverter<,,,,,>).MakeGenericType(args);
-
-					case 7:
-						return typeof(ValueTupleConverter<,,,,,,>).MakeGenericType(args);
-
-					default:
-						throw new NotSupportedException();
-				}
+				return ValueTupleTypes.TryGetValue(args.Length, out var converterType) ?
+					converterType.MakeGenericType(args) : throw new NotSupportedException();
 			}
-			else
-			{
-				switch (args.Length)
-				{
-					case 1:
-						return typeof(TupleConverter<>).MakeGenericType(args);
 
-					case 2:
-						return typeof(TupleConverter<,>).MakeGenericType(args);
-
-					case 3:
-						return typeof(TupleConverter<,,>).MakeGenericType(args);
-
-					case 4:
-						return typeof(TupleConverter<,,,>).MakeGenericType(args);
-
-					case 5:
-						return typeof(TupleConverter<,,,,>).MakeGenericType(args);
-
-					case 6:
-						return typeof(TupleConverter<,,,,,>).MakeGenericType(args);
-
-					case 7:
-						return typeof(TupleConverter<,,,,,,>).MakeGenericType(args);
-
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			return TupleTypes.TryGetValue(args.Length, out var tupleConverterType) ?
+				tupleConverterType.MakeGenericType(args) : throw new NotSupportedException();
 		}
 
 		public override JsonConverter CreateConverter(Type type, JsonSerializerOptions options) =>
