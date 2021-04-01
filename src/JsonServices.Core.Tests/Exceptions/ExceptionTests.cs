@@ -97,5 +97,24 @@ namespace JsonServices.Tests.Exceptions
 			Assert.AreEqual(src.MessageId, nex.MessageId);
 			Assert.AreEqual(src.Details, nex.Details);
 		}
+
+		[Test]
+		public void NonSerializableErrorDataShouldntThrow()
+		{
+			Assert.DoesNotThrow(() =>
+			{
+				var error = new Error
+				{
+					Code = AuthFailedException.ErrorCode,
+					Message = "As the dust settles, see our dreams, All coming true, It depends on you",
+					Data = new
+					{
+						Message = "I'm not serializable!"
+					},
+				};
+
+				var ex = JsonServicesException.Create(error);
+			});
+		}
 	}
 }

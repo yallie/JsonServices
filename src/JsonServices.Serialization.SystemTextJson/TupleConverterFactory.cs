@@ -8,6 +8,8 @@ namespace JsonServices.Serialization.SystemTextJson
 	/// <summary>
 	/// Helps deserializing tuples.
 	/// Inspiration: https://github.com/dotnet/runtime/issues/1519#issuecomment-572751931
+	/// Oh, I probably shouldn't serialize tuples like this.
+	/// A serialized tuple should look like an array: [1, "two", 3.14].
 	/// </summary>
 	internal class TupleConverterFactory : JsonConverterFactory
 	{

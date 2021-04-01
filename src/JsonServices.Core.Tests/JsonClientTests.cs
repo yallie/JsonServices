@@ -12,6 +12,7 @@ using JsonServices.Tests.Transport;
 using JsonServices.Transport;
 using NUnit.Framework;
 
+// TODO: these tests should be executed for all implemented serializers
 namespace JsonServices.Tests
 {
 	[TestFixture]

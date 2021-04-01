@@ -73,8 +73,18 @@ namespace JsonServices.Exceptions
 
 		public object Details
 		{
-			get { return Data[DetailsKey] as object; }
-			set { Data[DetailsKey] = value; }
+			get { return Data[DetailsKey]; }
+			set
+			{
+				if (value == null || value.GetType().IsSerializable)
+				{
+					Data[DetailsKey] = value;
+				}
+				else
+				{
+					Data[DetailsKey] = value.ToString();
+				}
+			}
 		}
 	}
 }
