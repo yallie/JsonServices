@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
     <PackageTags>websockets json rpc events</PackageTags>
-    <TargetFrameworks>net46</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
     <PackageTags>websockets json rpc events</PackageTags>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;net6.0</TargetFrameworks>
     <RootNamespace>JsonServices.Serialization.Tests</RootNamespace>
     <AssemblyName>JsonServices.Serialization.Tests</AssemblyName>
   </PropertyGroup>
