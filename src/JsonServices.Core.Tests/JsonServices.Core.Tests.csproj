@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <Title>JsonServices.Tests</Title>
-    <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
     <Copyright>Copyright Alexey Yakovlev 2018-2023. All rights reserved.</Copyright>
     <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
-    <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/yallie/JsonService</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/yallie/JsonServices</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yallie/JsonServices</RepositoryUrl>
     <PackageTags>websockets json rpc events</PackageTags>
     <TargetFrameworks>net461;net6.0</TargetFrameworks>
     <RootNamespace>JsonServices.Tests</RootNamespace>
