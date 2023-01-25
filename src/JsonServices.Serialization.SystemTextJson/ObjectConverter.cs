@@ -53,7 +53,15 @@ namespace JsonServices.Serialization.SystemTextJson
 		public override void Write(Utf8JsonWriter writer,
 			object objectToWrite, JsonSerializerOptions options)
 		{
-			throw new NotSupportedException("Should not get here.");
+			if (objectToWrite != null && objectToWrite.GetType() == typeof(object))
+			{
+				writer.WriteStartObject();
+				writer.WriteEndObject();
+				return;
+			}
+
+			// fall back to the default serialization
+			JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
 		}
 	}
 }
