@@ -12,6 +12,11 @@ namespace JsonServices.Services
 	{
 		public ServiceExecutor()
 		{
+			RegisterBuiltinServices();
+		}
+
+		private void RegisterBuiltinServices()
+		{
 			// built-in services: authentication
 			RegisterHandler(AuthRequest.MessageName, param =>
 			{

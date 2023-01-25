@@ -35,7 +35,6 @@ namespace JsonServices.Tests
 			// fake transport and serializer
 			var client = new StubClient((StubServer)server.Server);
 			var serializer = new Serializer();
-			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
 			return new JsonClient(client, provider, serializer);
 		}
@@ -144,6 +143,40 @@ namespace JsonServices.Tests
 					});
 
 					await Task.WhenAll(clients);
+				}
+			});
+		}
+
+		[Test]
+		public void FailingAfterExecutionHandler()
+		{
+			FailingAfterExecutionHandler(3, allowExceptions: false);
+		}
+
+		protected virtual void FailingAfterExecutionHandler(int maxClients, bool allowExceptions, ICredentials credentials = null)
+		{
+			Assert.Multiple(async () =>
+			{
+				using (var js = CreateServer().Start())
+				{
+					js.AfterExecuteService += (s, e) => throw new InvalidOperationException("This exception shouldn't crash the server.");
+					js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}.");
+
+					var clients = Enumerable.Range(100, maxClients).Select(async seed =>
+					{
+						// connect the client
+						var jc = CreateClient(js);
+						jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}.");
+
+						await jc.ConnectAsync(credentials);
+						await ClientRoutine(jc, seed, allowExceptions);
+					});
+
+					// the server didn't crash, the client didn't freeze
+					// and internal error exception is reported
+					Assert.That(async () => await Task.WhenAll(clients),
+						Throws.TypeOf<InternalErrorException>()
+							.With.Property("Code").EqualTo(-32603));
 				}
 			});
 		}

@@ -169,6 +169,8 @@ namespace JsonServices
 				// deserialization error
 				response = new ResponseErrorMessage
 				{
+					// request is probably null at this point
+					Id = request?.Id,
 					Error = ExceptionTranslator.Translate(ex,
 						ParseErrorException.ErrorCode,
 						"Parse error: " + ex.Message),
@@ -178,7 +180,32 @@ namespace JsonServices
 			{
 				// set response message
 				context.ResponseMessage = response;
-				AfterExecuteService?.Invoke(this, EventArgs.Empty);
+
+				// protect AfterExecuteService handler
+				try
+				{
+					AfterExecuteService?.Invoke(this, EventArgs.Empty);
+				}
+				catch (JsonServicesException ex)
+				{
+					// report known error code
+					response = new ResponseErrorMessage
+					{
+						Id = ex.MessageId,
+						Error = ExceptionTranslator.Translate(ex),
+					};
+				}
+				catch (Exception ex)
+				{
+					// unexpected error
+					response = new ResponseErrorMessage
+					{
+						Id = request?.Id,
+						Error = ExceptionTranslator.Translate(ex,
+							InternalErrorException.ErrorCode,
+							"Internal error: " + ex.Message),
+					};
+				}
 
 				// skip sending response if the request was a one-way notification
 				if (request == null || !request.IsNotification)
