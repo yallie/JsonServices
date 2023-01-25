@@ -4,7 +4,7 @@
     <Title>JsonServices.Transport.Fleck.Tests</Title>
     <Version>0.0.0.1</Version>
     <Authors>yallie</Authors>
-    <Copyright>Copyright Alexey Yakovlev 2018. All rights reserved.</Copyright>
+    <Copyright>Copyright Alexey Yakovlev 2018-2023. All rights reserved.</Copyright>
     <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
     <PackageLicenseUrl>https://github.com/yallie/JsonService/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/yallie/JsonService</PackageProjectUrl>

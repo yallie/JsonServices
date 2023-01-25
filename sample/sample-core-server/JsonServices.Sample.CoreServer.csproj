@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <Authors>yallie</Authors>
+    <Copyright>Copyright Alexey Yakovlev 2018-2023. All rights reserved.</Copyright>
+    <Description>C# Message-Based JSON-RPC Client over WebSockets</Description>
     <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
 
