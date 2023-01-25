@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JsonServices.Transport;
@@ -24,7 +25,8 @@ namespace JsonServices.Tests.Transport
 			Clients.Clear();
 		}
 
-		private Dictionary<string, StubClient> Clients { get; } = new Dictionary<string, StubClient>();
+		private ConcurrentDictionary<string, StubClient> Clients { get; } =
+			new ConcurrentDictionary<string, StubClient>();
 
 		public IEnumerable<IConnection> Connections => Clients.Values;
 
