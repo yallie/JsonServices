@@ -1,5 +1,6 @@
 ﻿using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
+using JsonServices.Tests.Exceptions;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
 using NUnit.Framework;
@@ -26,7 +27,9 @@ namespace JsonServices.Auth.SecureRemotePassword.Tests
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
-			return new JsonServer(server, provider, serializer, executor, AuthProvider);
+			var translator = new StubExceptionTranslator();
+			return new JsonServer(server, provider, serializer, executor,
+				AuthProvider, exceptionTranslator: translator);
 		}
 
 		protected override JsonClient CreateClient(JsonServer server)

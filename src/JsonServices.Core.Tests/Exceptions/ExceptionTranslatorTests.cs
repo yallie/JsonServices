@@ -1,5 +1,6 @@
 ﻿using System;
 using JsonServices.Exceptions;
+using JsonServices.Messages;
 using NUnit.Framework;
 
 namespace JsonServices.Tests.Exceptions
@@ -50,6 +51,25 @@ namespace JsonServices.Tests.Exceptions
 			var err = new ExceptionTranslator().Translate(ex);
 
 			Assert.NotNull(err);
+			Assert.AreEqual(InternalErrorException.ErrorCode, err.Code);
+			Assert.AreEqual(ex.Message, err.Message);
+			Assert.AreEqual(ex.ToString(), err.Data);
+		}
+
+		[Test]
+		public void StubExceptionTranslatorFiresAnEvent()
+		{
+			var error = default(Error);
+			var fired = false;
+			var tr = new StubExceptionTranslator();
+			tr.ErrorTranslated += (s, e) => fired = (error = e) != null;
+
+			var ex = new InvalidOperationException();
+			var err = tr.Translate(ex);
+
+			Assert.IsTrue(fired);
+			Assert.NotNull(err);
+			Assert.AreSame(err, error);
 			Assert.AreEqual(InternalErrorException.ErrorCode, err.Code);
 			Assert.AreEqual(ex.Message, err.Message);
 			Assert.AreEqual(ex.ToString(), err.Data);

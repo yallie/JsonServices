@@ -1,5 +1,6 @@
 ﻿using JsonServices.Serialization.ServiceStack;
 using JsonServices.Tests;
+using JsonServices.Tests.Exceptions;
 using JsonServices.Tests.Services;
 using NUnit.Framework;
 
@@ -21,7 +22,9 @@ namespace JsonServices.Transport.Fleck.Tests
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
-			return new JsonServer(server, provider, serializer, executor);
+			var translator = new StubExceptionTranslator();
+			return new JsonServer(server, provider, serializer, executor,
+				exceptionTranslator: translator);
 		}
 
 		protected override JsonClient CreateClient(JsonServer server)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JsonServices.Auth;
 using JsonServices.Exceptions;
 using JsonServices.Serialization.ServiceStack;
+using JsonServices.Tests.Exceptions;
 using JsonServices.Tests.Messages;
 using JsonServices.Tests.Services;
 using JsonServices.Tests.Transport;
@@ -27,7 +28,9 @@ namespace JsonServices.Tests
 			var serializer = new Serializer();
 			var executor = new StubExecutor();
 			var provider = new StubMessageTypeProvider();
-			return new JsonServer(server, provider, serializer, executor);
+			var translator = new StubExceptionTranslator();
+			return new JsonServer(server, provider, serializer, executor,
+				exceptionTranslator: translator);
 		}
 
 		protected virtual JsonClient CreateClient(JsonServer server)
@@ -150,17 +153,55 @@ namespace JsonServices.Tests
 		[Test]
 		public void FailingAfterExecutionHandler()
 		{
-			FailingAfterExecutionHandler(3, allowExceptions: false);
+			FailingAfterExecutionHandler(10, allowExceptions: false);
 		}
 
 		protected virtual void FailingAfterExecutionHandler(int maxClients, bool allowExceptions, ICredentials credentials = null)
 		{
-			Assert.Multiple(async () =>
+			Assert.Multiple(() =>
 			{
 				using (var js = CreateServer().Start())
 				{
 					js.AfterExecuteService += (s, e) => throw new InvalidOperationException("This exception shouldn't crash the server.");
 					js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}.");
+
+					var clients = Enumerable.Range(100, maxClients).Select(async seed =>
+					{
+						// connect the client
+						var jc = CreateClient(js);
+						jc.UnhandledException += (s, e) => Assert.Fail($"Unhandled client exception: {e.Exception}.");
+
+						await jc.ConnectAsync(credentials);
+						await ClientRoutine(jc, seed, allowExceptions);
+					});
+
+					// the server didn't crash, the client didn't freeze
+					// and internal error exception is reported
+					Assert.That(async () => await Task.WhenAll(clients),
+						Throws.TypeOf<InternalErrorException>()
+							.With.Property("Code").EqualTo(-32603));
+				}
+			});
+		}
+
+		[Test]
+		public void FailingExceptionTranslator()
+		{
+			FailingExceptionTranslator(10, allowExceptions: true);
+		}
+
+		protected virtual void FailingExceptionTranslator(int maxClients, bool allowExceptions, ICredentials credentials = null)
+		{
+			Assert.Multiple(() =>
+			{
+				using (var js = CreateServer().Start())
+				{
+					js.AfterExecuteService += (s, e) => throw new InvalidOperationException("This exception shouldn't crash the server.");
+					js.UnhandledException += (s, e) => Assert.Fail($"Unhandled server exception: {e.Exception}.");
+
+					var tr = js.ExceptionTranslator as StubExceptionTranslator;
+					Assert.That(tr, Is.Not.Null);
+					tr.ErrorTranslated += (s, e) => throw new InvalidOperationException($"Totally unexpected!");
 
 					var clients = Enumerable.Range(100, maxClients).Select(async seed =>
 					{

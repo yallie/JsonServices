@@ -25,7 +25,8 @@ namespace JsonServices
 			SubscriptionManager = new ServerSubscriptionManager(Server);
 			AuthProvider = authProvider ?? new NullAuthProvider();
 			SessionManager = sessionManager ?? new SessionManagerBase();
-			ExceptionTranslator = exceptionTranslator ?? new ExceptionTranslator();
+			DefaultExceptionTranslator = new ExceptionTranslator();
+			ExceptionTranslator = exceptionTranslator ?? DefaultExceptionTranslator;
 		}
 
 		public string ProductName { get; set; } = nameof(JsonServices);
@@ -47,6 +48,8 @@ namespace JsonServices
 		public ISessionManager SessionManager { get; }
 
 		public IExceptionTranslator ExceptionTranslator { get; }
+
+		private IExceptionTranslator DefaultExceptionTranslator { get; }
 
 		public event EventHandler InitializeRequestContext;
 
@@ -81,6 +84,20 @@ namespace JsonServices
 				Server.MessageReceived -= HandleServerMessage;
 				Server.Dispose();
 				IsDisposed = true;
+			}
+		}
+
+		private Error TranslateException(Exception ex, int? code = null, string message = null)
+		{
+			try
+			{
+				return ExceptionTranslator.Translate(ex, code, message);
+			}
+			catch (Exception trx)
+			{
+				// assume that default exception translator would never throw
+				var agg = new AggregateException(ex, trx);
+				return DefaultExceptionTranslator.Translate(agg, code, message);
 			}
 		}
 
@@ -140,7 +157,7 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
-						Error = ExceptionTranslator.Translate(ex),
+						Error = TranslateException(ex),
 					};
 				}
 				catch (Exception ex)
@@ -149,7 +166,7 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request.Id,
-						Error = ExceptionTranslator.Translate(ex,
+						Error = TranslateException(ex,
 							InternalErrorException.ErrorCode,
 							"Internal server error: " + ex.Message),
 					};
@@ -161,7 +178,7 @@ namespace JsonServices
 				response = new ResponseErrorMessage
 				{
 					Id = ex.MessageId,
-					Error = ExceptionTranslator.Translate(ex),
+					Error = TranslateException(ex),
 				};
 			}
 			catch (Exception ex)
@@ -171,7 +188,7 @@ namespace JsonServices
 				{
 					// request is probably null at this point
 					Id = request?.Id,
-					Error = ExceptionTranslator.Translate(ex,
+					Error = TranslateException(ex,
 						ParseErrorException.ErrorCode,
 						"Parse error: " + ex.Message),
 				};
@@ -192,7 +209,7 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = ex.MessageId,
-						Error = ExceptionTranslator.Translate(ex),
+						Error = TranslateException(ex),
 					};
 				}
 				catch (Exception ex)
@@ -201,7 +218,7 @@ namespace JsonServices
 					response = new ResponseErrorMessage
 					{
 						Id = request?.Id,
-						Error = ExceptionTranslator.Translate(ex,
+						Error = TranslateException(ex,
 							InternalErrorException.ErrorCode,
 							"Internal error: " + ex.Message),
 					};
