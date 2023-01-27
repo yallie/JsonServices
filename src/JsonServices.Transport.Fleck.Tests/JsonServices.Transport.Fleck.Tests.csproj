@@ -22,12 +22,6 @@
     <StartupObject />
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>Full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-    <BaseOutputPath>..\..\bin\UnitTests</BaseOutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Program.cs" />
   </ItemGroup>
@@ -54,6 +48,12 @@
   <PropertyGroup>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <BaseOutputPath>..\..\bin\UnitTests</BaseOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
 
 </Project>

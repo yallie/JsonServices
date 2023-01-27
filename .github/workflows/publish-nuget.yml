@@ -34,4 +34,4 @@ jobs:
       run: dotnet pack src -c Release --no-build -p:PublicRelease=true
 
     - name: Publish
-      run: dotnet nuget push CdekSdk\bin\Release\CdekSdk*.nupkg -k "${{ secrets.NUGET_JSON_SERVICES_API_TOKEN }}" -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push bin\Release\JsonServices*.nupkg -k "${{ secrets.NUGET_JSON_SERVICES_API_TOKEN }}" -s https://api.nuget.org/v3/index.json
