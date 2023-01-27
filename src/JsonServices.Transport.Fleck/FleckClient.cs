@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JsonServices.Transport.Fleck
 {
-	public class FleckClient : IClient
+	public sealed class FleckClient : IClient
 	{
 		public FleckClient(string url)
 		{

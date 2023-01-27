@@ -2,7 +2,7 @@
 
 namespace JsonServices.Services
 {
-	public class VersionRequest : IReturn<VersionResponse>, ICustomName
+	public sealed class VersionRequest : IReturn<VersionResponse>, ICustomName
 	{
 		public const string MessageName = "rpc.version";
 

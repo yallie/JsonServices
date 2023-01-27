@@ -3,7 +3,7 @@ using JsonServices.Messages;
 
 namespace JsonServices.Auth
 {
-	public class AuthRequest : IReturn<AuthResponse>, ICustomName
+	public sealed class AuthRequest : IReturn<AuthResponse>, ICustomName
 	{
 		public const string MessageName = "rpc.authenticate";
 

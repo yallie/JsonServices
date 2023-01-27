@@ -15,6 +15,10 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);SYSLIB0011</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
     <DebugSymbols>True</DebugSymbols>
@@ -37,5 +41,10 @@
     <ProjectReference Include="..\JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj" />
     <ProjectReference Include="..\JsonServices.Serialization.SystemTextJson\JsonServices.Serialization.SystemTextJson.csproj" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
 
 </Project>

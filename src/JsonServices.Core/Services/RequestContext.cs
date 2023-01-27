@@ -8,7 +8,7 @@ using JsonServices.Transport;
 
 namespace JsonServices.Services
 {
-	public class RequestContext : IDisposable
+	public sealed class RequestContext : IDisposable
 	{
 		public JsonServer Server { get; internal set; }
 
@@ -28,7 +28,7 @@ namespace JsonServices.Services
 		internal static AsyncLocal<RequestContext> CurrentContextHolder { get; } =
 			new AsyncLocal<RequestContext>();
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
 			var props = Properties;
 			if (props != null)

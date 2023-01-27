@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
@@ -23,6 +24,11 @@ namespace JsonServices.Exceptions
 			: base(ErrorCode, error.Message)
 		{
 			Details = error.Data;
+		}
+
+		protected AuthFailedException(SerializationInfo info, StreamingContext ctx)
+			: base(info, ctx)
+		{
 		}
 	}
 }

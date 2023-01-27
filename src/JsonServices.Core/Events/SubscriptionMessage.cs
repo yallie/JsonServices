@@ -4,7 +4,7 @@ using JsonServices.Messages;
 
 namespace JsonServices.Events
 {
-	public class SubscriptionMessage : IReturnVoid, ICustomName
+	public sealed class SubscriptionMessage : IReturnVoid, ICustomName
 	{
 		public const string MessageName = "rpc.subscription";
 

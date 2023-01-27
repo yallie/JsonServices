@@ -46,4 +46,9 @@
     <ProjectReference Include="..\JsonServices.Transport.NetMQ\JsonServices.Transport.NetMQ.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
 </Project>

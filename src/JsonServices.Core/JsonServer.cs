@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonServices.Auth;
@@ -13,7 +12,7 @@ using JsonServices.Transport;
 
 namespace JsonServices
 {
-	public class JsonServer : IDisposable
+	public sealed class JsonServer : IDisposable
 	{
 		public JsonServer(IServer server, IMessageTypeProvider typeProvider, ISerializer serializer, IServiceExecutor executor, IAuthProvider authProvider = null, ISessionManager sessionManager = null, IExceptionTranslator exceptionTranslator = null)
 		{

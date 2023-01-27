@@ -38,4 +38,9 @@
     <ProjectReference Include="..\JsonServices.Serialization.ServiceStack\JsonServices.Serialization.ServiceStack.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
 </Project>

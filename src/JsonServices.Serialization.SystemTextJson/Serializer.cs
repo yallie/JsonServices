@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using JsonServices.Exceptions;
 using JsonServices.Messages;
 using JsonServices.Serialization.SystemTextJson.Internal;
@@ -14,7 +15,11 @@ namespace JsonServices.Serialization.SystemTextJson
 		private static JsonSerializerOptions CreateOptions()
 		{
 			var options = new JsonSerializerOptions();
+#if NET_461
 			options.IgnoreNullValues = false;
+#else
+			options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+#endif
 			options.Converters.Add(new AnonymousConverterFactory());
 			options.Converters.Add(new CultureInfoConverter());
 			options.Converters.Add(new ObjectConverter());

@@ -14,7 +14,7 @@ using JsonServices.Transport;
 
 namespace JsonServices
 {
-	public class JsonClient : IDisposable, IMessageNameProvider
+	public sealed class JsonClient : IDisposable, IMessageNameProvider
 	{
 		public JsonClient(IClient client, IMessageTypeProvider typeProvider, ISerializer serializer)
 		{

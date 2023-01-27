@@ -8,7 +8,7 @@ using FleckWebSocketServer = Fleck.WebSocketServer;
 
 namespace JsonServices.Transport.Fleck
 {
-	public class FleckServer : IServer
+	public sealed class FleckServer : IServer
 	{
 		public FleckServer(string url)
 		{

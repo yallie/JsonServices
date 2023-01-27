@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using JsonServices.Messages;
 
 namespace JsonServices.Exceptions
@@ -12,6 +13,20 @@ namespace JsonServices.Exceptions
 			: base(message, innerException)
 		{
 			Code = code;
+		}
+
+		protected JsonServicesException(SerializationInfo info, StreamingContext ctx)
+			: base(info, ctx)
+		{
+			Code = info.GetInt32(nameof(Code));
+			Details = info.GetString(nameof(Details));
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue(nameof(Code), Code);
+			info.AddValue(nameof(Details), $"{Details}");
 		}
 
 		internal JsonServicesException()

@@ -51,4 +51,9 @@
     <ProjectReference Include="..\JsonServices.Transport.WebSocketSharp\JsonServices.Transport.WebSocketSharp.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
 </Project>

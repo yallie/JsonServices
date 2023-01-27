@@ -7,7 +7,7 @@ using NetMQ.Sockets;
 
 namespace JsonServices.Transport.NetMQ
 {
-	public class NetMQClient : IClient
+	public sealed class NetMQClient : IClient
 	{
 		public NetMQClient(string url)
 		{

@@ -10,7 +10,7 @@ using NetMQ.Sockets;
 
 namespace JsonServices.Transport.NetMQ
 {
-	public class NetMQServer : IServer
+	public sealed class NetMQServer : IServer
 	{
 		public NetMQServer(string url)
 		{
